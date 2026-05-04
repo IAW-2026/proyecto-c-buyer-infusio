@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f3ef;
+  --foreground: #2d2926;
+  --card: #ffffff;
+  --card-foreground: #2d2926;
+  --primary: #6b7056;
+  --primary-foreground: #ffffff;
+  --secondary: #d4cfc5;
+  --secondary-foreground: #2d2926;
+  --muted: #e8e4dd;
+  --muted-foreground: #6b6560;
+  --accent: #b86f4c;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #d4cfc5;
+  --input: #d4cfc5;
+  --ring: #6b7056;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), 'Times New Roman', serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-olive: #6b7056;
+  --color-terracotta: #b86f4c;
+  --color-cream: #f5f3ef;
+  --color-tan: #d4cfc5;
+  --color-brown: #2d2926;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  ::selection {
+    background-color: rgba(107, 112, 86, 0.3);
+    color: #2d2926;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
