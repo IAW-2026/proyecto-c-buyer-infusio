@@ -36,3 +36,12 @@ export const PurchaseStatus = {
 } as const
 
 export type PurchaseStatus = (typeof PurchaseStatus)[keyof typeof PurchaseStatus]
+
+
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  CLIENT: 'CLIENT',
+  VENDOR: 'VENDOR'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]

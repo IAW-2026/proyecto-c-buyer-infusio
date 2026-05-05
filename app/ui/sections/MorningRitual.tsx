@@ -45,6 +45,8 @@ export default function MorningRitual() {
                   src="/images/morning-ritual.jpg"
                   alt="Ritual matutino con infusiones"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  loading="eager"
                   className="object-cover"
                 />
               </div>

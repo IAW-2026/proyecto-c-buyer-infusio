@@ -19,6 +19,7 @@ model User {
   carts             Cart[]
   purchaseOrders    PurchaseOrder[]
   purchases         Purchase[]
+  role              UserRole           @default(CLIENT)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
@@ -124,4 +125,10 @@ enum PurchaseStatus {
   DELIVERED
   CANCELLED
   DISPUTED
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+  VENDOR
 }

@@ -9,8 +9,10 @@ export default function HeroSection() {
             src="/images/hero-coffee.jpg"
             alt="Infusión artesanal"
             fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover"
             priority
+            loading="eager"
           />
         </div>
 
