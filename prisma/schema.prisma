@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── User (synced from Clerk via webhook on first login) ──────────────────────
+model User {
+  id                String             @id // Clerk user ID (sub claim from JWT)
+  name              String
+  lastName          String
+  email             String             @unique
+  phoneNumber       String?
+  addresses         Address[]
+  favouriteProducts FavouriteProduct[]
+  carts             Cart[]
+  purchaseOrders    PurchaseOrder[]
+  purchases         Purchase[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street     String
+  city       String
+  province   String
+  postalCode String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+// ─── Favourites (productId is the Seller App's ID — no local FK) ──────────────
+model FavouriteProduct {
+  userId    String
+  productId String // Seller App's product ID
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, productId])
+}
+
+// ─── Cart ─────────────────────────────────────────────────────────────────────
+model Cart {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status        CartStatus     @default(NOT_CHECKED_OUT)
+  items         CartItem[]
+  purchaseOrder PurchaseOrder?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+// CartItem stores a snapshot of product data so the cart display never needs
+// to call the Seller API (product name/image/price may change after adding).
+model CartItem {
+  id              String  @id @default(cuid())
+  cartId          String
+  cart            Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId       String  // Seller App's product ID — no FK, product lives in Seller's DB
+  productName     String  // Snapshot
+  productImageUrl String? // Snapshot
+  priceAtTime     Decimal @db.Decimal(10, 2) // Snapshot
+  quantity        Int
+
+  @@unique([cartId, productId])
+}
+
+enum CartStatus {
+  NOT_CHECKED_OUT
+  CHECKED_OUT
+}
+
+// ─── Purchase Order (pending — sent to Seller App on checkout) ────────────────
+model PurchaseOrder {
+  id          String              @id @default(cuid())
+  appId       String              @default("buyer-app")
+  cartId      String              @unique
+  cart        Cart                @relation(fields: [cartId], references: [id])
+  userId      String
+  user        User                @relation(fields: [userId], references: [id])
+  status      PurchaseOrderStatus @default(PENDING)
+  userAddress Json                // Snapshot of shipping address at time of order
+  packages    Json                @default("[]") // Package IDs returned by Seller App
+  purchase    Purchase?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+enum PurchaseOrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// ─── Purchase (completed — holds all cross-service IDs) ───────────────────────
+model Purchase {
+  id              String         @id @default(cuid())
+  appId           String         @default("buyer-app")
+  purchaseOrderId String         @unique
+  purchaseOrder   PurchaseOrder  @relation(fields: [purchaseOrderId], references: [id])
+  cartId          String
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  status          PurchaseStatus @default(PENDING)
+  totalAmount     Decimal?       @db.Decimal(10, 2) // Set on creation from cart total
+  shippingIds     String[] // One ID per package, from Shipping App
+  paymentId       String? // From Payments App
+  disputeId       String? // From Payments App, if a dispute was opened
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum PurchaseStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  DISPUTED
+}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { auth } from "@clerk/nextjs/server";
-import { ClerkProvider, Show, SignUpButton, SignInButton, UserButton } from "@clerk/nextjs";
+import { AuthButtons } from "./AuthButtons";
 import CartNavLink from "./CartNavLink";
 import MobileNav from "./MobileNav";
 
@@ -51,60 +51,26 @@ export default async function Navbar() {
 
           {/* Desktop Auth */}
           <div className="hidden lg:flex shrink-0 items-center gap-3">
-            <ClerkProvider>
-              <Show when="signed-in">
-                <UserButton />
-              </Show>
-              <Show when="signed-out">
-                <SignInButton mode="modal">
-                  <button className="px-5 py-2.5 text-xs tracking-[0.15em] text-brown border border-brown rounded-full hover:bg-brown hover:text-cream transition-colors">
-                    SIGN IN
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="px-5 py-2.5 text-xs tracking-[0.15em] text-cream bg-olive rounded-full hover:bg-brown transition-colors">
-                    JOIN
-                  </button>
-                </SignUpButton>
-              </Show>
-            </ClerkProvider>
+            <AuthButtons isSignedIn={!!userId} />
           </div>
 
           {/* Mobile Hamburger */}
           <div className="flex items-center lg:hidden">
-            <ClerkProvider>
-              <MobileNav>
-                <nav className="flex flex-col gap-4 mb-4" aria-label="Categorías">
-                  {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className={mobileLinkClass}>
-                      {link.label}
-                    </Link>
-                  ))}
-                  <Suspense fallback={<span className={mobileLinkClass}>CARRITO (0)</span>}>
-                    <CartNavLink userId={userId} className={mobileLinkClass} />
-                  </Suspense>
-                </nav>
-                <div className="flex gap-3 pt-4 border-t border-tan">
-                  <Show when="signed-in">
-                    <div className="flex justify-center items-center">
-                      <UserButton />
-                    </div>
-                  </Show>
-                  <Show when="signed-out">
-                    <SignInButton mode="modal">
-                      <button className="flex-1 py-2.5 text-xs tracking-[0.15em] text-brown border border-brown rounded-full">
-                        SIGN IN
-                      </button>
-                    </SignInButton>
-                    <SignUpButton mode="modal">
-                      <button className="flex-1 py-2.5 text-xs tracking-[0.15em] text-cream bg-olive rounded-full">
-                        JOIN
-                      </button>
-                    </SignUpButton>
-                  </Show>
-                </div>
-              </MobileNav>
-            </ClerkProvider>
+            <MobileNav>
+              <nav className="flex flex-col gap-4 mb-4" aria-label="Categorías">
+                {navLinks.map((link) => (
+                  <Link key={link.href} href={link.href} className={mobileLinkClass}>
+                    {link.label}
+                  </Link>
+                ))}
+                <Suspense fallback={<span className={mobileLinkClass}>CARRITO (0)</span>}>
+                  <CartNavLink userId={userId} className={mobileLinkClass} />
+                </Suspense>
+              </nav>
+              <div className="flex gap-3 pt-4 border-t border-tan">
+                <AuthButtons isSignedIn={!!userId} mobile />
+              </div>
+            </MobileNav>
           </div>
         </div>
       </div>
