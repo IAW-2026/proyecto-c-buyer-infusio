@@ -9,7 +9,7 @@ interface AdminSidebarProps {
 
 const NAV = [
   {
-    label: "DASHBOARD",
+    label: "PANEL DE CONTROL",
     href: "/admin",
     exact: true,
     icon: (
@@ -22,7 +22,7 @@ const NAV = [
     ),
   },
   {
-    label: "PURCHASES",
+    label: "COMPRAS",
     href: "/admin/purchases",
     exact: false,
     icon: (
@@ -35,7 +35,7 @@ const NAV = [
     ),
   },
   {
-    label: "VENDORS",
+    label: "VENDEDORES",
     href: "/admin/vendors",
     exact: false,
     icon: (
@@ -47,7 +47,7 @@ const NAV = [
     ),
   },
   {
-    label: "USERS",
+    label: "USUARIOS",
     href: "/admin/users",
     exact: false,
     icon: (
@@ -58,7 +58,7 @@ const NAV = [
     ),
   },
   {
-    label: "ANALYTICS",
+    label: "ESTADÍSTICAS",
     href: "/admin/analytics",
     exact: false,
     icon: (
