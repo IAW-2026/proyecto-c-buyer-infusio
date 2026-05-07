@@ -121,7 +121,7 @@ export default function AdminSidebar({ adminName }: AdminSidebarProps) {
           <span className="text-xs font-medium text-brown">{initials}</span>
         </div>
         <div>
-          <p className="text-xs tracking-[0.12em] text-muted-foreground">ADMINISTRATOR</p>
+          <p className="text-xs tracking-[0.12em] text-muted-foreground">ADMINISTRADOR</p>
           <p className="text-xs text-brown mt-0.5">{adminName}</p>
         </div>
       </div>
