@@ -5,10 +5,10 @@ import CartNavButton from "./CartNavButton";
 import MobileNav from "./MobileNav";
 
 const navLinks = [
-  { href: "/?query=café", label: "CAFÉ" },
+  { href: "/?query=cafe", label: "CAFÉ" },
   { href: "/?query=infusiones", label: "INFUSIONES" },
   { href: "/?query=accesorios", label: "ACCESORIOS" },
-  { href: "/?query=máquinas", label: "MÁQUINAS" },
+  { href: "/?query=maquinas", label: "MÁQUINAS" },
 ];
 
 const linkClass = "text-xs tracking-[0.15em] text-brown hover:text-olive transition-colors";

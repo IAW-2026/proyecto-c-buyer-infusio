@@ -82,7 +82,8 @@ export default function AddToCartControls({
           "pendingCartItem",
           JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity })
         );
-        router.push(`/sign-in?redirect_url=${encodeURIComponent(window.location.href)}`);
+        const { pathname, search } = new URL(window.location.href);
+        router.push(`/sign-in?redirect_url=${encodeURIComponent(pathname + search)}`);
         return;
       }
 

@@ -35,11 +35,24 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     // Seller API unreachable — render empty catalog instead of crashing
   }
 
+  const DISPLAY_LABELS: Record<string, string> = {
+    cafe: "Café",
+    maquinas: "Máquinas",
+    tes: "Tés",
+  };
+  const displayLabel = (q: string) =>
+    DISPLAY_LABELS[q.toLowerCase()] ??
+    (q.charAt(0).toUpperCase() + q.slice(1).toLowerCase());
+
+  const normalize = (s: string) =>
+    s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+  const q = normalize(query);
   const filtered = allProducts.filter(
     (p) =>
-      p.name.toLowerCase().includes(query.toLowerCase()) ||
-      p.description?.toLowerCase().includes(query.toLowerCase()) ||
-      p.categories.some((c) => c.toLowerCase().includes(query.toLowerCase()))
+      normalize(p.name).includes(q) ||
+      normalize(p.description ?? "").includes(q) ||
+      p.categories.some((c) => normalize(c).includes(q))
   );
 
   const totalCount = filtered.length;
@@ -55,7 +68,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         <p className="text-xs tracking-[0.25em] text-terracotta italic mb-6">
           CAFÉ, TÉ Y EL ARTE DE PREPARARLOS
         </p>
-        <h1 className="font-serif text-6xl lg:text-7xl text-brown mb-8">{query.charAt(0).toUpperCase() + query.slice(1).toLowerCase()}</h1>
+        <h1 className="font-serif text-6xl lg:text-7xl text-brown mb-8">{displayLabel(query)}</h1>
         <p className="text-sm italic text-muted-foreground max-w-xl mx-auto leading-relaxed">
                {totalCount !== 1 ? "Se encontraron" : "Se encontró"} {totalCount} producto{totalCount !== 1 ? "s" : ""}
         </p>

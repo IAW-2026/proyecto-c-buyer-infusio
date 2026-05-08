@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 export interface CartItem {
@@ -26,6 +27,7 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { userId } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,7 +48,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    if (userId === undefined) return; // Clerk still initialising
+    if (userId === null) {
+      setItems([]);   // signed out — clear display, leave DB intact
+      setIsOpen(false);
+    } else {
+      refresh();      // signed in — restore cart from DB
+    }
+  }, [userId, refresh]);
 
   const applyOptimistic = useCallback(
     (updater: (prev: CartItem[]) => CartItem[]) => setItems(updater),
