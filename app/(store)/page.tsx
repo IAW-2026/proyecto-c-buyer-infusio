@@ -49,13 +49,20 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   return (
     <section className="py-12 lg:py-20 px-6 lg:px-12">
       <div className="max-w-350 mx-auto">
+      
+      {/* Header */}
+      <div className="pt-20 lg:pt-10 pb-12 px-6 text-center border-b border-tan">
+        <p className="text-xs tracking-[0.25em] text-terracotta italic mb-6">
+          CAFÉ, TÉ Y EL ARTE DE PREPARARLOS
+        </p>
+        <h1 className="font-serif text-6xl lg:text-7xl text-brown mb-8">{query.charAt(0).toUpperCase() + query.slice(1).toLowerCase()}</h1>
+        <p className="text-sm italic text-muted-foreground max-w-xl mx-auto leading-relaxed">
+               {totalCount !== 1 ? "Se encontraron" : "Se encontró"} {totalCount} producto{totalCount !== 1 ? "s" : ""}
+        </p>
+      </div>
+
         <div className="flex items-center justify-between mb-8">
-          <h2 className="font-serif text-3xl lg:text-4xl text-brown">
-            Resultados para &ldquo;{query}&rdquo;
-          </h2>
-          <p className="text-xs tracking-[0.15em] text-muted-foreground">
-            {totalCount} PRODUCTO{totalCount !== 1 ? "S" : ""}
-          </p>
+                   
         </div>
 
         {products.length === 0 ? (
