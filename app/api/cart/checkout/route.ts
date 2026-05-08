@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/prisma";
-import { createPurchaseOrder, getPaymentUrl } from "@/lib/services/externalApis";
+import { createPurchaseOrder, OrderItem } from "@/lib/services/externalApis";
 
 interface AddressBody {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
   street: string;
+  apartment?: string;
   city: string;
   province: string;
   postalCode: string;
+  country?: string;
+  note?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -32,11 +38,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
   }
 
+  const orderItems: OrderItem[] = cart.items.map((item) => ({
+    product_id: item.productId,
+    product_name: item.productName,
+    unit_price: Number(item.priceAtTime),
+    quantity: item.quantity,
+    subtotal: Number(item.priceAtTime) * item.quantity,
+  }));
+
   const token = await getToken();
 
-  const { purchase_order_id } = await createPurchaseOrder(cart.id, userId, token ?? undefined);
-
-  const { checkout_url } = await getPaymentUrl(purchase_order_id, token ?? undefined);
+  const { purchase_order_id, shipping_cost, currency, checkout_url } =
+    await createPurchaseOrder(userId, address as Record<string, string | undefined>, orderItems, token ?? undefined);
 
   await db.purchaseOrder.create({
     data: {
@@ -52,5 +65,5 @@ export async function POST(request: NextRequest) {
     data: { status: "CHECKED_OUT" },
   });
 
-  return NextResponse.json({ checkout_url });
+  return NextResponse.json({ purchase_order_id, shipping_cost, currency, checkout_url });
 }

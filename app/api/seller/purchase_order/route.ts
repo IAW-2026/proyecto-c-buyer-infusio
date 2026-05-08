@@ -7,19 +7,32 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { shopping_cart_id, user_id } = body as {
-    shopping_cart_id: string;
+  const { user_id, address, items } = body as {
     user_id: string;
+    address: Record<string, string | undefined>;
+    items: Array<{ product_id: string; product_name: string; unit_price: number; quantity: number; subtotal: number }>;
   };
 
-  if (!shopping_cart_id || !user_id) {
+  if (!user_id || !address || !items?.length) {
     return NextResponse.json(
-      { error: "shopping_cart_id and user_id are required" },
+      { error: "user_id, address, and items are required" },
       { status: 400 }
     );
   }
 
-  const purchase_order_id = `mock_order_${Date.now()}`;
+  const subtotal = items.reduce((s, i) => s + i.subtotal, 0);
 
-  return NextResponse.json({ purchase_order_id }, { status: 201 });
+  const destNum = parseInt(address?.postalCode ?? "1000", 10);
+  const diff = Math.abs(destNum - 1000);
+  const shipping_cost = diff > 3000 ? 4200 : diff > 1000 ? 2800 : 1500;
+
+  const total = subtotal + shipping_cost;
+  const purchase_order_id = `mock_order_${Date.now()}`;
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const checkout_url = `${APP_URL}/pago?order_id=${purchase_order_id}&amount=${total}`;
+
+  return NextResponse.json(
+    { purchase_order_id, shipping_cost, currency: "ARS", checkout_url },
+    { status: 201 }
+  );
 }

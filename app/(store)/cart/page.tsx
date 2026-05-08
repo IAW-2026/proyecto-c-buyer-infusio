@@ -2,10 +2,9 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/prisma";
-import CartItemRow from "@/app/ui/CartItemRow";
-import CartSummary from "@/app/ui/CartSummary";
+import CheckoutForm from "@/app/ui/CheckoutForm";
 
-export const metadata = { title: "Carrito — Infusio" };
+export const metadata = { title: "Pago — Infusio" };
 
 export default async function CartPage() {
   const { userId } = await auth();
@@ -39,22 +38,8 @@ export default async function CartPage() {
   }
 
   return (
-    <section className="max-w-350 mx-auto px-6 lg:px-12 py-12 lg:py-20">
-      <h1 className="font-serif text-3xl lg:text-4xl text-brown mb-10">Tu Carrito</h1>
-
-      <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-x-16 lg:items-start">
-        {/* Item list */}
-        <div>
-          {items.map((item) => (
-            <CartItemRow key={item.id} item={item} />
-          ))}
-        </div>
-
-        {/* Summary + checkout */}
-        <div className="mt-10 lg:mt-0 lg:sticky lg:top-24">
-          <CartSummary items={items} />
-        </div>
-      </div>
-    </section>
+    <main className="max-w-350 mx-auto px-6 lg:px-12 py-16 lg:py-24">
+      <CheckoutForm items={items} />
+    </main>
   );
 }

@@ -57,8 +57,19 @@ export interface SellerProduct {
   badge?: string;
 }
 
+export interface OrderItem {
+  product_id: string;
+  product_name: string;
+  unit_price: number;
+  quantity: number;
+  subtotal: number;
+}
+
 export interface CreatePurchaseOrderResponse {
   purchase_order_id: string;
+  shipping_cost: number;
+  currency: string;
+  checkout_url: string;
 }
 
 export interface PaymentUrlResponse {
@@ -148,15 +159,16 @@ export async function getProductById(
 }
 
 export async function createPurchaseOrder(
-  cartId: string,
   userId: string,
+  address: Record<string, string | undefined>,
+  items: OrderItem[],
   token?: string
 ): Promise<CreatePurchaseOrderResponse> {
   return apiFetch<CreatePurchaseOrderResponse>(
     `${SELLER_API_URL}/purchase_order`,
     {
       method: "POST",
-      body: JSON.stringify({ shopping_cart_id: cartId, user_id: userId }),
+      body: JSON.stringify({ user_id: userId, address, items }),
       cache: "no-store",
     },
     token
