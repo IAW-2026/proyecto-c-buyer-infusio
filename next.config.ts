@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "jesper.com.ar" },
       { protocol: "https", hostname: "newsite.fazenda.com.ar" },
       { protocol: "https", hostname: "www.connectroasters.com" },
+      { protocol: "https", hostname: "beanswithoutborders.com" },
     ],
   },
 };

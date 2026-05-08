@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { AuthButtons } from "./AuthButtons";
-import CartNavLink from "./CartNavLink";
+import CartNavButton from "./CartNavButton";
 import MobileNav from "./MobileNav";
 
 const navLinks = [
@@ -44,9 +43,7 @@ export default async function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Suspense fallback={<span className={linkClass}>CARRITO (0)</span>}>
-              <CartNavLink userId={userId} className={linkClass} />
-            </Suspense>
+            <CartNavButton userId={userId} className={linkClass} />
           </nav>
 
           {/* Desktop Auth */}
@@ -63,9 +60,7 @@ export default async function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <Suspense fallback={<span className={mobileLinkClass}>CARRITO (0)</span>}>
-                  <CartNavLink userId={userId} className={mobileLinkClass} />
-                </Suspense>
+                <CartNavButton userId={userId} className={mobileLinkClass} />
               </nav>
               <div className="flex gap-3 pt-4 border-t border-tan">
                 <AuthButtons isSignedIn={!!userId} mobile />

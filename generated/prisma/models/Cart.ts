@@ -20,14 +20,25 @@ export type CartModel = runtime.Types.Result.DefaultSelection<Prisma.$CartPayloa
 
 export type AggregateCart = {
   _count: CartCountAggregateOutputType | null
+  _avg: CartAvgAggregateOutputType | null
+  _sum: CartSumAggregateOutputType | null
   _min: CartMinAggregateOutputType | null
   _max: CartMaxAggregateOutputType | null
+}
+
+export type CartAvgAggregateOutputType = {
+  subtotal: runtime.Decimal | null
+}
+
+export type CartSumAggregateOutputType = {
+  subtotal: runtime.Decimal | null
 }
 
 export type CartMinAggregateOutputType = {
   id: string | null
   userId: string | null
   status: $Enums.CartStatus | null
+  subtotal: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +47,7 @@ export type CartMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   status: $Enums.CartStatus | null
+  subtotal: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,16 +56,26 @@ export type CartCountAggregateOutputType = {
   id: number
   userId: number
   status: number
+  subtotal: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
+export type CartAvgAggregateInputType = {
+  subtotal?: true
+}
+
+export type CartSumAggregateInputType = {
+  subtotal?: true
+}
+
 export type CartMinAggregateInputType = {
   id?: true
   userId?: true
   status?: true
+  subtotal?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +84,7 @@ export type CartMaxAggregateInputType = {
   id?: true
   userId?: true
   status?: true
+  subtotal?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +93,7 @@ export type CartCountAggregateInputType = {
   id?: true
   userId?: true
   status?: true
+  subtotal?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -113,6 +137,18 @@ export type CartAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: CartAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: CartSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: CartMinAggregateInputType
@@ -143,6 +179,8 @@ export type CartGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: CartCountAggregateInputType | true
+  _avg?: CartAvgAggregateInputType
+  _sum?: CartSumAggregateInputType
   _min?: CartMinAggregateInputType
   _max?: CartMaxAggregateInputType
 }
@@ -151,9 +189,12 @@ export type CartGroupByOutputType = {
   id: string
   userId: string
   status: $Enums.CartStatus
+  subtotal: runtime.Decimal | null
   createdAt: Date
   updatedAt: Date
   _count: CartCountAggregateOutputType | null
+  _avg: CartAvgAggregateOutputType | null
+  _sum: CartSumAggregateOutputType | null
   _min: CartMinAggregateOutputType | null
   _max: CartMaxAggregateOutputType | null
 }
@@ -180,6 +221,7 @@ export type CartWhereInput = {
   id?: Prisma.StringFilter<"Cart"> | string
   userId?: Prisma.StringFilter<"Cart"> | string
   status?: Prisma.EnumCartStatusFilter<"Cart"> | $Enums.CartStatus
+  subtotal?: Prisma.DecimalNullableFilter<"Cart"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Cart"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Cart"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -191,6 +233,7 @@ export type CartOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -205,6 +248,7 @@ export type CartWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CartWhereInput | Prisma.CartWhereInput[]
   userId?: Prisma.StringFilter<"Cart"> | string
   status?: Prisma.EnumCartStatusFilter<"Cart"> | $Enums.CartStatus
+  subtotal?: Prisma.DecimalNullableFilter<"Cart"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Cart"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Cart"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -216,11 +260,14 @@ export type CartOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CartCountOrderByAggregateInput
+  _avg?: Prisma.CartAvgOrderByAggregateInput
   _max?: Prisma.CartMaxOrderByAggregateInput
   _min?: Prisma.CartMinOrderByAggregateInput
+  _sum?: Prisma.CartSumOrderByAggregateInput
 }
 
 export type CartScalarWhereWithAggregatesInput = {
@@ -230,6 +277,7 @@ export type CartScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Cart"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Cart"> | string
   status?: Prisma.EnumCartStatusWithAggregatesFilter<"Cart"> | $Enums.CartStatus
+  subtotal?: Prisma.DecimalNullableWithAggregatesFilter<"Cart"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Cart"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Cart"> | Date | string
 }
@@ -237,6 +285,7 @@ export type CartScalarWhereWithAggregatesInput = {
 export type CartCreateInput = {
   id?: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCartsInput
@@ -248,6 +297,7 @@ export type CartUncheckedCreateInput = {
   id?: string
   userId: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.CartItemUncheckedCreateNestedManyWithoutCartInput
@@ -257,6 +307,7 @@ export type CartUncheckedCreateInput = {
 export type CartUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCartsNestedInput
@@ -268,6 +319,7 @@ export type CartUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.CartItemUncheckedUpdateManyWithoutCartNestedInput
@@ -278,6 +330,7 @@ export type CartCreateManyInput = {
   id?: string
   userId: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -285,6 +338,7 @@ export type CartCreateManyInput = {
 export type CartUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -293,6 +347,7 @@ export type CartUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -311,14 +366,20 @@ export type CartCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type CartAvgOrderByAggregateInput = {
+  subtotal?: Prisma.SortOrder
 }
 
 export type CartMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -327,8 +388,13 @@ export type CartMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type CartSumOrderByAggregateInput = {
+  subtotal?: Prisma.SortOrder
 }
 
 export type CartScalarRelationFilter = {
@@ -382,6 +448,14 @@ export type EnumCartStatusFieldUpdateOperationsInput = {
   set?: $Enums.CartStatus
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type CartCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.CartCreateWithoutItemsInput, Prisma.CartUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.CartCreateOrConnectWithoutItemsInput
@@ -413,6 +487,7 @@ export type CartUpdateOneRequiredWithoutPurchaseOrderNestedInput = {
 export type CartCreateWithoutUserInput = {
   id?: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.CartItemCreateNestedManyWithoutCartInput
@@ -422,6 +497,7 @@ export type CartCreateWithoutUserInput = {
 export type CartUncheckedCreateWithoutUserInput = {
   id?: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.CartItemUncheckedCreateNestedManyWithoutCartInput
@@ -461,6 +537,7 @@ export type CartScalarWhereInput = {
   id?: Prisma.StringFilter<"Cart"> | string
   userId?: Prisma.StringFilter<"Cart"> | string
   status?: Prisma.EnumCartStatusFilter<"Cart"> | $Enums.CartStatus
+  subtotal?: Prisma.DecimalNullableFilter<"Cart"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Cart"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Cart"> | Date | string
 }
@@ -468,6 +545,7 @@ export type CartScalarWhereInput = {
 export type CartCreateWithoutItemsInput = {
   id?: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCartsInput
@@ -478,6 +556,7 @@ export type CartUncheckedCreateWithoutItemsInput = {
   id?: string
   userId: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   purchaseOrder?: Prisma.PurchaseOrderUncheckedCreateNestedOneWithoutCartInput
@@ -502,6 +581,7 @@ export type CartUpdateToOneWithWhereWithoutItemsInput = {
 export type CartUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCartsNestedInput
@@ -512,6 +592,7 @@ export type CartUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   purchaseOrder?: Prisma.PurchaseOrderUncheckedUpdateOneWithoutCartNestedInput
@@ -520,6 +601,7 @@ export type CartUncheckedUpdateWithoutItemsInput = {
 export type CartCreateWithoutPurchaseOrderInput = {
   id?: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCartsInput
@@ -530,6 +612,7 @@ export type CartUncheckedCreateWithoutPurchaseOrderInput = {
   id?: string
   userId: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.CartItemUncheckedCreateNestedManyWithoutCartInput
@@ -554,6 +637,7 @@ export type CartUpdateToOneWithWhereWithoutPurchaseOrderInput = {
 export type CartUpdateWithoutPurchaseOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCartsNestedInput
@@ -564,6 +648,7 @@ export type CartUncheckedUpdateWithoutPurchaseOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.CartItemUncheckedUpdateManyWithoutCartNestedInput
@@ -572,6 +657,7 @@ export type CartUncheckedUpdateWithoutPurchaseOrderInput = {
 export type CartCreateManyUserInput = {
   id?: string
   status?: $Enums.CartStatus
+  subtotal?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -579,6 +665,7 @@ export type CartCreateManyUserInput = {
 export type CartUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.CartItemUpdateManyWithoutCartNestedInput
@@ -588,6 +675,7 @@ export type CartUpdateWithoutUserInput = {
 export type CartUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.CartItemUncheckedUpdateManyWithoutCartNestedInput
@@ -597,6 +685,7 @@ export type CartUncheckedUpdateWithoutUserInput = {
 export type CartUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCartStatusFieldUpdateOperationsInput | $Enums.CartStatus
+  subtotal?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -636,6 +725,7 @@ export type CartSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   userId?: boolean
   status?: boolean
+  subtotal?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -648,6 +738,7 @@ export type CartSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   userId?: boolean
   status?: boolean
+  subtotal?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -657,6 +748,7 @@ export type CartSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   userId?: boolean
   status?: boolean
+  subtotal?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -666,11 +758,12 @@ export type CartSelectScalar = {
   id?: boolean
   userId?: boolean
   status?: boolean
+  subtotal?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CartOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["cart"]>
+export type CartOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "subtotal" | "createdAt" | "updatedAt", ExtArgs["result"]["cart"]>
 export type CartInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Cart$itemsArgs<ExtArgs>
@@ -695,6 +788,7 @@ export type $CartPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     userId: string
     status: $Enums.CartStatus
+    subtotal: runtime.Decimal | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["cart"]>
@@ -1126,6 +1220,7 @@ export interface CartFieldRefs {
   readonly id: Prisma.FieldRef<"Cart", 'String'>
   readonly userId: Prisma.FieldRef<"Cart", 'String'>
   readonly status: Prisma.FieldRef<"Cart", 'CartStatus'>
+  readonly subtotal: Prisma.FieldRef<"Cart", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Cart", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Cart", 'DateTime'>
 }

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "./CartContext";
 
 interface AddToCartControlsProps {
   productId: string;
   productName: string;
+  productVariant?: string;
   productImageUrl?: string;
   priceAtTime: number;
   isOutOfStock: boolean;
@@ -15,6 +17,7 @@ interface AddToCartControlsProps {
 export default function AddToCartControls({
   productId,
   productName,
+  productVariant,
   productImageUrl,
   priceAtTime,
   isOutOfStock,
@@ -22,8 +25,8 @@ export default function AddToCartControls({
 }: AddToCartControlsProps) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [added, setAdded] = useState(false);
   const router = useRouter();
+  const { refresh, openCartSilent, applyOptimistic } = useCart();
 
   const btnBg = accent === "terracotta"
     ? "bg-terracotta hover:bg-brown"
@@ -38,25 +41,55 @@ export default function AddToCartControls({
   }
 
   async function handleAdd() {
+    const tempId = `optimistic_${productId}`;
+
+    // Optimistically add to cart and open drawer immediately
+    applyOptimistic((prev) => {
+      const existing = prev.find((i) => i.productId === productId);
+      if (existing) {
+        return prev.map((i) =>
+          i.productId === productId ? { ...i, quantity: i.quantity + quantity } : i
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: tempId,
+          productId,
+          productName,
+          productVariant: productVariant ?? null,
+          productImageUrl: productImageUrl ?? null,
+          priceAtTime,
+          quantity,
+        },
+      ];
+    });
+    openCartSilent();
+
+    // Confirm with server in background
     setLoading(true);
     try {
       const res = await fetch("/api/cart/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, productName, productImageUrl, priceAtTime, quantity }),
+        body: JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity }),
       });
 
       if (res.status === 401) {
-        router.push("/sign-in");
+        // Revert optimistic state, save for after sign-in
+        applyOptimistic((prev) => prev.filter((i) => i.id !== tempId));
+        sessionStorage.setItem(
+          "pendingCartItem",
+          JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity })
+        );
+        router.push(`/sign-in?redirect_url=${encodeURIComponent(window.location.href)}`);
         return;
       }
-      if (!res.ok) throw new Error();
 
-      setAdded(true);
-      router.refresh();
-      setTimeout(() => setAdded(false), 2000);
+      // Replace temp item with real DB data
+      refresh();
     } catch {
-      // silent degradation
+      refresh(); // revert on network error
     } finally {
       setLoading(false);
     }
@@ -89,7 +122,7 @@ export default function AddToCartControls({
         disabled={loading}
         className={`flex-1 py-3 text-xs tracking-[0.15em] font-medium text-cream ${btnBg} disabled:opacity-50 transition-colors`}
       >
-        {loading ? "…" : added ? "¡AGREGADO!" : "AGREGAR AL CARRITO"}
+        {loading ? "…" : "AGREGAR AL CARRITO"}
       </button>
     </div>
   );

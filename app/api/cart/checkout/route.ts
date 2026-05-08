@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     data: {
       cartId: cart.id,
       userId,
-      userAddress: address,
+      userAddress: address as object,
       status: "PENDING",
     },
   });

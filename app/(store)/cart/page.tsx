@@ -16,7 +16,10 @@ export default async function CartPage() {
     include: { items: true },
   });
 
-  const items = cart?.items ?? [];
+  const items = (cart?.items ?? []).map((item) => ({
+    ...item,
+    priceAtTime: Number(item.priceAtTime),
+  }));
 
   if (items.length === 0) {
     return (

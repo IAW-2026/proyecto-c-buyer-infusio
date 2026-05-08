@@ -23,9 +23,10 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { productId, productName, productImageUrl, priceAtTime, quantity = 1 } = body as {
+  const { productId, productName, productVariant, productImageUrl, priceAtTime, quantity = 1 } = body as {
     productId: string;
     productName: string;
+    productVariant?: string;
     productImageUrl?: string;
     priceAtTime: number;
     quantity?: number;
@@ -35,18 +36,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "productId, productName and priceAtTime are required" }, { status: 400 });
   }
 
-  // Ensure the User row exists — may not yet if the Clerk webhook hasn't fired
-  const clerkUser = await currentUser();
-  await db.user.upsert({
-    where: { id: userId },
-    create: {
-      id: userId,
-      name: clerkUser?.firstName ?? "—",
-      lastName: clerkUser?.lastName ?? "—",
-      email: clerkUser?.emailAddresses[0]?.emailAddress ?? `${userId}@unknown`,
-    },
-    update: {},
-  });
+  // Ensure the User row exists — may not yet if the Clerk webhook hasn't fired.
+  // Only call currentUser() (slow Clerk API round-trip) when the row is actually missing.
+  const existingUser = await db.user.findUnique({ where: { id: userId }, select: { id: true } });
+  if (!existingUser) {
+    const clerkUser = await currentUser();
+    const email = clerkUser?.emailAddresses[0]?.emailAddress ?? `${userId}@unknown`;
+    const name = clerkUser?.firstName ?? "—";
+    const lastName = clerkUser?.lastName ?? "—";
+
+    await db.$transaction(async (tx) => {
+      // Remove any old record with the same email but a stale/seed ID.
+      await tx.user.deleteMany({ where: { email, NOT: { id: userId } } });
+      await tx.user.upsert({
+        where: { id: userId },
+        create: { id: userId, name, lastName, email },
+        update: {},
+      });
+    });
+  }
 
   // Find or create the active cart
   let cart = await db.cart.findFirst({
@@ -72,6 +80,7 @@ export async function POST(request: NextRequest) {
         cartId: cart.id,
         productId,
         productName,
+        productVariant: productVariant ?? null,
         productImageUrl: productImageUrl ?? null,
         priceAtTime,
         quantity,

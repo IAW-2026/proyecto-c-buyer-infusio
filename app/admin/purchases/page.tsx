@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
-import type { PurchaseStatus } from "@/generated/prisma/client";
+import { Prisma, type PurchaseStatus } from "@/generated/prisma/client";
 import Link from "next/link";
+import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
 
 const STATUS_LABEL: Record<PurchaseStatus, string> = {
   PENDING:   "PROCESANDO",
@@ -38,23 +39,36 @@ export default async function PurchasesPage({
   const { status } = await searchParams;
   const activeStatus = ALL_STATUSES.includes(status as PurchaseStatus) ? (status as PurchaseStatus) : null;
 
-  const purchases = await db.purchase.findMany({
-    where: activeStatus ? { status: activeStatus } : undefined,
-    include: {
-      user: { select: { name: true, lastName: true, email: true } },
-      purchaseOrder: {
-        include: {
-          cart: {
-            include: { items: { select: { productName: true, quantity: true } } },
+  type PurchaseRow = {
+    id: string; status: PurchaseStatus; totalAmount: Prisma.Decimal | null; createdAt: Date;
+    user: { name: string; lastName: string; email: string };
+    purchaseOrder: { cart: { items: { productName: string; quantity: number }[] } | null } | null;
+  };
+  let purchases: PurchaseRow[] = [];
+  let dbError = false;
+
+  try {
+    purchases = await db.purchase.findMany({
+      where: activeStatus ? { status: activeStatus } : undefined,
+      include: {
+        user: { select: { name: true, lastName: true, email: true } },
+        purchaseOrder: {
+          include: {
+            cart: {
+              include: { items: { select: { productName: true, quantity: true } } },
+            },
           },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
+  } catch {
+    dbError = true;
+  }
 
   return (
     <div className="px-10 py-10">
+      {dbError && <DbErrorBanner />}
       <div className="mb-10">
         <p className="text-xs tracking-[0.2em] text-terracotta italic mb-2">GESTIÓN</p>
         <h1 className="font-serif text-5xl text-brown">Compras</h1>

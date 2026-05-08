@@ -14,12 +14,12 @@ model User {
   lastName          String
   email             String             @unique
   phoneNumber       String?
+  role              UserRole           @default(CLIENT)
   addresses         Address[]
   favouriteProducts FavouriteProduct[]
   carts             Cart[]
   purchaseOrders    PurchaseOrder[]
   purchases         Purchase[]
-  role              UserRole           @default(CLIENT)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
@@ -46,26 +46,47 @@ model FavouriteProduct {
   @@id([userId, productId])
 }
 
+// ─── Product (mirror of Seller App's Artículo) ───────────────────────────────
+// Cached locally so the storefront and cart don't always need to call the Seller API.
+model Product {
+  id               String   @id // Seller App's product ID
+  sellerId         String   // Clerk vendor ID
+  name             String
+  description      String
+  categories       String[]
+  price            Decimal  @db.Decimal(10, 2)
+  stock            Int      @default(0)
+  unit             String
+  imageUrl         String?
+  location         String?
+  isLimitedEdition Boolean  @default(false)
+  badge            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
 // ─── Cart ─────────────────────────────────────────────────────────────────────
 model Cart {
   id            String         @id @default(cuid())
   userId        String
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   status        CartStatus     @default(NOT_CHECKED_OUT)
+  subtotal      Decimal?       @db.Decimal(10, 2)
   items         CartItem[]
   purchaseOrder PurchaseOrder?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
 
-// CartItem stores a snapshot of product data so the cart display never needs
-// to call the Seller API (product name/image/price may change after adding).
+// CartItem snapshots product data at add-to-cart time (name, image, price)
+// so the cart never needs to call the Seller API again.
 model CartItem {
   id              String  @id @default(cuid())
   cartId          String
   cart            Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  productId       String  // Seller App's product ID — no FK, product lives in Seller's DB
+  productId       String  // Seller App's product ID — no FK
   productName     String  // Snapshot
+  productVariant  String? // Snapshot of unit/variant (e.g. "250G / GRANO")
   productImageUrl String? // Snapshot
   priceAtTime     Decimal @db.Decimal(10, 2) // Snapshot
   quantity        Int
@@ -78,7 +99,7 @@ enum CartStatus {
   CHECKED_OUT
 }
 
-// ─── Purchase Order (pending — sent to Seller App on checkout) ────────────────
+// ─── Purchase Order ───────────────────────────────────────────────────────────
 model PurchaseOrder {
   id          String              @id @default(cuid())
   appId       String              @default("buyer-app")
@@ -88,7 +109,9 @@ model PurchaseOrder {
   user        User                @relation(fields: [userId], references: [id])
   status      PurchaseOrderStatus @default(PENDING)
   userAddress Json                // Snapshot of shipping address at time of order
-  packages    Json                @default("[]") // Package IDs returned by Seller App
+  shippingId  String?             // Assigned by Shipping App
+  paymentId   String?             // Assigned by Payments App
+  packages    Package[]
   purchase    Purchase?
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
@@ -100,7 +123,33 @@ enum PurchaseOrderStatus {
   CANCELLED
 }
 
-// ─── Purchase (completed — holds all cross-service IDs) ───────────────────────
+// ─── Package (Paquete) — one per vendor per order ─────────────────────────────
+model Package {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  sellerId        String        // Seller App's vendor ID
+  buyerId         String        // Clerk user ID
+  amount          Decimal       @db.Decimal(10, 2)
+  shippingCost    Decimal       @db.Decimal(10, 2) @default(0)
+  shippingId      String?       // Assigned by Shipping App
+  items           PackageItem[]
+  createdAt       DateTime      @default(now())
+}
+
+// ─── Package Items (Artículos Paquete) ────────────────────────────────────────
+model PackageItem {
+  id          String  @id @default(cuid())
+  packageId   String
+  package     Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  productId   String  // Seller App's product ID
+  productName String  // Snapshot
+  unitPrice   Decimal @db.Decimal(10, 2)
+  quantity    Int
+  subtotal    Decimal @db.Decimal(10, 2)
+}
+
+// ─── Purchase (completed) ─────────────────────────────────────────────────────
 model Purchase {
   id              String         @id @default(cuid())
   appId           String         @default("buyer-app")
@@ -110,10 +159,10 @@ model Purchase {
   userId          String
   user            User           @relation(fields: [userId], references: [id])
   status          PurchaseStatus @default(PENDING)
-  totalAmount     Decimal?       @db.Decimal(10, 2) // Set on creation from cart total
-  shippingIds     String[] // One ID per package, from Shipping App
-  paymentId       String? // From Payments App
-  disputeId       String? // From Payments App, if a dispute was opened
+  totalAmount     Decimal?       @db.Decimal(10, 2)
+  paymentOrderId  String?        // FK to local PaymentOrder mirror
+  paymentOrder    PaymentOrder?  @relation(fields: [paymentOrderId], references: [id])
+  disputeId       String?        // ID from Payments App
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
@@ -127,6 +176,56 @@ enum PurchaseStatus {
   DISPUTED
 }
 
+// ─── Payment Order (mirror of Payments App data) ─────────────────────────────
+model PaymentOrder {
+  id            String        @id @default(cuid())
+  mercadoPagoId String?       // ID returned by Mercado Pago
+  sourceOrderId String        // Purchase Order ID
+  sourceAppId   String        @default("buyer-app")
+  buyerId       String        // Clerk user ID
+  amount        Decimal       @db.Decimal(10, 2)
+  status        PaymentStatus @default(PENDING)
+  purchases     Purchase[]
+  disputes      Dispute[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  ACCEPTED
+  CANCELLED
+}
+
+// ─── Dispute ──────────────────────────────────────────────────────────────────
+model Dispute {
+  id             String        @id @default(cuid())
+  paymentOrderId String
+  paymentOrder   PaymentOrder  @relation(fields: [paymentOrderId], references: [id])
+  reason         String
+  status         DisputeStatus @default(OPEN)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum DisputeStatus {
+  OPEN
+  RESOLVED
+}
+
+// ─── Shipment (mirror of Shipping App data) ───────────────────────────────────
+model Shipment {
+  id             String    @id // ID from Shipping App
+  origin         String
+  destination    String
+  originDatetime DateTime?
+  finalDatetime  DateTime?
+  status         String    @default("PENDING")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
 enum UserRole {
   ADMIN
   CLIENT

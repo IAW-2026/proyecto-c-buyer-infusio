@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
-import type { PurchaseStatus } from "@/generated/prisma/client";
+import { Prisma, type PurchaseStatus } from "@/generated/prisma/client";
 import type { UserRole } from "@/generated/prisma/enums";
+import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
 
 const STATUS_LABEL: Record<PurchaseStatus, string> = {
   PENDING:   "Procesando",
@@ -20,22 +21,32 @@ const ROLE_LABEL: Record<UserRole, string> = {
 export default async function AnalyticsPage() {
   const oneMonthAgo = new Date();
   oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-  const [purchasesByStatus, usersByRole, recentPurchases, totalCarts] = await Promise.all([
-    db.purchase.groupBy({
-      by: ["status"],
-      _count: { id: true },
-      _sum: { totalAmount: true },
-    }),
-    db.user.groupBy({
-      by: ["role"],
-      _count: { id: true },
-    }),
-    db.purchase.count({ where: { createdAt: { gte: oneMonthAgo } } }),
-    db.cart.count({ where: { status: "NOT_CHECKED_OUT" } }),
-  ]);
+  type PurchaseGroup = { status: string; _count: { id: number }; _sum: { totalAmount: Prisma.Decimal | null } };
+  type UserGroup = { role: string; _count: { id: number } };
+  let purchasesByStatus: PurchaseGroup[] = [];
+  let usersByRole: UserGroup[] = [];
+  let recentPurchases = 0;
+  let totalCarts = 0;
+  let dbError = false;
+
+  try {
+    [purchasesByStatus, usersByRole, recentPurchases, totalCarts] = await Promise.all([
+      db.purchase.groupBy({
+        by: ["status"],
+        _count: { id: true },
+        _sum: { totalAmount: true },
+      }),
+      db.user.groupBy({
+        by: ["role"],
+        _count: { id: true },
+      }),
+      db.purchase.count({ where: { createdAt: { gte: oneMonthAgo } } }),
+      db.cart.count({ where: { status: "NOT_CHECKED_OUT" } }),
+    ]);
+  } catch {
+    dbError = true;
+  }
 
   const totalRevenue = purchasesByStatus
     .filter((s) => ["PAID", "SHIPPED", "DELIVERED"].includes(s.status))
@@ -45,6 +56,7 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="px-10 py-10">
+      {dbError && <DbErrorBanner />}
       <div className="mb-10">
         <p className="text-xs tracking-[0.2em] text-terracotta italic mb-2">MÉTRICAS</p>
         <h1 className="font-serif text-5xl text-brown">Estadísticas</h1>

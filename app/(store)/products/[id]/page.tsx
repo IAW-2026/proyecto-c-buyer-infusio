@@ -215,6 +215,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 <AddToCartControls
                   productId={product.id}
                   productName={product.name}
+                  productVariant={product.unit ?? undefined}
                   productImageUrl={product.imageUrl ?? undefined}
                   priceAtTime={product.price}
                   isOutOfStock={isOutOfStock}

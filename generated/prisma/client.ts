@@ -57,6 +57,11 @@ export type Address = Prisma.AddressModel
  */
 export type FavouriteProduct = Prisma.FavouriteProductModel
 /**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel
+/**
  * Model Cart
  * 
  */
@@ -72,7 +77,32 @@ export type CartItem = Prisma.CartItemModel
  */
 export type PurchaseOrder = Prisma.PurchaseOrderModel
 /**
+ * Model Package
+ * 
+ */
+export type Package = Prisma.PackageModel
+/**
+ * Model PackageItem
+ * 
+ */
+export type PackageItem = Prisma.PackageItemModel
+/**
  * Model Purchase
  * 
  */
 export type Purchase = Prisma.PurchaseModel
+/**
+ * Model PaymentOrder
+ * 
+ */
+export type PaymentOrder = Prisma.PaymentOrderModel
+/**
+ * Model Dispute
+ * 
+ */
+export type Dispute = Prisma.DisputeModel
+/**
+ * Model Shipment
+ * 
+ */
+export type Shipment = Prisma.ShipmentModel

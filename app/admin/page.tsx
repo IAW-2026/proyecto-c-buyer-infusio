@@ -1,5 +1,6 @@
 import { db } from "@/lib/prisma";
-import type { PurchaseStatus } from "@/generated/prisma/client";
+import { Prisma, type PurchaseStatus } from "@/generated/prisma/client";
+import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
 
 const STATUS_LABEL: Record<PurchaseStatus, string> = {
   PENDING:   "PROCESANDO",
@@ -31,31 +32,47 @@ export default async function AdminPage() {
   const oneWeekAgo = new Date();
   oneWeekAgo.setTime(oneWeekAgo.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const [statusCounts, purchases, totalUsers, newUsersThisWeek] = await Promise.all([
-    db.purchase.groupBy({
-      by: ["status"],
-      _count: { id: true },
-      _sum: { totalAmount: true },
-    }),
-    db.purchase.findMany({
-      include: {
-        user: { select: { name: true, lastName: true } },
-        purchaseOrder: {
-          include: {
-            cart: {
-              include: {
-                items: { select: { productName: true, quantity: true } },
+  type StatusCount = { status: PurchaseStatus; _count: { id: number }; _sum: { totalAmount: Prisma.Decimal | null } };
+  type PurchaseRow = {
+    id: string; status: PurchaseStatus; totalAmount: Prisma.Decimal | null; createdAt: Date;
+    user: { name: string; lastName: string };
+    purchaseOrder: { cart: { items: { productName: string; quantity: number }[] } | null } | null;
+  };
+  let statusCounts: StatusCount[] = [];
+  let purchases: PurchaseRow[] = [];
+  let totalUsers = 0;
+  let newUsersThisWeek = 0;
+  let dbError = false;
+
+  try {
+    [statusCounts, purchases, totalUsers, newUsersThisWeek] = await Promise.all([
+      db.purchase.groupBy({
+        by: ["status"],
+        _count: { id: true },
+        _sum: { totalAmount: true },
+      }),
+      db.purchase.findMany({
+        include: {
+          user: { select: { name: true, lastName: true } },
+          purchaseOrder: {
+            include: {
+              cart: {
+                include: {
+                  items: { select: { productName: true, quantity: true } },
+                },
               },
             },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-    }),
-    db.user.count(),
-    db.user.count({ where: { createdAt: { gte: oneWeekAgo } } }),
-  ]);
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      }),
+      db.user.count(),
+      db.user.count({ where: { createdAt: { gte: oneWeekAgo } } }),
+    ]);
+  } catch {
+    dbError = true;
+  }
 
   const totalRevenue = statusCounts
     .filter((s) => ["PAID", "SHIPPED", "DELIVERED"].includes(s.status))
@@ -76,6 +93,8 @@ export default async function AdminPage() {
 
   return (
     <div className="px-10 py-10">
+
+      {dbError && <DbErrorBanner />}
 
       {/* Page header */}
       <div className="flex items-start justify-between mb-10">

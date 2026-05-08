@@ -38,6 +38,23 @@ export const PurchaseStatus = {
 export type PurchaseStatus = (typeof PurchaseStatus)[keyof typeof PurchaseStatus]
 
 
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const DisputeStatus = {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED'
+} as const
+
+export type DisputeStatus = (typeof DisputeStatus)[keyof typeof DisputeStatus]
+
+
 export const UserRole = {
   ADMIN: 'ADMIN',
   CLIENT: 'CLIENT',
