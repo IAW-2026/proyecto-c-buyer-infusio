@@ -14,6 +14,7 @@ interface AddressBody {
   postalCode: string;
   country?: string;
   note?: string;
+  [key: string]: string | undefined;
 }
 
 export async function POST(request: NextRequest) {
