@@ -7,10 +7,6 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const { id } = await params;
   const p = await db.product.findUnique({ where: { id } });
 

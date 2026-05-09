@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Mock endpoint — mirrors POST /api/shipping/cost from the Shipping App contract.
 export async function POST(request: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const body = await request.json();
   const { origin_postal_code, destination_postal_code } = body as {
     origin_postal_code: string;

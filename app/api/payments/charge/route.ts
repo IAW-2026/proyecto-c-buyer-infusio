@@ -4,10 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 // This is called by the Seller App (not Buyer App directly), but mocking it here
 // allows the full checkout flow to work when PAYMENTS_API_URL points to localhost:3000.
 export async function POST(request: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const body = await request.json();
   const { seller_app_order_id, buyer_id, amount } = body as {
     seller_app_id: string;

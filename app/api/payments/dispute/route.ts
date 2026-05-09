@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Mock endpoint — mirrors POST /api/payments/dispute from the Payments App contract.
 export async function POST(request: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const body = await request.json();
   const { user_id, payment_order_id } = body as {
     user_id: string;

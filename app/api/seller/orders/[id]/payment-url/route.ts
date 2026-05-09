@@ -7,10 +7,6 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const { id } = await params;
 
   // Simulate what the Seller App would do: call Payments App to create a charge

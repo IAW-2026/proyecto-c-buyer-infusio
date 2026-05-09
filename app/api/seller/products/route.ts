@@ -3,13 +3,7 @@ import { db } from "@/lib/prisma";
 import type { SellerProduct } from "@/lib/services/externalApis";
 
 // Mock endpoint — mirrors GET /api/seller/products from the Seller App contract.
-// Active in dev when SELLER_API_URL=http://localhost:3000.
-// Returns 404 in production to prevent accidental exposure.
 export async function GET() {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const rows = await db.product.findMany({ orderBy: { name: "asc" } });
 
   const products: SellerProduct[] = rows.map((p) => ({
