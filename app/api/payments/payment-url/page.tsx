@@ -33,7 +33,7 @@ function PagoContent() {
   );
 }
 
-export default function PagoPage() {
+export default function PaymentUrlPage() {
   return (
     <Suspense>
       <PagoContent />

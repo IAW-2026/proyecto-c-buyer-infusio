@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const total = subtotal + shipping_cost;
   const purchase_order_id = `mock_order_${Date.now()}`;
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const checkout_url = `${APP_URL}/pago?order_id=${purchase_order_id}&amount=${total}`;
+  const checkout_url = `${APP_URL}/api/payments/payment-url?order_id=${purchase_order_id}&amount=${total}`;
 
   return NextResponse.json(
     { purchase_order_id, shipping_cost, currency: "ARS", checkout_url },

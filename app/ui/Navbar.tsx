@@ -43,6 +43,9 @@ export default async function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {userId && (
+              <Link href="/orders" className={linkClass}>PEDIDOS</Link>
+            )}
             <CartNavButton userId={userId} className={linkClass} />
           </nav>
 
@@ -60,6 +63,9 @@ export default async function Navbar() {
                     {link.label}
                   </Link>
                 ))}
+                {userId && (
+                  <Link href="/orders" className={mobileLinkClass}>PEDIDOS</Link>
+                )}
                 <CartNavButton userId={userId} className={mobileLinkClass} />
               </nav>
               <div className="flex gap-3 pt-4 border-t border-tan">
