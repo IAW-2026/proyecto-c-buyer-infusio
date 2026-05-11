@@ -87,11 +87,6 @@ export type Package = Prisma.PackageModel
  */
 export type PackageItem = Prisma.PackageItemModel
 /**
- * Model Purchase
- * 
- */
-export type Purchase = Prisma.PurchaseModel
-/**
  * Model PaymentOrder
  * 
  */

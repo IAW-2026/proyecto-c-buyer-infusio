@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/prisma";
+import { db } from "@/app/lib/prisma";
 
 interface Params {
   params: Promise<{ itemId: string }>;

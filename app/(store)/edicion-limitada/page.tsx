@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getProducts } from "@/lib/services/externalApis";
-import type { SellerProduct } from "@/lib/services/externalApis";
+import { getProducts } from "@/app/lib/services/externalApis";
+import type { SellerProduct } from "@/app/lib/services/externalApis";
 import ProductCard from "@/app/ui/ProductCard";
 
 interface PageProps {

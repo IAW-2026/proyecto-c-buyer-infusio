@@ -248,7 +248,6 @@ export type PaymentOrderWhereInput = {
   status?: Prisma.EnumPaymentStatusFilter<"PaymentOrder"> | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFilter<"PaymentOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PaymentOrder"> | Date | string
-  purchases?: Prisma.PurchaseListRelationFilter
   disputes?: Prisma.DisputeListRelationFilter
 }
 
@@ -262,7 +261,6 @@ export type PaymentOrderOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  purchases?: Prisma.PurchaseOrderByRelationAggregateInput
   disputes?: Prisma.DisputeOrderByRelationAggregateInput
 }
 
@@ -279,7 +277,6 @@ export type PaymentOrderWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumPaymentStatusFilter<"PaymentOrder"> | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFilter<"PaymentOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PaymentOrder"> | Date | string
-  purchases?: Prisma.PurchaseListRelationFilter
   disputes?: Prisma.DisputeListRelationFilter
 }, "id">
 
@@ -325,7 +322,6 @@ export type PaymentOrderCreateInput = {
   status?: $Enums.PaymentStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  purchases?: Prisma.PurchaseCreateNestedManyWithoutPaymentOrderInput
   disputes?: Prisma.DisputeCreateNestedManyWithoutPaymentOrderInput
 }
 
@@ -339,7 +335,6 @@ export type PaymentOrderUncheckedCreateInput = {
   status?: $Enums.PaymentStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutPaymentOrderInput
   disputes?: Prisma.DisputeUncheckedCreateNestedManyWithoutPaymentOrderInput
 }
 
@@ -353,7 +348,6 @@ export type PaymentOrderUpdateInput = {
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  purchases?: Prisma.PurchaseUpdateManyWithoutPaymentOrderNestedInput
   disputes?: Prisma.DisputeUpdateManyWithoutPaymentOrderNestedInput
 }
 
@@ -367,7 +361,6 @@ export type PaymentOrderUncheckedUpdateInput = {
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutPaymentOrderNestedInput
   disputes?: Prisma.DisputeUncheckedUpdateManyWithoutPaymentOrderNestedInput
 }
 
@@ -405,11 +398,6 @@ export type PaymentOrderUncheckedUpdateManyInput = {
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PaymentOrderNullableScalarRelationFilter = {
-  is?: Prisma.PaymentOrderWhereInput | null
-  isNot?: Prisma.PaymentOrderWhereInput | null
 }
 
 export type PaymentOrderCountOrderByAggregateInput = {
@@ -461,22 +449,6 @@ export type PaymentOrderScalarRelationFilter = {
   isNot?: Prisma.PaymentOrderWhereInput
 }
 
-export type PaymentOrderCreateNestedOneWithoutPurchasesInput = {
-  create?: Prisma.XOR<Prisma.PaymentOrderCreateWithoutPurchasesInput, Prisma.PaymentOrderUncheckedCreateWithoutPurchasesInput>
-  connectOrCreate?: Prisma.PaymentOrderCreateOrConnectWithoutPurchasesInput
-  connect?: Prisma.PaymentOrderWhereUniqueInput
-}
-
-export type PaymentOrderUpdateOneWithoutPurchasesNestedInput = {
-  create?: Prisma.XOR<Prisma.PaymentOrderCreateWithoutPurchasesInput, Prisma.PaymentOrderUncheckedCreateWithoutPurchasesInput>
-  connectOrCreate?: Prisma.PaymentOrderCreateOrConnectWithoutPurchasesInput
-  upsert?: Prisma.PaymentOrderUpsertWithoutPurchasesInput
-  disconnect?: Prisma.PaymentOrderWhereInput | boolean
-  delete?: Prisma.PaymentOrderWhereInput | boolean
-  connect?: Prisma.PaymentOrderWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentOrderUpdateToOneWithWhereWithoutPurchasesInput, Prisma.PaymentOrderUpdateWithoutPurchasesInput>, Prisma.PaymentOrderUncheckedUpdateWithoutPurchasesInput>
-}
-
 export type EnumPaymentStatusFieldUpdateOperationsInput = {
   set?: $Enums.PaymentStatus
 }
@@ -495,74 +467,6 @@ export type PaymentOrderUpdateOneRequiredWithoutDisputesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentOrderUpdateToOneWithWhereWithoutDisputesInput, Prisma.PaymentOrderUpdateWithoutDisputesInput>, Prisma.PaymentOrderUncheckedUpdateWithoutDisputesInput>
 }
 
-export type PaymentOrderCreateWithoutPurchasesInput = {
-  id?: string
-  mercadoPagoId?: string | null
-  sourceOrderId: string
-  sourceAppId?: string
-  buyerId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  status?: $Enums.PaymentStatus
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  disputes?: Prisma.DisputeCreateNestedManyWithoutPaymentOrderInput
-}
-
-export type PaymentOrderUncheckedCreateWithoutPurchasesInput = {
-  id?: string
-  mercadoPagoId?: string | null
-  sourceOrderId: string
-  sourceAppId?: string
-  buyerId: string
-  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  status?: $Enums.PaymentStatus
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  disputes?: Prisma.DisputeUncheckedCreateNestedManyWithoutPaymentOrderInput
-}
-
-export type PaymentOrderCreateOrConnectWithoutPurchasesInput = {
-  where: Prisma.PaymentOrderWhereUniqueInput
-  create: Prisma.XOR<Prisma.PaymentOrderCreateWithoutPurchasesInput, Prisma.PaymentOrderUncheckedCreateWithoutPurchasesInput>
-}
-
-export type PaymentOrderUpsertWithoutPurchasesInput = {
-  update: Prisma.XOR<Prisma.PaymentOrderUpdateWithoutPurchasesInput, Prisma.PaymentOrderUncheckedUpdateWithoutPurchasesInput>
-  create: Prisma.XOR<Prisma.PaymentOrderCreateWithoutPurchasesInput, Prisma.PaymentOrderUncheckedCreateWithoutPurchasesInput>
-  where?: Prisma.PaymentOrderWhereInput
-}
-
-export type PaymentOrderUpdateToOneWithWhereWithoutPurchasesInput = {
-  where?: Prisma.PaymentOrderWhereInput
-  data: Prisma.XOR<Prisma.PaymentOrderUpdateWithoutPurchasesInput, Prisma.PaymentOrderUncheckedUpdateWithoutPurchasesInput>
-}
-
-export type PaymentOrderUpdateWithoutPurchasesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  mercadoPagoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sourceOrderId?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceAppId?: Prisma.StringFieldUpdateOperationsInput | string
-  buyerId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  disputes?: Prisma.DisputeUpdateManyWithoutPaymentOrderNestedInput
-}
-
-export type PaymentOrderUncheckedUpdateWithoutPurchasesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  mercadoPagoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sourceOrderId?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceAppId?: Prisma.StringFieldUpdateOperationsInput | string
-  buyerId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  disputes?: Prisma.DisputeUncheckedUpdateManyWithoutPaymentOrderNestedInput
-}
-
 export type PaymentOrderCreateWithoutDisputesInput = {
   id?: string
   mercadoPagoId?: string | null
@@ -573,7 +477,6 @@ export type PaymentOrderCreateWithoutDisputesInput = {
   status?: $Enums.PaymentStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  purchases?: Prisma.PurchaseCreateNestedManyWithoutPaymentOrderInput
 }
 
 export type PaymentOrderUncheckedCreateWithoutDisputesInput = {
@@ -586,7 +489,6 @@ export type PaymentOrderUncheckedCreateWithoutDisputesInput = {
   status?: $Enums.PaymentStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutPaymentOrderInput
 }
 
 export type PaymentOrderCreateOrConnectWithoutDisputesInput = {
@@ -615,7 +517,6 @@ export type PaymentOrderUpdateWithoutDisputesInput = {
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  purchases?: Prisma.PurchaseUpdateManyWithoutPaymentOrderNestedInput
 }
 
 export type PaymentOrderUncheckedUpdateWithoutDisputesInput = {
@@ -628,7 +529,6 @@ export type PaymentOrderUncheckedUpdateWithoutDisputesInput = {
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutPaymentOrderNestedInput
 }
 
 
@@ -637,12 +537,10 @@ export type PaymentOrderUncheckedUpdateWithoutDisputesInput = {
  */
 
 export type PaymentOrderCountOutputType = {
-  purchases: number
   disputes: number
 }
 
 export type PaymentOrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  purchases?: boolean | PaymentOrderCountOutputTypeCountPurchasesArgs
   disputes?: boolean | PaymentOrderCountOutputTypeCountDisputesArgs
 }
 
@@ -654,13 +552,6 @@ export type PaymentOrderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
    * Select specific fields to fetch from the PaymentOrderCountOutputType
    */
   select?: Prisma.PaymentOrderCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * PaymentOrderCountOutputType without action
- */
-export type PaymentOrderCountOutputTypeCountPurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PurchaseWhereInput
 }
 
 /**
@@ -681,7 +572,6 @@ export type PaymentOrderSelect<ExtArgs extends runtime.Types.Extensions.Internal
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  purchases?: boolean | Prisma.PaymentOrder$purchasesArgs<ExtArgs>
   disputes?: boolean | Prisma.PaymentOrder$disputesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentOrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentOrder"]>
@@ -724,7 +614,6 @@ export type PaymentOrderSelectScalar = {
 
 export type PaymentOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mercadoPagoId" | "sourceOrderId" | "sourceAppId" | "buyerId" | "amount" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentOrder"]>
 export type PaymentOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  purchases?: boolean | Prisma.PaymentOrder$purchasesArgs<ExtArgs>
   disputes?: boolean | Prisma.PaymentOrder$disputesArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentOrderCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -734,7 +623,6 @@ export type PaymentOrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type $PaymentOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PaymentOrder"
   objects: {
-    purchases: Prisma.$PurchasePayload<ExtArgs>[]
     disputes: Prisma.$DisputePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1141,7 +1029,6 @@ readonly fields: PaymentOrderFieldRefs;
  */
 export interface Prisma__PaymentOrderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  purchases<T extends Prisma.PaymentOrder$purchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentOrder$purchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   disputes<T extends Prisma.PaymentOrder$disputesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentOrder$disputesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DisputePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1571,30 +1458,6 @@ export type PaymentOrderDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many PaymentOrders to delete.
    */
   limit?: number
-}
-
-/**
- * PaymentOrder.purchases
- */
-export type PaymentOrder$purchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Purchase
-   */
-  select?: Prisma.PurchaseSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Purchase
-   */
-  omit?: Prisma.PurchaseOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PurchaseInclude<ExtArgs> | null
-  where?: Prisma.PurchaseWhereInput
-  orderBy?: Prisma.PurchaseOrderByWithRelationInput | Prisma.PurchaseOrderByWithRelationInput[]
-  cursor?: Prisma.PurchaseWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PurchaseScalarFieldEnum | Prisma.PurchaseScalarFieldEnum[]
 }
 
 /**

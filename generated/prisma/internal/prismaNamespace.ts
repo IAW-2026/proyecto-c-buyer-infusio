@@ -393,7 +393,6 @@ export const ModelName = {
   PurchaseOrder: 'PurchaseOrder',
   Package: 'Package',
   PackageItem: 'PackageItem',
-  Purchase: 'Purchase',
   PaymentOrder: 'PaymentOrder',
   Dispute: 'Dispute',
   Shipment: 'Shipment'
@@ -412,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "address" | "favouriteProduct" | "product" | "cart" | "cartItem" | "purchaseOrder" | "package" | "packageItem" | "purchase" | "paymentOrder" | "dispute" | "shipment"
+    modelProps: "user" | "address" | "favouriteProduct" | "product" | "cart" | "cartItem" | "purchaseOrder" | "package" | "packageItem" | "paymentOrder" | "dispute" | "shipment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1082,80 +1081,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Purchase: {
-      payload: Prisma.$PurchasePayload<ExtArgs>
-      fields: Prisma.PurchaseFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.PurchaseFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.PurchaseFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>
-        }
-        findFirst: {
-          args: Prisma.PurchaseFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.PurchaseFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>
-        }
-        findMany: {
-          args: Prisma.PurchaseFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>[]
-        }
-        create: {
-          args: Prisma.PurchaseCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>
-        }
-        createMany: {
-          args: Prisma.PurchaseCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.PurchaseCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>[]
-        }
-        delete: {
-          args: Prisma.PurchaseDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>
-        }
-        update: {
-          args: Prisma.PurchaseUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>
-        }
-        deleteMany: {
-          args: Prisma.PurchaseDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.PurchaseUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.PurchaseUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>[]
-        }
-        upsert: {
-          args: Prisma.PurchaseUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PurchasePayload>
-        }
-        aggregate: {
-          args: Prisma.PurchaseAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregatePurchase>
-        }
-        groupBy: {
-          args: Prisma.PurchaseGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PurchaseGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.PurchaseCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PurchaseCountAggregateOutputType> | number
-        }
-      }
-    }
     PaymentOrder: {
       payload: Prisma.$PaymentOrderPayload<ExtArgs>
       fields: Prisma.PaymentOrderFieldRefs
@@ -1423,7 +1348,7 @@ export const UserScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   phoneNumber: 'phoneNumber',
-  role: 'role',
+  roles: 'roles',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1543,23 +1468,6 @@ export const PackageItemScalarFieldEnum = {
 export type PackageItemScalarFieldEnum = (typeof PackageItemScalarFieldEnum)[keyof typeof PackageItemScalarFieldEnum]
 
 
-export const PurchaseScalarFieldEnum = {
-  id: 'id',
-  appId: 'appId',
-  purchaseOrderId: 'purchaseOrderId',
-  cartId: 'cartId',
-  userId: 'userId',
-  status: 'status',
-  totalAmount: 'totalAmount',
-  paymentOrderId: 'paymentOrderId',
-  disputeId: 'disputeId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PurchaseScalarFieldEnum = (typeof PurchaseScalarFieldEnum)[keyof typeof PurchaseScalarFieldEnum]
-
-
 export const PaymentOrderScalarFieldEnum = {
   id: 'id',
   mercadoPagoId: 'mercadoPagoId',
@@ -1662,16 +1570,16 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'UserRole'
+ * Reference to a field of type 'UserRole[]'
  */
-export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
 /**
- * Reference to a field of type 'UserRole[]'
+ * Reference to a field of type 'UserRole'
  */
-export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
     
 
 
@@ -1763,20 +1671,6 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'PurchaseStatus'
- */
-export type EnumPurchaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PurchaseStatus'>
-    
-
-
-/**
- * Reference to a field of type 'PurchaseStatus[]'
- */
-export type ListEnumPurchaseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PurchaseStatus[]'>
     
 
 
@@ -1940,7 +1834,6 @@ export type GlobalOmitConfig = {
   purchaseOrder?: Prisma.PurchaseOrderOmit
   package?: Prisma.PackageOmit
   packageItem?: Prisma.PackageItemOmit
-  purchase?: Prisma.PurchaseOmit
   paymentOrder?: Prisma.PaymentOrderOmit
   dispute?: Prisma.DisputeOmit
   shipment?: Prisma.ShipmentOmit

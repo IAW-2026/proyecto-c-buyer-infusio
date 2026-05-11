@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { db } from "@/lib/prisma";
+import { db } from "@/app/lib/prisma";
 import CheckoutForm from "@/app/ui/CheckoutForm";
 
 export const metadata = { title: "Pago — Infusio" };

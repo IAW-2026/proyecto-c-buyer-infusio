@@ -14,12 +14,11 @@ model User {
   lastName          String
   email             String             @unique
   phoneNumber       String?
-  role              UserRole           @default(CLIENT)
+  roles             UserRole[]         @default([CLIENT])
   addresses         Address[]
   favouriteProducts FavouriteProduct[]
   carts             Cart[]
   purchaseOrders    PurchaseOrder[]
-  purchases         Purchase[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
@@ -112,7 +111,6 @@ model PurchaseOrder {
   shippingId  String?             // Assigned by Shipping App
   paymentId   String?             // Assigned by Payments App
   packages    Package[]
-  purchase    Purchase?
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
 }
@@ -149,33 +147,6 @@ model PackageItem {
   subtotal    Decimal @db.Decimal(10, 2)
 }
 
-// ─── Purchase (completed) ─────────────────────────────────────────────────────
-model Purchase {
-  id              String         @id @default(cuid())
-  appId           String         @default("buyer-app")
-  purchaseOrderId String         @unique
-  purchaseOrder   PurchaseOrder  @relation(fields: [purchaseOrderId], references: [id])
-  cartId          String
-  userId          String
-  user            User           @relation(fields: [userId], references: [id])
-  status          PurchaseStatus @default(PENDING)
-  totalAmount     Decimal?       @db.Decimal(10, 2)
-  paymentOrderId  String?        // FK to local PaymentOrder mirror
-  paymentOrder    PaymentOrder?  @relation(fields: [paymentOrderId], references: [id])
-  disputeId       String?        // ID from Payments App
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-}
-
-enum PurchaseStatus {
-  PENDING
-  PAID
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  DISPUTED
-}
-
 // ─── Payment Order (mirror of Payments App data) ─────────────────────────────
 model PaymentOrder {
   id            String        @id @default(cuid())
@@ -185,7 +156,6 @@ model PaymentOrder {
   buyerId       String        // Clerk user ID
   amount        Decimal       @db.Decimal(10, 2)
   status        PaymentStatus @default(PENDING)
-  purchases     Purchase[]
   disputes      Dispute[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

@@ -44,26 +44,148 @@ async function main() {
     where: { id: { in: ["user_seed_admin_001", "user_seed_client_001"] } },
   });
 
-  async function upsertUser(clerkId: string, name: string, lastName: string, email: string, role: UserRole) {
+  async function upsertUser(clerkId: string, name: string, lastName: string, email: string, roles: UserRole[]) {
     // Remove any stale record with the same email but a different ID before upserting.
     await prisma.user.deleteMany({ where: { email, NOT: { id: clerkId } } });
     await prisma.user.upsert({
       where: { id: clerkId },
-      update: {},
-      create: { id: clerkId, name, lastName, email, role },
+      update: { roles },
+      create: { id: clerkId, name, lastName, email, roles },
     });
   }
 
   const adminClerk = await findOrCreateClerkUser("admin@infusio.com", "Admin", "Infusio", "admin_infusio");
-  await upsertUser(adminClerk.id, "Admin", "Infusio", "admin@infusio.com", UserRole.ADMIN);
+  await upsertUser(adminClerk.id, "Admin", "Infusio", "admin@infusio.com", [UserRole.ADMIN]);
 
   const clientClerk = await findOrCreateClerkUser("cliente@infusio.com", "Cliente", "Prueba", "cliente_prueba");
-  await upsertUser(clientClerk.id, "Cliente", "Prueba", "cliente@infusio.com", UserRole.CLIENT);
+  await upsertUser(clientClerk.id, "Cliente", "Prueba", "cliente@infusio.com", [UserRole.CLIENT]);
 
   for (const p of PRODUCTS) {
     await prisma.product.upsert({ where: { id: p.id }, create: p, update: p });
   }
   console.log(`  ${PRODUCTS.length} products upserted`);
+
+  // ─── Fake purchase orders for milivives@gmail.com ───────────────────────────
+  const { data: milivList } = await clerk.users.getUserList({ emailAddress: ["milivives@gmail.com"] });
+  if (milivList.length === 0) {
+    console.log("  milivives@gmail.com not found in Clerk — skipping demo orders");
+    return;
+  }
+  const milivClerk = milivList[0];
+  await upsertUser(milivClerk.id, milivClerk.firstName ?? "Mili", milivClerk.lastName ?? "Vives", "milivives@gmail.com", [UserRole.CLIENT, UserRole.VENDOR]);
+
+  // Delete any orders previously seeded under clientClerk to avoid duplicates
+  await prisma.purchaseOrder.deleteMany({ where: { userId: clientClerk.id, id: { startsWith: "order_seed_" } } });
+
+  const clientId = milivClerk.id;
+  const demoAddress = { street: "Av. Corrientes 1234", city: "Buenos Aires", province: "CABA", postalCode: "1043" };
+
+  const ORDERS: {
+    id: string; cartId: string; status: "PENDING" | "CONFIRMED" | "CANCELLED";
+    shippingId: string | null; daysAgo: number; shippingCost: number;
+    items: { productId: string; name: string; image: string | null; price: number; qty: number }[];
+  }[] = [
+    {
+      id: "order_seed_001", cartId: "cart_seed_001", status: "PENDING", shippingId: null, daysAgo: 1, shippingCost: 0,
+      items: [
+        { productId: "prod_009", name: "Café Yirgacheffe Etiopía",      image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp",  price: 4800, qty: 2 },
+      ],
+    },
+    {
+      id: "order_seed_002", cartId: "cart_seed_002", status: "CONFIRMED", shippingId: "ship_pending_001", daysAgo: 4, shippingCost: 1500,
+      items: [
+        { productId: "prod_010", name: "Espresso Blend Brasileño",       image: "https://www.connectroasters.com/cdn/shop/files/Connect112125-8.jpg?v=1763930646&width=1946", price: 3600, qty: 1 },
+        { productId: "prod_004", name: "Bombilla Acero Inox Pico de Loro", image: "https://acdn-us.mitiendanube.com/stores/004/274/329/products/pico-de-loro-acero-1-d208ed4b8e792db12617592794656043-1024-1024.webp", price: 1200, qty: 1 },
+      ],
+    },
+    {
+      id: "order_seed_003", cartId: "cart_seed_003", status: "CONFIRMED", shippingId: "ship_transit_001", daysAgo: 8, shippingCost: 2800,
+      items: [
+        { productId: "prod_001", name: "Yerba Mate Rosamonte Especial",  image: "https://http2.mlstatic.com/D_NQ_NP_654535-MLA92396918908_092025-O.webp",  price: 2850, qty: 3 },
+        { productId: "prod_006", name: "Té Verde Taragüi Menta Poleo",   image: "https://statics.dinoonline.com.ar/imagenes/large_460x460/2020123_l.jpg", price: 890, qty: 2 },
+      ],
+    },
+    {
+      id: "order_seed_004", cartId: "cart_seed_004", status: "CONFIRMED", shippingId: "ship_transit_002", daysAgo: 14, shippingCost: 4200,
+      items: [
+        { productId: "prod_003", name: "Mate Calabaza Imperial Curado",  image: "https://acdn-us.mitiendanube.com/stores/005/262/890/products/imp1-539d6d4d80116ffbce17316867237631-640-0.webp",  price: 4500, qty: 1 },
+        { productId: "prod_005", name: "Termo Stanley Classic Verde",    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvAwrS7ZrOMVhlT5P3R-Jl87w46X7PWJ5vWg&s", price: 28000, qty: 1 },
+      ],
+    },
+    {
+      id: "order_seed_005", cartId: "cart_seed_005", status: "CONFIRMED", shippingId: "ship_delivered_001", daysAgo: 30, shippingCost: 1500,
+      items: [
+        { productId: "prod_011", name: "Café Sidamo Etiopía Natural",    image: "https://beanswithoutborders.com/cdn/shop/files/No-text-Ethiopia-sidama-coffee-beans-natural-flavor.png?v=1767841523&width=1445", price: 5200, qty: 1 },
+        { productId: "prod_002", name: "Yerba Mate CBSé Energía Pomelo", image: "https://http2.mlstatic.com/D_NQ_NP_927424-MLU72565713266_112023-O.webp", price: 3100, qty: 2 },
+      ],
+    },
+    {
+      id: "order_seed_006", cartId: "cart_seed_006", status: "CONFIRMED", shippingId: "ship_delivered_002", daysAgo: 45, shippingCost: 2800,
+      items: [
+        { productId: "prod_007", name: "Set Mate + Bombilla Artesanal",  image: "https://acdn-us.mitiendanube.com/stores/003/024/004/products/img_5168-877e4a2f4754a8696517423171106674-480-0.webp", price: 5800, qty: 1 },
+      ],
+    },
+    {
+      id: "order_seed_007", cartId: "cart_seed_007", status: "CANCELLED", shippingId: null, daysAgo: 20, shippingCost: 0,
+      items: [
+        { productId: "prod_012", name: "Yerba Mate Amanda Tradicional",  image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVIE1QfLr6Wxp4HxU_Xon0389jiolMPKQUPw&s", price: 4200, qty: 1 },
+      ],
+    },
+    {
+      id: "order_seed_008", cartId: "cart_seed_008", status: "CONFIRMED", shippingId: "ship_incident_001", daysAgo: 10, shippingCost: 1500,
+      items: [
+        { productId: "prod_008", name: "Hierbas para Tereré Frío",       image: "https://jesper.com.ar/wp-content/uploads/2023/04/te-verde-terere-bolsa500g.jpg", price: 1650, qty: 2 },
+        { productId: "prod_009", name: "Café Yirgacheffe Etiopía",       image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, qty: 1 },
+      ],
+    },
+  ];
+
+  for (const o of ORDERS) {
+    const createdAt = new Date(Date.now() - o.daysAgo * 86_400_000);
+
+    await prisma.cart.upsert({
+      where: { id: o.cartId },
+      create: {
+        id: o.cartId, userId: clientId, status: "CHECKED_OUT", createdAt,
+        items: {
+          create: o.items.map((item) => ({
+            productId: item.productId, productName: item.name,
+            productImageUrl: item.image, priceAtTime: item.price, quantity: item.qty,
+          })),
+        },
+      },
+      update: {},
+    });
+
+    await prisma.purchaseOrder.upsert({
+      where: { id: o.id },
+      create: {
+        id: o.id, cartId: o.cartId, userId: clientId,
+        status: o.status, userAddress: demoAddress,
+        shippingId: o.shippingId, createdAt,
+      },
+      update: {},
+    });
+
+    if (o.shippingCost > 0) {
+      const amount = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+      await prisma.package.upsert({
+        where: { id: `pkg_seed_${o.id}` },
+        create: {
+          id: `pkg_seed_${o.id}`,
+          purchaseOrderId: o.id,
+          sellerId: "seller_001",
+          buyerId: clientId,
+          amount,
+          shippingCost: o.shippingCost,
+          shippingId: o.shippingId,
+          createdAt,
+        },
+        update: {},
+      });
+    }
+  }
+  console.log(`  ${ORDERS.length} demo orders upserted`);
 
   console.log(`\nSeed complete. Test password: ${TEST_PASSWORD}`);
   console.log(`  admin@infusio.com   → ${adminClerk.id}`);

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 interface AdminSidebarProps {
   adminName: string;
@@ -35,18 +37,6 @@ const NAV = [
     ),
   },
   {
-    label: "VENDEDORES",
-    href: "/admin/vendors",
-    exact: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M1 6l2-4h10l2 4" />
-        <rect x="1" y="6" width="14" height="9" rx="1" />
-        <path d="M6 15V10h4v5" />
-      </svg>
-    ),
-  },
-  {
     label: "USUARIOS",
     href: "/admin/users",
     exact: false,
@@ -73,17 +63,11 @@ const NAV = [
 
 export default function AdminSidebar({ adminName }: AdminSidebarProps) {
   const pathname = usePathname();
+  const { signOut } = useClerk();
 
   function isActive(href: string, exact: boolean) {
     return exact ? pathname === href : pathname.startsWith(href);
   }
-
-  const initials = adminName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-65 bg-cream border-r border-tan flex flex-col z-40">
@@ -115,14 +99,27 @@ export default function AdminSidebar({ adminName }: AdminSidebarProps) {
         })}
       </nav>
 
-      {/* User info */}
-      <div className="px-8 py-6 border-t border-tan flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-tan flex items-center justify-center shrink-0">
-          <span className="text-xs font-medium text-brown">{initials}</span>
-        </div>
-        <div>
-          <p className="text-xs tracking-[0.12em] text-muted-foreground">ADMINISTRADOR</p>
-          <p className="text-xs text-brown mt-0.5">{adminName}</p>
+      {/* User info + sign out */}
+      <div className="px-5 py-5 border-t border-tan">
+        <div className="flex items-center gap-3 px-3 py-2.5">
+          <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
+            <Image src="/images/admin.png" alt={adminName} width={32} height={32} className="object-cover w-full h-full" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs tracking-[0.12em] text-muted-foreground">ADMINISTRADOR</p>
+            <p className="text-xs text-brown mt-0.5 truncate">{adminName}</p>
+          </div>
+          <button
+            onClick={() => signOut({ redirectUrl: "/sign-in" })}
+            title="Cerrar sesión"
+            className="shrink-0 text-muted-foreground hover:text-terracotta transition-colors"
+          >
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />
+              <path d="M11 11l3-3-3-3" />
+              <line x1="14" y1="8" x2="6" y2="8" />
+            </svg>
+          </button>
         </div>
       </div>
     </aside>

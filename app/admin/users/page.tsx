@@ -1,4 +1,4 @@
-import { db } from "@/lib/prisma";
+import { db } from "@/app/lib/prisma";
 import type { UserRole } from "@/generated/prisma/enums";
 import type { Prisma } from "@/generated/prisma/client";
 import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
@@ -20,15 +20,16 @@ function formatDate(date: Date) {
 }
 
 export default async function UsersPage() {
-  type UserRow = Prisma.UserModel & { _count: { purchases: number; carts: number } };
+  type UserRow = Prisma.UserModel & { _count: { purchaseOrders: number; carts: number } };
   let users: UserRow[] = [];
   let dbError = false;
 
   try {
     users = await db.user.findMany({
+      where: { roles: { has: "CLIENT" } },
       orderBy: { createdAt: "desc" },
       include: {
-        _count: { select: { purchases: true, carts: true } },
+        _count: { select: { purchaseOrders: true, carts: true } },
       },
     });
   } catch {
@@ -45,7 +46,7 @@ export default async function UsersPage() {
         </div>
         <div className="pt-2">
           <p className="text-xs tracking-[0.15em] text-muted-foreground">
-            {users.length} usuario{users.length !== 1 ? "s" : ""} registrado{users.length !== 1 ? "s" : ""}
+            {users.length} cliente{users.length !== 1 ? "s" : ""} registrado{users.length !== 1 ? "s" : ""}
           </p>
         </div>
       </div>
@@ -76,11 +77,15 @@ export default async function UsersPage() {
                 </td>
                 <td className="py-4 text-sm text-muted-foreground">{u.email}</td>
                 <td className="py-4">
-                  <span className={`px-2 py-1 text-xs tracking-widest ${ROLE_COLOR[u.role]}`}>
-                    {ROLE_LABEL[u.role]}
-                  </span>
+                  <div className="flex gap-1 flex-wrap">
+                    {u.roles.filter((r) => r !== "ADMIN").map((r) => (
+                      <span key={r} className={`px-2 py-1 text-xs tracking-widest ${ROLE_COLOR[r]}`}>
+                        {ROLE_LABEL[r]}
+                      </span>
+                    ))}
+                  </div>
                 </td>
-                <td className="py-4 text-sm text-brown text-center">{u._count.purchases}</td>
+                <td className="py-4 text-sm text-brown text-center">{u._count.purchaseOrders}</td>
                 <td className="py-4 text-sm text-muted-foreground whitespace-nowrap">{formatDate(u.createdAt)}</td>
               </tr>
             ))

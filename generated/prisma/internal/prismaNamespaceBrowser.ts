@@ -60,7 +60,6 @@ export const ModelName = {
   PurchaseOrder: 'PurchaseOrder',
   Package: 'Package',
   PackageItem: 'PackageItem',
-  Purchase: 'Purchase',
   PaymentOrder: 'PaymentOrder',
   Dispute: 'Dispute',
   Shipment: 'Shipment'
@@ -88,7 +87,7 @@ export const UserScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   phoneNumber: 'phoneNumber',
-  role: 'role',
+  roles: 'roles',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -206,23 +205,6 @@ export const PackageItemScalarFieldEnum = {
 } as const
 
 export type PackageItemScalarFieldEnum = (typeof PackageItemScalarFieldEnum)[keyof typeof PackageItemScalarFieldEnum]
-
-
-export const PurchaseScalarFieldEnum = {
-  id: 'id',
-  appId: 'appId',
-  purchaseOrderId: 'purchaseOrderId',
-  cartId: 'cartId',
-  userId: 'userId',
-  status: 'status',
-  totalAmount: 'totalAmount',
-  paymentOrderId: 'paymentOrderId',
-  disputeId: 'disputeId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PurchaseScalarFieldEnum = (typeof PurchaseScalarFieldEnum)[keyof typeof PurchaseScalarFieldEnum]
 
 
 export const PaymentOrderScalarFieldEnum = {
