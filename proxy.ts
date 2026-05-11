@@ -6,7 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/edicion-limitada(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  "/admin(.*)", // TODO: remove — temporarily public for dev, must be ADMIN-only in production
+
   // All API routes are public at proxy level — individual routes handle auth themselves
   "/api/(.*)",
 ]);

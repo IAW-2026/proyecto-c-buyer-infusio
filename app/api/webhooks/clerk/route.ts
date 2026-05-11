@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { db } from "@/lib/prisma";
+import { db } from "@/app/lib/prisma";
 
 interface ClerkUserData {
   id: string;
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         name: firstName,
         lastName,
         phoneNumber: phone,
-        role: "CLIENT",
+        roles: ["CLIENT"],
       },
     });
   } else if (type === "user.updated") {

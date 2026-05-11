@@ -1,19 +1,20 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { db } from "@/app/lib/prisma";
 import AdminSidebar from "@/app/ui/admin/AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  /*
-    const user = await currentUser();
-  const roles = (user?.publicMetadata?.roles as string[] | undefined) ?? [];
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
 
-  if (!roles.includes("admin")) {
-    redirect("/");
-  }
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { roles: true, name: true, lastName: true },
+  });
 
-  const adminName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Admin";
-*/
-  const adminName = "Mili";
+  if (!user?.roles.includes("ADMIN")) redirect("/");
+
+  const adminName = [user.name, user.lastName].filter(Boolean).join(" ") || "Admin";
 
   return (
     <div className="flex min-h-screen bg-cream">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/prisma";
-import { createPurchaseOrder, OrderItem } from "@/lib/services/externalApis";
+import { db } from "@/app/lib/prisma";
+import { createPurchaseOrder, OrderItem } from "@/app/lib/services/externalApis";
 
 interface AddressBody {
   email?: string;
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
   const token = await getToken();
 
   const { purchase_order_id, shipping_cost, currency, checkout_url } =
-    await createPurchaseOrder(userId, address as Record<string, string | undefined>, orderItems, token ?? undefined);
+    await createPurchaseOrder(userId, address as unknown as Record<string, string | undefined>, orderItems, token ?? undefined);
 
   await db.purchaseOrder.create({
     data: {

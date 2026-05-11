@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getShipmentTracking } from "@/lib/services/externalApis";
-import type { ShipmentStatusValue } from "@/lib/services/externalApis";
+import { getShipmentTracking } from "@/app/lib/services/externalApis";
+import type { ShipmentStatusValue } from "@/app/lib/services/externalApis";
 
 type BadgeInfo = { label: string; cls: string };
 

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getProductById } from "@/lib/services/externalApis";
-import type { SellerProduct } from "@/lib/services/externalApis";
+import { getProductById } from "@/app/lib/services/externalApis";
+import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "@/app/ui/AddToCartControls";
 
 interface PageProps {

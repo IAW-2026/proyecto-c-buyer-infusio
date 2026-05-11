@@ -1,4 +1,4 @@
-import { getProducts, type SellerProduct } from "@/lib/services/externalApis";
+import { getProducts, type SellerProduct } from "@/app/lib/services/externalApis";
 import ProductCard from "@/app/ui/ProductCard";
 import Pagination from "@/app/ui/Pagination";
 import MorningRitual from "@/app/ui/sections/MorningRitual";

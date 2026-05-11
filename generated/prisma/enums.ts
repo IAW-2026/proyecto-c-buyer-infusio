@@ -26,18 +26,6 @@ export const PurchaseOrderStatus = {
 export type PurchaseOrderStatus = (typeof PurchaseOrderStatus)[keyof typeof PurchaseOrderStatus]
 
 
-export const PurchaseStatus = {
-  PENDING: 'PENDING',
-  PAID: 'PAID',
-  SHIPPED: 'SHIPPED',
-  DELIVERED: 'DELIVERED',
-  CANCELLED: 'CANCELLED',
-  DISPUTED: 'DISPUTED'
-} as const
-
-export type PurchaseStatus = (typeof PurchaseStatus)[keyof typeof PurchaseStatus]
-
-
 export const PaymentStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',

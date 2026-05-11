@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/prisma";
-import type { SellerProduct } from "@/lib/services/externalApis";
+import { db } from "@/app/lib/prisma";
+import type { SellerProduct } from "@/app/lib/services/externalApis";
 
 // Mock endpoint — mirrors GET /api/seller/products from the Seller App contract.
 // Active in dev when SELLER_API_URL=http://localhost:3000.

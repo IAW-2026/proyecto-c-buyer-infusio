@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/prisma";
-import { getShipmentTracking } from "@/lib/services/externalApis";
+import { db } from "@/app/lib/prisma";
+import { getShipmentTracking } from "@/app/lib/services/externalApis";
 import OrdersTable, { type OrderRow } from "@/app/ui/OrdersTable";
 
 export default async function OrdersPage() {

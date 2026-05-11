@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { SellerProduct } from "@/lib/services/externalApis";
+import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "./AddToCartControls";
 
 interface ProductCardProps {

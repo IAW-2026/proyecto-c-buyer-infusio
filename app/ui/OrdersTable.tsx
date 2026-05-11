@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import type { ShipmentTrackingResponse, ShipmentStatusValue } from "@/lib/services/externalApis";
+import type { ShipmentTrackingResponse, ShipmentStatusValue } from "@/app/lib/services/externalApis";
 
 export interface OrderCartItem {
   id: string;

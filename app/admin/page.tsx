@@ -1,23 +1,21 @@
-import { db } from "@/lib/prisma";
-import { Prisma, type PurchaseStatus } from "@/generated/prisma/client";
+import { Suspense } from "react";
+import { db } from "@/app/lib/prisma";
+import { type PurchaseOrderStatus } from "@/generated/prisma/client";
+import Link from "next/link";
 import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
+import ExportDropdown from "@/app/ui/admin/ExportDropdown";
+import AdminSearch from "@/app/ui/admin/AdminSearch";
 
-const STATUS_LABEL: Record<PurchaseStatus, string> = {
+const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
   PENDING:   "PROCESANDO",
-  PAID:      "PAGADO",
-  SHIPPED:   "ENVIADO",
-  DELIVERED: "ENTREGADO",
+  CONFIRMED: "CONFIRMADO",
   CANCELLED: "CANCELADO",
-  DISPUTED:  "EN DISPUTA",
 };
 
-const STATUS_COLOR: Record<PurchaseStatus, string> = {
-  PENDING:   "text-terracotta",
-  PAID:      "text-olive",
-  SHIPPED:   "text-muted-foreground",
-  DELIVERED: "text-olive",
-  CANCELLED: "text-muted-foreground",
-  DISPUTED:  "text-terracotta",
+const STATUS_CLS: Record<PurchaseOrderStatus, string> = {
+  PENDING:   "bg-tan/60 text-brown",
+  CONFIRMED: "bg-[#dce6d8] text-[#4e7048]",
+  CANCELLED: "bg-[#eedede] text-[#904545]",
 };
 
 function formatOrderId(id: string) {
@@ -28,64 +26,71 @@ function formatDate(date: Date) {
   return date.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ query?: string }>;
+}) {
+  const { query } = await searchParams;
   const oneWeekAgo = new Date();
   oneWeekAgo.setTime(oneWeekAgo.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  type StatusCount = { status: PurchaseStatus; _count: { id: number }; _sum: { totalAmount: Prisma.Decimal | null } };
-  type PurchaseRow = {
-    id: string; status: PurchaseStatus; totalAmount: Prisma.Decimal | null; createdAt: Date;
+  type StatusCount = { status: PurchaseOrderStatus; _count: { id: number } };
+  type OrderRow = {
+    id: string; status: PurchaseOrderStatus; createdAt: Date;
     user: { name: string; lastName: string };
-    purchaseOrder: { cart: { items: { productName: string; quantity: number }[] } | null } | null;
+    cart: { items: { productName: string; quantity: number }[] };
+    packages: { amount: import("@/generated/prisma/client").Prisma.Decimal }[];
   };
+
   let statusCounts: StatusCount[] = [];
-  let purchases: PurchaseRow[] = [];
+  let orders: OrderRow[] = [];
   let totalUsers = 0;
   let newUsersThisWeek = 0;
+  let totalRevenue = 0;
   let dbError = false;
 
   try {
-    [statusCounts, purchases, totalUsers, newUsersThisWeek] = await Promise.all([
-      db.purchase.groupBy({
-        by: ["status"],
-        _count: { id: true },
-        _sum: { totalAmount: true },
-      }),
-      db.purchase.findMany({
+    const [sc, o, u, uw, rev] = await Promise.all([
+      db.purchaseOrder.groupBy({ by: ["status"], _count: { id: true } }),
+      db.purchaseOrder.findMany({
+        where: query
+          ? {
+              OR: [
+                // Strip the display prefix (#INF-) so users can paste the formatted ID
+                { id: { contains: query.replace(/^#?inf-?/i, "").trim(), mode: "insensitive" } },
+                { user: { name: { contains: query, mode: "insensitive" } } },
+                { user: { lastName: { contains: query, mode: "insensitive" } } },
+                { user: { email: { contains: query, mode: "insensitive" } } },
+              ],
+            }
+          : { createdAt: { gte: oneWeekAgo } },
         include: {
           user: { select: { name: true, lastName: true } },
-          purchaseOrder: {
-            include: {
-              cart: {
-                include: {
-                  items: { select: { productName: true, quantity: true } },
-                },
-              },
-            },
-          },
+          cart: { include: { items: { select: { productName: true, quantity: true } } } },
+          packages: { select: { amount: true } },
         },
         orderBy: { createdAt: "desc" },
-        take: 10,
+        take: query ? 50 : undefined,
       }),
       db.user.count(),
       db.user.count({ where: { createdAt: { gte: oneWeekAgo } } }),
+      db.package.aggregate({ _sum: { amount: true } }),
     ]);
+    statusCounts = sc;
+    orders = o;
+    totalUsers = u;
+    newUsersThisWeek = uw;
+    totalRevenue = Number(rev._sum.amount ?? 0);
   } catch {
     dbError = true;
   }
 
-  const totalRevenue = statusCounts
-    .filter((s) => ["PAID", "SHIPPED", "DELIVERED"].includes(s.status))
-    .reduce((sum, s) => sum + Number(s._sum.totalAmount ?? 0), 0);
-
   const activeOrders = statusCounts
-    .filter((s) => ["PENDING", "PAID", "SHIPPED"].includes(s.status))
+    .filter((s) => s.status === "PENDING")
     .reduce((sum, s) => sum + s._count.id, 0);
 
-  const pendingOrders = statusCounts
-    .find((s) => s.status === "PENDING")?._count.id ?? 0;
-
-  const revenueFormatted = totalRevenue.toLocaleString("en-US", {
+  const revenueFormatted = totalRevenue.toLocaleString("es-AR", {
     style: "currency",
     currency: "ARS",
     minimumFractionDigits: 2,
@@ -103,34 +108,24 @@ export default async function AdminPage() {
           <h1 className="font-serif text-5xl text-brown">Consola de Administración</h1>
         </div>
         <div className="flex items-center gap-6 pt-2">
-          <div className="flex items-center gap-2 bg-tan/50 border border-tan rounded-full px-4 py-2">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground">
-              <circle cx="7" cy="7" r="5" />
-              <line x1="11" y1="11" x2="15" y2="15" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Buscar órdenes, vendedores..."
-              className="bg-transparent text-xs text-brown placeholder:text-muted-foreground outline-none w-52"
-            />
-          </div>
-          <button className="text-xs tracking-[0.15em] text-brown hover:text-terracotta transition-colors">
-            EXPORTAR DATOS
-          </button>
+          <Suspense>
+            <AdminSearch />
+          </Suspense>
+          <ExportDropdown />
         </div>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
         <StatCard
-          label="TOTAL REVENUE"
+          label="INGRESOS TOTALES"
           value={revenueFormatted}
-          sub="Pedidos pagados y enviados"
+          sub="Suma de todos los paquetes"
         />
         <StatCard
           label="PEDIDOS ACTIVOS"
           value={activeOrders.toLocaleString()}
-          sub={`${pendingOrders} pendientes de proceso`}
+          sub="Pendientes de procesamiento"
         />
         <StatCard
           label="BASE DE CLIENTES"
@@ -144,13 +139,18 @@ export default async function AdminPage() {
         />
       </div>
 
-      {/* Recent purchases */}
+      {/* Recent orders */}
       <div className="mb-12">
         <div className="flex items-baseline justify-between mb-6">
-          <h2 className="font-serif text-3xl text-brown">Compras Recientes</h2>
-          <button className="text-xs tracking-[0.15em] text-muted-foreground hover:text-brown transition-colors">
-            VER REGISTRO COMPLETO
-          </button>
+          <h2 className="font-serif text-3xl text-brown">
+            {query ? `Resultados para "${query}"` : "Pedidos — Última Semana"}
+          </h2>
+          <Link
+            href="/admin/purchases"
+            className="text-xs tracking-[0.15em] text-muted-foreground hover:text-brown transition-colors"
+          >
+            VER REGISTRO COMPLETO →
+          </Link>
         </div>
 
         <table className="w-full">
@@ -167,33 +167,33 @@ export default async function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {purchases.length === 0 ? (
+            {orders.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-16 text-center font-serif text-xl text-muted-foreground">
-                  No hay compras registradas todavía.
+                  No hay pedidos registrados todavía.
                 </td>
               </tr>
             ) : (
-              purchases.map((p) => {
-                const items = p.purchaseOrder?.cart?.items ?? [];
+              orders.map((o) => {
+                const items = o.cart.items;
                 const itemsLabel = items.length > 0
                   ? items.map((i) => `${i.productName} (${i.quantity})`).join(", ")
                   : "—";
-                const total = p.totalAmount
-                  ? `$${Number(p.totalAmount).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
+                const total = o.packages.length > 0
+                  ? `$${o.packages.reduce((s, p) => s + Number(p.amount), 0).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
                   : "—";
 
                 return (
-                  <tr key={p.id} className="border-b border-tan/60">
-                    <td className="py-4 text-sm text-brown">{formatOrderId(p.id)}</td>
-                    <td className="py-4 text-sm text-brown">
-                      {p.user.name} {p.user.lastName}
-                    </td>
-                    <td className="py-4 text-sm text-muted-foreground">{formatDate(p.createdAt)}</td>
+                  <tr key={o.id} className="border-b border-tan/60">
+                    <td className="py-4 text-sm text-brown">{formatOrderId(o.id)}</td>
+                    <td className="py-4 text-sm text-brown">{o.user.name} {o.user.lastName}</td>
+                    <td className="py-4 text-sm text-muted-foreground">{formatDate(o.createdAt)}</td>
                     <td className="py-4 text-sm text-muted-foreground max-w-xs truncate">{itemsLabel}</td>
                     <td className="py-4 text-sm font-medium text-brown">{total}</td>
-                    <td className={`py-4 text-xs tracking-[0.12em] ${STATUS_COLOR[p.status]}`}>
-                      {STATUS_LABEL[p.status]}
+                    <td className="py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs tracking-widest ${STATUS_CLS[o.status]}`}>
+                        {STATUS_LABEL[o.status]}
+                      </span>
                     </td>
                   </tr>
                 );
@@ -203,35 +203,22 @@ export default async function AdminPage() {
         </table>
       </div>
 
-      {/* Bottom two-col section */}
-      <div className="grid grid-cols-2 gap-12">
-        {/* Verified vendors placeholder */}
-        <div>
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="font-serif text-3xl text-brown">Vendedores Verificados</h2>
-            <button className="text-xs tracking-[0.15em] text-muted-foreground hover:text-brown transition-colors">
-              ADMINISTRAR
-            </button>
-          </div>
-          <p className="text-sm italic text-muted-foreground">
-            La gestión de vendedores se administra desde el Seller App.
-          </p>
+      {/* New registered users */}
+      <div>
+        <div className="flex items-baseline justify-between mb-6">
+          <h2 className="font-serif text-3xl text-brown">Nuevos Usuarios</h2>
+          <Link
+            href="/admin/users"
+            className="text-xs tracking-[0.15em] text-muted-foreground hover:text-brown transition-colors"
+          >
+            DIRECTORIO →
+          </Link>
         </div>
-
-        {/* New registered users placeholder */}
-        <div>
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="font-serif text-3xl text-brown">Nuevos Usuarios</h2>
-            <button className="text-xs tracking-[0.15em] text-muted-foreground hover:text-brown transition-colors">
-              DIRECTORIO
-            </button>
-          </div>
-          <p className="text-sm italic text-muted-foreground">
-            {newUsersThisWeek > 0
-              ? `${newUsersThisWeek} usuario${newUsersThisWeek !== 1 ? "s" : ""} registrado${newUsersThisWeek !== 1 ? "s" : ""} esta semana.`
-              : "Ningún usuario nuevo esta semana."}
-          </p>
-        </div>
+        <p className="text-sm italic text-muted-foreground">
+          {newUsersThisWeek > 0
+            ? `${newUsersThisWeek} usuario${newUsersThisWeek !== 1 ? "s" : ""} registrado${newUsersThisWeek !== 1 ? "s" : ""} esta semana.`
+            : "Ningún usuario nuevo esta semana."}
+        </p>
       </div>
 
     </div>

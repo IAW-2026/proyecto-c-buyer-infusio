@@ -1,31 +1,17 @@
-import { db } from "@/lib/prisma";
-import { Prisma, type PurchaseStatus } from "@/generated/prisma/client";
+import { db } from "@/app/lib/prisma";
+import { type PurchaseOrderStatus } from "@/generated/prisma/client";
 import Link from "next/link";
 import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
+import PurchasesTable, { type AdminOrderRow } from "@/app/ui/admin/PurchasesTable";
+import { getShipmentTracking, type ShipmentStatusValue } from "@/app/lib/services/externalApis";
 
-const STATUS_LABEL: Record<PurchaseStatus, string> = {
+const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
   PENDING:   "PROCESANDO",
-  PAID:      "PAGADO",
-  SHIPPED:   "ENVIADO",
-  DELIVERED: "ENTREGADO",
+  CONFIRMED: "CONFIRMADO",
   CANCELLED: "CANCELADO",
-  DISPUTED:  "EN DISPUTA",
 };
 
-const STATUS_COLOR: Record<PurchaseStatus, string> = {
-  PENDING:   "text-terracotta bg-terracotta/10",
-  PAID:      "text-olive bg-olive/10",
-  SHIPPED:   "text-muted-foreground bg-tan/50",
-  DELIVERED: "text-olive bg-olive/10",
-  CANCELLED: "text-muted-foreground bg-tan/50",
-  DISPUTED:  "text-terracotta bg-terracotta/10",
-};
-
-const ALL_STATUSES = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED", "DISPUTED"] as const;
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
-}
+const ALL_STATUSES: PurchaseOrderStatus[] = ["PENDING", "CONFIRMED", "CANCELLED"];
 
 function formatId(id: string) {
   return `#INF-${id.slice(-4).toUpperCase()}`;
@@ -37,34 +23,72 @@ export default async function PurchasesPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const { status } = await searchParams;
-  const activeStatus = ALL_STATUSES.includes(status as PurchaseStatus) ? (status as PurchaseStatus) : null;
+  const activeStatus = ALL_STATUSES.includes(status as PurchaseOrderStatus)
+    ? (status as PurchaseOrderStatus)
+    : null;
 
-  type PurchaseRow = {
-    id: string; status: PurchaseStatus; totalAmount: Prisma.Decimal | null; createdAt: Date;
+  type RawOrder = {
+    id: string;
+    status: PurchaseOrderStatus;
+    shippingId: string | null;
+    createdAt: Date;
     user: { name: string; lastName: string; email: string };
-    purchaseOrder: { cart: { items: { productName: string; quantity: number }[] } | null } | null;
+    cart: { items: { productName: string; quantity: number; priceAtTime: import("@/generated/prisma/client").Prisma.Decimal }[] };
+    packages: { amount: import("@/generated/prisma/client").Prisma.Decimal }[];
   };
-  let purchases: PurchaseRow[] = [];
+
+  let rawOrders: RawOrder[] = [];
+  let totalCount = 0;
   let dbError = false;
 
   try {
-    purchases = await db.purchase.findMany({
-      where: activeStatus ? { status: activeStatus } : undefined,
-      include: {
-        user: { select: { name: true, lastName: true, email: true } },
-        purchaseOrder: {
-          include: {
-            cart: {
-              include: { items: { select: { productName: true, quantity: true } } },
-            },
-          },
+    [rawOrders, totalCount] = await Promise.all([
+      db.purchaseOrder.findMany({
+        where: activeStatus ? { status: activeStatus } : undefined,
+        include: {
+          user: { select: { name: true, lastName: true, email: true } },
+          cart: { include: { items: { select: { productName: true, quantity: true, priceAtTime: true } } } },
+          packages: { select: { amount: true } },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      }),
+      db.purchaseOrder.count({ where: activeStatus ? { status: activeStatus } : undefined }),
+    ]);
   } catch {
     dbError = true;
   }
+
+  // Fetch shipping statuses in parallel for orders that have a shippingId
+  const trackingMap: Record<string, ShipmentStatusValue | null> = {};
+  await Promise.all(
+    rawOrders
+      .filter((o) => o.shippingId)
+      .map(async (o) => {
+        try {
+          const t = await getShipmentTracking(o.shippingId!);
+          trackingMap[o.id] = t.status;
+        } catch {
+          trackingMap[o.id] = null;
+        }
+      })
+  );
+
+  // Serialize Prisma Decimals and Dates before passing to the client component
+  const orders: AdminOrderRow[] = rawOrders.map((o) => ({
+    id: o.id,
+    status: o.status,
+    shippingId: o.shippingId,
+    shipStatus: o.shippingId ? (trackingMap[o.id] ?? null) : null,
+    createdAt: o.createdAt.toISOString(),
+    userName: `${o.user.name} ${o.user.lastName}`,
+    userEmail: o.user.email,
+    items: o.cart.items.map((item) => ({
+      productName: item.productName,
+      quantity: item.quantity,
+      priceAtTime: Number(item.priceAtTime),
+    })),
+    total: o.packages.reduce((s, p) => s + Number(p.amount), 0),
+  }));
 
   return (
     <div className="px-10 py-10">
@@ -79,17 +103,21 @@ export default async function PurchasesPage({
         <Link
           href="/admin/purchases"
           className={`px-4 py-1.5 text-xs tracking-[0.12em] border transition-colors ${
-            !activeStatus ? "border-brown text-brown" : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
+            !activeStatus
+              ? "border-brown text-brown"
+              : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
           }`}
         >
-          TODOS ({purchases.length})
+          TODOS ({totalCount})
         </Link>
         {ALL_STATUSES.map((s) => (
           <Link
             key={s}
             href={`/admin/purchases?status=${s}`}
             className={`px-4 py-1.5 text-xs tracking-[0.12em] border transition-colors ${
-              activeStatus === s ? "border-brown text-brown" : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
+              activeStatus === s
+                ? "border-brown text-brown"
+                : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
             }`}
           >
             {STATUS_LABEL[s]}
@@ -101,7 +129,7 @@ export default async function PurchasesPage({
       <table className="w-full">
         <thead>
           <tr className="border-b border-tan">
-            {["ORDER ID", "CLIENTE", "EMAIL", "FECHA", "PRODUCTOS", "TOTAL", "ESTADO"].map((h) => (
+            {["ORDER ID", "CLIENTE", "FECHA", "PRODUCTOS", "TOTAL", "ESTADO", "ESTADO ENVÍO"].map((h) => (
               <th key={h} className="pb-3 text-left text-xs tracking-[0.15em] text-terracotta font-normal">
                 {h}
               </th>
@@ -109,39 +137,7 @@ export default async function PurchasesPage({
           </tr>
         </thead>
         <tbody>
-          {purchases.length === 0 ? (
-            <tr>
-              <td colSpan={7} className="py-16 text-center font-serif text-xl text-muted-foreground">
-                No hay compras para este filtro.
-              </td>
-            </tr>
-          ) : (
-            purchases.map((p) => {
-              const items = p.purchaseOrder?.cart?.items ?? [];
-              const itemsLabel = items.length > 0
-                ? items.map((i) => `${i.productName} ×${i.quantity}`).join(", ")
-                : "—";
-              const total = p.totalAmount
-                ? `$${Number(p.totalAmount).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
-                : "—";
-
-              return (
-                <tr key={p.id} className="border-b border-tan/60 hover:bg-tan/20 transition-colors">
-                  <td className="py-4 text-sm text-brown">{formatId(p.id)}</td>
-                  <td className="py-4 text-sm text-brown">{p.user.name} {p.user.lastName}</td>
-                  <td className="py-4 text-xs text-muted-foreground">{p.user.email}</td>
-                  <td className="py-4 text-sm text-muted-foreground whitespace-nowrap">{formatDate(p.createdAt)}</td>
-                  <td className="py-4 text-xs text-muted-foreground max-w-xs truncate">{itemsLabel}</td>
-                  <td className="py-4 text-sm font-medium text-brown">{total}</td>
-                  <td className="py-4">
-                    <span className={`px-2 py-1 text-xs tracking-[0.1em] ${STATUS_COLOR[p.status]}`}>
-                      {STATUS_LABEL[p.status]}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })
-          )}
+          <PurchasesTable orders={orders} />
         </tbody>
       </table>
     </div>

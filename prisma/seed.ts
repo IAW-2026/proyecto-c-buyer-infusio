@@ -44,21 +44,21 @@ async function main() {
     where: { id: { in: ["user_seed_admin_001", "user_seed_client_001"] } },
   });
 
-  async function upsertUser(clerkId: string, name: string, lastName: string, email: string, role: UserRole) {
+  async function upsertUser(clerkId: string, name: string, lastName: string, email: string, roles: UserRole[]) {
     // Remove any stale record with the same email but a different ID before upserting.
     await prisma.user.deleteMany({ where: { email, NOT: { id: clerkId } } });
     await prisma.user.upsert({
       where: { id: clerkId },
-      update: {},
-      create: { id: clerkId, name, lastName, email, role },
+      update: { roles },
+      create: { id: clerkId, name, lastName, email, roles },
     });
   }
 
   const adminClerk = await findOrCreateClerkUser("admin@infusio.com", "Admin", "Infusio", "admin_infusio");
-  await upsertUser(adminClerk.id, "Admin", "Infusio", "admin@infusio.com", UserRole.ADMIN);
+  await upsertUser(adminClerk.id, "Admin", "Infusio", "admin@infusio.com", [UserRole.ADMIN]);
 
   const clientClerk = await findOrCreateClerkUser("cliente@infusio.com", "Cliente", "Prueba", "cliente_prueba");
-  await upsertUser(clientClerk.id, "Cliente", "Prueba", "cliente@infusio.com", UserRole.CLIENT);
+  await upsertUser(clientClerk.id, "Cliente", "Prueba", "cliente@infusio.com", [UserRole.CLIENT]);
 
   for (const p of PRODUCTS) {
     await prisma.product.upsert({ where: { id: p.id }, create: p, update: p });
@@ -72,7 +72,7 @@ async function main() {
     return;
   }
   const milivClerk = milivList[0];
-  await upsertUser(milivClerk.id, milivClerk.firstName ?? "Mili", milivClerk.lastName ?? "Vives", "milivives@gmail.com", UserRole.CLIENT);
+  await upsertUser(milivClerk.id, milivClerk.firstName ?? "Mili", milivClerk.lastName ?? "Vives", "milivives@gmail.com", [UserRole.CLIENT, UserRole.VENDOR]);
 
   // Delete any orders previously seeded under clientClerk to avoid duplicates
   await prisma.purchaseOrder.deleteMany({ where: { userId: clientClerk.id, id: { startsWith: "order_seed_" } } });
