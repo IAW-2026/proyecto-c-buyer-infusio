@@ -48,12 +48,21 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
   const q = normalize(query);
-  const filtered = allProducts.filter(
-    (p) =>
+  const filtered = allProducts.filter((p) => {
+    const primaryCat = normalize(p.categories[0] ?? "");
+    const isMachine = primaryCat.includes("maquina");
+
+    if (isMachine) {
+      // Machines only appear when the query targets them by name or primary category
+      return normalize(p.name).includes(q) || primaryCat.includes(q);
+    }
+
+    return (
       normalize(p.name).includes(q) ||
       normalize(p.description ?? "").includes(q) ||
       p.categories.some((c) => normalize(c).includes(q))
-  );
+    );
+  });
 
   const totalCount = filtered.length;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);

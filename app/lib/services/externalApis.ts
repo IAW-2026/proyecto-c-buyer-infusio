@@ -55,6 +55,19 @@ export interface SellerProduct {
   unit?: string;
   isLimitedEdition?: boolean;
   badge?: string;
+  colors?: string[];
+  specs?: {
+    materials?: string;
+    capacity?: string;
+    dimensions?: {
+      height?: string;
+      diameter?: string;
+      length?: string;
+      width?: string;
+      weight?: string;
+    };
+    care?: string;
+  };
 }
 
 export interface OrderItem {

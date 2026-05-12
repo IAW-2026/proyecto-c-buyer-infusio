@@ -3,12 +3,21 @@ import Image from "next/image";
 import { getProductById } from "@/app/lib/services/externalApis";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "@/app/ui/AddToCartControls";
+import AccessoryDetailLayout from "@/app/ui/AccessoryDetailLayout";
+import { getAccessoryRitual } from "@/app/lib/gemini";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 type Accent = "olive" | "terracotta";
+
+function isAccessory(categories: string[]): boolean {
+  const c = categories.join(" ").toLowerCase();
+  return ["mates", "bombilla", "termo", "accesorio", "combo", "máquina", "maquina"].some((k) =>
+    c.includes(k)
+  );
+}
 
 function getAccent(categories: string[]): Accent {
   const all = categories.join(" ").toLowerCase();
@@ -67,6 +76,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const product = result as SellerProduct;
 
   const accent = getAccent(product.categories);
+
+  if (isAccessory(product.categories)) {
+    const ritual = await getAccessoryRitual({
+      name: product.name,
+      categories: product.categories,
+      materials: product.specs?.materials,
+    }).catch(() => null);
+    return <AccessoryDetailLayout product={product} ritual={ritual} accent="slate" />;
+  }
+
   const accentText = accent === "terracotta" ? "text-terracotta" : "text-olive";
   const isOutOfStock = product.stock === 0;
   const sensoryTags = getSensoryTags(product);
@@ -225,29 +244,24 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
               {/* Metadata */}
               {[
-                { key: "CATEGORÍA", value: product.categories[0]?.toUpperCase() ?? "—" },
+                {
+                  key: "CATEGORÍA",
+                  value: (() => { const c = product.categories[0] ?? ""; return c ? c.charAt(0).toUpperCase() + c.slice(1) : "—"; })(),
+                },
                 { key: "ORIGEN", value: product.location ?? "—" },
                 {
                   key: "STOCK",
                   value: isOutOfStock ? "Sin stock" : `${product.stock} disponibles`,
                 },
-                { key: "VENDEDOR", value: product.sellerId },
               ].map(({ key, value }, i, arr) => (
                 <div
                   key={key}
                   className={`flex items-center justify-between px-6 py-3 ${i < arr.length - 1 ? "border-b border-tan" : ""}`}
                 >
                   <p className="text-xs tracking-[0.15em] text-muted-foreground">{key}</p>
-                  <p className="text-xs text-brown">{value}</p>
+                  <p className="font-serif text-sm text-brown">{value}</p>
                 </div>
               ))}
-
-              {/* Free shipping */}
-              <div className="px-6 py-4 border-t border-tan">
-                <p className="text-xs italic text-muted-foreground text-center">
-                  Envío gratis en pedidos mayores a $10.000
-                </p>
-              </div>
 
             </div>
           </aside>

@@ -31,6 +31,8 @@ export async function GET(
     location: p.location ?? undefined,
     isLimitedEdition: p.isLimitedEdition,
     badge: p.badge ?? undefined,
+    colors: p.colors,
+    specs: p.specs as SellerProduct["specs"] ?? undefined,
   };
 
   return NextResponse.json({ product });
