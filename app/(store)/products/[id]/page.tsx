@@ -4,6 +4,7 @@ import { getProductById } from "@/app/lib/services/externalApis";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "@/app/ui/AddToCartControls";
 import AccessoryDetailLayout from "@/app/ui/AccessoryDetailLayout";
+import SensoryChart from "@/app/ui/SensoryChart";
 import { getAccessoryRitual } from "@/app/lib/gemini";
 
 interface PageProps {
@@ -145,23 +146,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   </span>
                 ))}
               </div>
-              {/* Radar chart placeholder */}
-              <div className="w-full max-w-xs mx-auto aspect-square bg-tan/30 border border-tan flex flex-col items-center justify-center gap-3">
-                <svg
-                  className="w-28 h-28 opacity-20 text-brown"
-                  viewBox="0 0 100 100"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" strokeWidth="1" />
-                  <polygon points="50,20 80,35 80,65 50,80 20,65 20,35" strokeWidth="1" />
-                  <polygon points="50,35 65,42.5 65,57.5 50,65 35,57.5 35,42.5" strokeWidth="1" />
-                  <line x1="50" y1="5" x2="50" y2="95" strokeWidth="0.5" />
-                  <line x1="5" y1="27.5" x2="95" y2="72.5" strokeWidth="0.5" />
-                  <line x1="95" y1="27.5" x2="5" y2="72.5" strokeWidth="0.5" />
-                </svg>
-                <p className="text-xs tracking-[0.15em] text-muted-foreground">GRÁFICO SENSORIAL</p>
-                <p className="text-xs text-muted-foreground">Disponible próximamente</p>
+              <div className="w-full max-w-xs mx-auto py-4">
+                <SensoryChart tags={sensoryTags} accent={accent} productId={product.id} />
               </div>
             </section>
 
