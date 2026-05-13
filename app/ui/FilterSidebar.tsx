@@ -42,7 +42,7 @@ export default function FilterSidebar({ groups, accent, query }: Props) {
 
   function getActiveValues(param: string): string[] {
     const val = searchParams.get(param);
-    return val ? val.split(",").filter(Boolean) : [];
+    return val ? val.split("|").filter(Boolean) : [];
   }
 
   function toggle(param: "origins" | "types" | "priceRange", value: string, multi: boolean) {
@@ -57,7 +57,7 @@ export default function FilterSidebar({ groups, accent, query }: Props) {
       if (next.length === 0) {
         params.delete(param);
       } else {
-        params.set(param, next.join(","));
+        params.set(param, next.join("|"));
       }
     } else {
       if (searchParams.get(param) === value) {

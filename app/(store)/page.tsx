@@ -187,8 +187,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   });
 
   // Secondary filters: origins, types, priceRange
-  const activeOrigins = origins ? origins.split(",").filter(Boolean) : [];
-  const activeTypes   = types   ? types.split(",").filter(Boolean)   : [];
+  const activeOrigins = origins ? origins.split("|").filter(Boolean) : [];
+  const activeTypes   = types   ? types.split("|").filter(Boolean)   : [];
 
   const displayed = queryFiltered.filter((p) => {
     if (activeOrigins.length && !activeOrigins.includes(p.location ?? "")) return false;
