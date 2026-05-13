@@ -11,7 +11,7 @@ interface AddToCartControlsProps {
   productImageUrl?: string;
   priceAtTime: number;
   isOutOfStock: boolean;
-  accent: "olive" | "terracotta";
+  accent: "olive" | "terracotta" | "slate";
 }
 
 export default function AddToCartControls({
@@ -28,9 +28,10 @@ export default function AddToCartControls({
   const router = useRouter();
   const { refresh, openCartSilent, applyOptimistic } = useCart();
 
-  const btnBg = accent === "terracotta"
-    ? "bg-terracotta hover:bg-brown"
-    : "bg-olive hover:bg-brown";
+  const btnCls =
+    accent === "terracotta" ? "bg-terracotta hover:bg-brown text-cream" :
+    accent === "slate"      ? "bg-[#DFD9DE] hover:bg-[#c8c1c7] text-brown" :
+    /* olive */                "bg-olive hover:bg-brown text-cream";
 
   if (isOutOfStock) {
     return (
@@ -121,7 +122,7 @@ export default function AddToCartControls({
       <button
         onClick={handleAdd}
         disabled={loading}
-        className={`flex-1 py-3 text-xs tracking-[0.15em] font-medium text-cream ${btnBg} disabled:opacity-50 transition-colors`}
+        className={`flex-1 py-3 text-xs tracking-[0.15em] font-medium ${btnCls} disabled:opacity-50 transition-colors`}
       >
         {loading ? "…" : "AGREGAR AL CARRITO"}
       </button>

@@ -3,12 +3,22 @@ import Image from "next/image";
 import { getProductById } from "@/app/lib/services/externalApis";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "@/app/ui/AddToCartControls";
+import AccessoryDetailLayout from "@/app/ui/AccessoryDetailLayout";
+import SensoryChart from "@/app/ui/SensoryChart";
+import { getAccessoryRitual } from "@/app/lib/gemini";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 type Accent = "olive" | "terracotta";
+
+function isAccessory(categories: string[]): boolean {
+  const c = categories.join(" ").toLowerCase();
+  return ["mates", "bombilla", "termo", "accesorio", "combo", "máquina", "maquina"].some((k) =>
+    c.includes(k)
+  );
+}
 
 function getAccent(categories: string[]): Accent {
   const all = categories.join(" ").toLowerCase();
@@ -67,6 +77,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const product = result as SellerProduct;
 
   const accent = getAccent(product.categories);
+
+  if (isAccessory(product.categories)) {
+    const ritual = await getAccessoryRitual({
+      name: product.name,
+      categories: product.categories,
+      materials: product.specs?.materials,
+    }).catch(() => null);
+    return <AccessoryDetailLayout product={product} ritual={ritual} accent="slate" />;
+  }
+
   const accentText = accent === "terracotta" ? "text-terracotta" : "text-olive";
   const isOutOfStock = product.stock === 0;
   const sensoryTags = getSensoryTags(product);
@@ -126,23 +146,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   </span>
                 ))}
               </div>
-              {/* Radar chart placeholder */}
-              <div className="w-full max-w-xs mx-auto aspect-square bg-tan/30 border border-tan flex flex-col items-center justify-center gap-3">
-                <svg
-                  className="w-28 h-28 opacity-20 text-brown"
-                  viewBox="0 0 100 100"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" strokeWidth="1" />
-                  <polygon points="50,20 80,35 80,65 50,80 20,65 20,35" strokeWidth="1" />
-                  <polygon points="50,35 65,42.5 65,57.5 50,65 35,57.5 35,42.5" strokeWidth="1" />
-                  <line x1="50" y1="5" x2="50" y2="95" strokeWidth="0.5" />
-                  <line x1="5" y1="27.5" x2="95" y2="72.5" strokeWidth="0.5" />
-                  <line x1="95" y1="27.5" x2="5" y2="72.5" strokeWidth="0.5" />
-                </svg>
-                <p className="text-xs tracking-[0.15em] text-muted-foreground">GRÁFICO SENSORIAL</p>
-                <p className="text-xs text-muted-foreground">Disponible próximamente</p>
+              <div className="w-full max-w-xs mx-auto py-4">
+                <SensoryChart tags={sensoryTags} accent={accent} productId={product.id} />
               </div>
             </section>
 
@@ -225,29 +230,24 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
               {/* Metadata */}
               {[
-                { key: "CATEGORÍA", value: product.categories[0]?.toUpperCase() ?? "—" },
+                {
+                  key: "CATEGORÍA",
+                  value: (() => { const c = product.categories[0] ?? ""; return c ? c.charAt(0).toUpperCase() + c.slice(1) : "—"; })(),
+                },
                 { key: "ORIGEN", value: product.location ?? "—" },
                 {
                   key: "STOCK",
                   value: isOutOfStock ? "Sin stock" : `${product.stock} disponibles`,
                 },
-                { key: "VENDEDOR", value: product.sellerId },
               ].map(({ key, value }, i, arr) => (
                 <div
                   key={key}
                   className={`flex items-center justify-between px-6 py-3 ${i < arr.length - 1 ? "border-b border-tan" : ""}`}
                 >
                   <p className="text-xs tracking-[0.15em] text-muted-foreground">{key}</p>
-                  <p className="text-xs text-brown">{value}</p>
+                  <p className="font-serif text-sm text-brown">{value}</p>
                 </div>
               ))}
-
-              {/* Free shipping */}
-              <div className="px-6 py-4 border-t border-tan">
-                <p className="text-xs italic text-muted-foreground text-center">
-                  Envío gratis en pedidos mayores a $10.000
-                </p>
-              </div>
 
             </div>
           </aside>

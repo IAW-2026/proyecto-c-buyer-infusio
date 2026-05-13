@@ -7,10 +7,11 @@ interface ProductCardProps {
   product: SellerProduct;
 }
 
-type Accent = "olive" | "terracotta";
+type Accent = "olive" | "terracotta" | "slate";
 
 function getAccent(categories: string[]): Accent {
   const all = categories.join(" ").toLowerCase();
+  if (["mates", "bombilla", "termo", "accesorio", "combo", "máquina", "maquina"].some((k) => all.includes(k))) return "slate";
   if (all.includes("café") || all.includes("cafe") || all.includes("coffee")) return "terracotta";
   return "olive";
 }
@@ -20,7 +21,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const accent = getAccent(product.categories);
-  const accentClass = accent === "terracotta" ? "text-terracotta" : "text-olive";
+  const accentClass =
+    accent === "terracotta" ? "text-terracotta" :
+    accent === "slate"      ? "text-[#7A6B77]"  :
+    "text-olive";
   const label = product.location ?? product.categories[0]?.toUpperCase() ?? "";
 
   return (

@@ -97,6 +97,27 @@ ${FORMAT_RULES}`;
   return result.response.text();
 }
 
+// ─── Accessory ritual description ────────────────────────────────────────────
+
+export interface AccessoryRitualInput {
+  name: string;
+  categories: string[];
+  materials?: string;
+}
+
+export async function getAccessoryRitual(product: AccessoryRitualInput): Promise<string> {
+  const prompt = `${BASE_CONTEXT}
+
+El producto es: "${product.name}" (${product.categories.join(", ")}).${product.materials ? ` Fabricado en: ${product.materials}.` : ""}
+
+Escribí exactamente 2 oraciones sobre cómo este accesorio forma parte del ritual diario de preparar y disfrutar infusiones.
+Tono poético, cálido, rioplatense informal. Sin emojis. Sin títulos.
+${FORMAT_RULES}`;
+
+  const result = await model().generateContent(prompt);
+  return result.response.text();
+}
+
 // ─── Revenue trend & forecast ─────────────────────────────────────────────────
 
 export interface RevenueTrendStats {
