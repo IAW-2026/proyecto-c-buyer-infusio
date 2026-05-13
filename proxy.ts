@@ -6,7 +6,6 @@ const isPublicRoute = createRouteMatcher([
   "/edicion-limitada(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
-
   // All API routes are public at proxy level — individual routes handle auth themselves
   "/api/(.*)",
 ]);

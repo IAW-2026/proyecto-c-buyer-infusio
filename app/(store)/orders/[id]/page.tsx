@@ -2,9 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/app/lib/prisma";
-import { getShipmentTracking } from "@/app/lib/services/externalApis";
-import type { ShipmentStatusValue } from "@/app/lib/services/externalApis";
+import { db } from "@/lib/prisma";
+import { getShipmentTracking } from "@/lib/services/externalApis";
+import type { ShipmentStatusValue } from "@/lib/services/externalApis";
+import RepeatOrderButton from "@/app/ui/RepeatOrderButton";
 
 type BadgeInfo = { label: string; cls: string };
 
@@ -208,13 +209,23 @@ export default async function OrderDetailPage({
         </div>
       </details>
 
-      <div className="mt-8 flex gap-4 flex-wrap">
-        <button className="px-10 py-3.5 text-[10px] tracking-[0.2em] text-cream bg-brown hover:bg-olive transition-colors">
-          REPETIR PEDIDO
-        </button>
-        <button className="px-10 py-3.5 text-[10px] tracking-[0.2em] text-brown border border-brown hover:bg-tan/30 transition-colors">
+      <div className="mt-8 flex gap-4 flex-wrap items-start">
+        <RepeatOrderButton
+          items={items.map((i) => ({
+            productId: i.productId,
+            productName: i.productName,
+            productVariant: i.productVariant,
+            productImageUrl: i.productImageUrl,
+            priceAtTime: Number(i.priceAtTime),
+            quantity: i.quantity,
+          }))}
+        />
+        <a
+          href={`/api/orders/${id}/invoice`}
+          className="px-10 py-3.5 text-[10px] tracking-[0.2em] text-brown border border-brown hover:bg-tan/30 transition-colors"
+        >
           DESCARGAR FACTURA
-        </button>
+        </a>
       </div>
     </div>
   );
