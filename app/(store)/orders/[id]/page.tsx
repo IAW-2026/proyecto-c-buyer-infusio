@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/app/lib/prisma";
 import { getShipmentTracking } from "@/app/lib/services/externalApis";
 import type { ShipmentStatusValue } from "@/app/lib/services/externalApis";
-import RepeatOrderButton from "@/app/ui/RepeatOrderButton";
+import RepeatOrderButton from "@/app/ui/cart/RepeatOrderButton";
 
 type BadgeInfo = { label: string; cls: string };
 

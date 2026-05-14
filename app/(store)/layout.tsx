@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/app/lib/prisma";
 import Navbar from "@/app/ui/Navbar";
 import Footer from "@/app/ui/Footer";
-import { CartProvider } from "@/app/ui/CartContext";
-import CartDrawer from "@/app/ui/CartDrawer";
-import PendingCartEffect from "@/app/ui/PendingCartEffect";
+import { CartProvider } from "@/app/ui/cart/CartContext";
+import CartDrawer from "@/app/ui/cart/CartDrawer";
+import PendingCartEffect from "@/app/ui/cart/PendingCartEffect";
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();

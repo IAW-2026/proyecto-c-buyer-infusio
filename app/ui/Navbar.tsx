@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { AuthButtons } from "./AuthButtons";
-import CartNavButton from "./CartNavButton";
+import CartNavButton from "./cart/CartNavButton";
 import MobileNav from "./MobileNav";
 
 const navLinks = [

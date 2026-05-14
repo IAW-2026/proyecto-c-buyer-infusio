@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
-import AddToCartControls from "./AddToCartControls";
+import AddToCartControls from "@/app/ui/cart/AddToCartControls";
 
 interface ProductCardProps {
   product: SellerProduct;

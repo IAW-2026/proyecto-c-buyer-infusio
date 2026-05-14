@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import AddToCartControls from "@/app/ui/AddToCartControls";
+import AddToCartControls from "@/app/ui/cart/AddToCartControls";
 
 interface Props {
   productId: string;

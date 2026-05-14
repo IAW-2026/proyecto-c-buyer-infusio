@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getProductById } from "@/app/lib/services/externalApis";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
-import AddToCartControls from "@/app/ui/AddToCartControls";
-import AccessoryDetailLayout from "@/app/ui/AccessoryDetailLayout";
-import SensoryChart from "@/app/ui/SensoryChart";
+import AddToCartControls from "@/app/ui/cart/AddToCartControls";
+import AccessoryDetailLayout from "@/app/ui/product/AccessoryDetailLayout";
+import SensoryChart from "@/app/ui/product/SensoryChart";
 import { getAccessoryRitual } from "@/app/lib/gemini";
 
 interface PageProps {

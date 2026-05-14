@@ -1,11 +1,11 @@
 import { getProducts, type SellerProduct } from "@/app/lib/services/externalApis";
-import ProductCard from "@/app/ui/ProductCard";
+import ProductCard from "@/app/ui/product/ProductCard";
 import Pagination from "@/app/ui/Pagination";
 import MorningRitual from "@/app/ui/sections/MorningRitual";
 import FeatureCards from "@/app/ui/sections/FeatureCards";
 import HeroSection from "@/app/ui/sections/HeroSection";
 import EdicionLimitada from "@/app/ui/sections/EdicionLimitada";
-import FilterSidebar, { type FilterGroup } from "@/app/ui/FilterSidebar";
+import FilterSidebar, { type FilterGroup } from "@/app/ui/product/FilterSidebar";
 
 const PAGE_SIZE = 12;
 

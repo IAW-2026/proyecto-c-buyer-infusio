@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "@/app/ui/CartContext";
+import { useCart } from "./CartContext";
 
 interface OrderItem {
   productId: string;

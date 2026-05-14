@@ -1,6 +1,6 @@
 import Image from "next/image";
 import ScrollToTop from "@/app/ui/ScrollToTop";
-import AccessoryPurchasePanel from "@/app/ui/AccessoryPurchasePanel";
+import AccessoryPurchasePanel from "./AccessoryPurchasePanel";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
 
 interface Props {
