@@ -5,7 +5,7 @@ const features = [
     title: "Infusiones de origen único, del productor a tu mesa.",
     bgColor: "bg-olive",
     textColor: "text-cream",
-    buttonClass: "border-cream/40 text-cream/80 hover:bg-cream/10",
+    buttonClass: "border-cream/40 text-cream hover:bg-cream/10",
   },
   {
     number: "02",
@@ -13,7 +13,7 @@ const features = [
     title: "Más de 40 productores artesanales seleccionados.",
     bgColor: "bg-terracotta",
     textColor: "text-cream",
-    buttonClass: "border-cream/40 text-cream/80 hover:bg-cream/10",
+    buttonClass: "border-cream/40 text-cream hover:bg-cream/10",
   },
   {
     number: "03",
@@ -21,7 +21,7 @@ const features = [
     title: "Cada blend es una firma. Cada hoja, un legado.",
     bgColor: "bg-tan",
     textColor: "text-brown",
-    buttonClass: "border-brown/40 text-brown/80 hover:bg-brown/10",
+    buttonClass: "border-brown/40 text-brown hover:bg-brown/10",
   },
 ];
 
@@ -35,7 +35,7 @@ export default function FeatureCards() {
               key={feature.number}
               className={`${feature.bgColor} ${feature.textColor} p-8 lg:p-10 flex flex-col justify-between min-h-100 lg:min-h-120`}
             >
-              <p className="text-xs tracking-[0.15em] opacity-80">
+              <p className="text-xs tracking-[0.15em]">
                 {feature.number} / {feature.label}
               </p>
               <div>

@@ -43,9 +43,9 @@ export default function Footer() {
 
           {Object.values(footerLinks).map((section) => (
             <div key={section.title}>
-              <h3 className="text-xs tracking-[0.15em] text-brown font-medium mb-6">
+              <p className="text-xs tracking-[0.15em] text-brown font-medium mb-6">
                 {section.title}
-              </h3>
+              </p>
               <ul className="flex flex-col gap-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
