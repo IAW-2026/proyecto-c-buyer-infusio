@@ -4,25 +4,25 @@ const footerLinks = {
   shop: {
     title: "TIENDA",
     links: [
-      { label: "Café", href: "/?query=caf%C3%A9" },
-      { label: "Infusiones", href: "/?query=infusiones" },
-      { label: "Accesorios", href: "/?query=mates" },
+      { label: "Café", href: "/?query=cafe", ariaLabel: "Ver productos de café" },
+      { label: "Infusiones", href: "/?query=infusiones", ariaLabel: "Ver infusiones" },
+      { label: "Accesorios", href: "/?query=accesorios", ariaLabel: "Ver accesorios" },
     ],
   },
   info: {
     title: "INFORMACIÓN",
     links: [
-      { label: "Política de envíos", href: "/" },
-      { label: "Devoluciones", href: "/" },
-      { label: "Contacto", href: "/" },
+      { label: "Política de envíos", href: "/", ariaLabel: "Política de envíos" },
+      { label: "Devoluciones", href: "/", ariaLabel: "Política de devoluciones" },
+      { label: "Contacto", href: "/", ariaLabel: "Contacto" },
     ],
   },
   account: {
     title: "MI CUENTA",
     links: [
-      { label: "Mis pedidos", href: "/orders" },
-      { label: "Carrito", href: "/cart" },
-      { label: "Favoritos", href: "/favourites" },
+      { label: "Mis pedidos", href: "/orders", ariaLabel: "Ver mis pedidos" },
+      { label: "Carrito", href: "/cart", ariaLabel: "Ver carrito" },
+      { label: "Favoritos", href: "/favourites", ariaLabel: "Ver favoritos" },
     ],
   },
 };
@@ -51,6 +51,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
+                      aria-label={link.ariaLabel}
                       className="text-sm text-muted-foreground hover:text-brown transition-colors"
                     >
                       {link.label}

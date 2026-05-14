@@ -11,7 +11,7 @@
   --secondary-foreground: #2d2926;
   --muted: #e8e4dd;
   --muted-foreground: #6b6560;
-  --accent: #b86f4c;
+  --accent: #9b4a30;
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
@@ -41,7 +41,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-olive: #6b7056;
-  --color-terracotta: #b86f4c;
+  --color-terracotta: #9b4a30;
   --color-cream: #f5f3ef;
   --color-tan: #d4cfc5;
   --color-brown: #2d2926;
