@@ -12,7 +12,7 @@ interface Props {
 export default function AccessoryDetailLayout({ product, ritual, accent }: Props) {
   const accentText =
     accent === "terracotta" ? "text-terracotta" :
-    accent === "slate"      ? "text-[#7A6B77]"  :
+    accent === "slate"      ? "text-[#72586E]"  :
     "text-olive";
 
   const isOutOfStock = product.stock === 0;

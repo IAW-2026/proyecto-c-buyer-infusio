@@ -26,13 +26,13 @@ export default function FilterSidebar({ groups, accent, query }: Props) {
   const searchParams = useSearchParams();
 
   const checkColor =
-    accent === "terracotta" ? "#b86f4c" :
-    accent === "slate"      ? "#7A6B77" :
+    accent === "terracotta" ? "#9b4a30" :
+    accent === "slate"      ? "#72586E" :
     "#6b7056";
 
   const accentText =
     accent === "terracotta" ? "text-terracotta" :
-    accent === "slate"      ? "text-[#7A6B77]" :
+    accent === "slate"      ? "text-[#72586E]" :
     "text-olive";
 
   const hasActiveFilters =
