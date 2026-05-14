@@ -24,6 +24,12 @@
     "react-dom": "19.2.4",
     "svix": "^1.92.2"
   },
+  "browserslist": [
+    "chrome >= 93",
+    "firefox >= 90",
+    "safari >= 15",
+    "edge >= 93"
+  ],
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },

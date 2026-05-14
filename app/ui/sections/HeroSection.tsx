@@ -9,7 +9,7 @@ export default function HeroSection() {
             src="/images/hero-coffee.jpg"
             alt="Infusión artesanal"
             fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, (max-width: 1400px) 50vw, 700px"
             className="object-cover"
             priority
             loading="eager"
