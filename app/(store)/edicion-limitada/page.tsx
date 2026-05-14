@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getProducts } from "@/app/lib/services/externalApis";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
-import ProductCard from "@/app/ui/ProductCard";
+import ProductCard from "@/app/ui/product/ProductCard";
 
 interface PageProps {
   searchParams: Promise<{ tab?: string }>;
