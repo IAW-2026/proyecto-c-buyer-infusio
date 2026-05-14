@@ -4,8 +4,8 @@ import { db } from "@/app/lib/prisma";
 import Navbar from "@/app/ui/Navbar";
 import Footer from "@/app/ui/Footer";
 import { CartProvider } from "@/app/ui/cart/CartContext";
+import CartDrawer from "@/app/ui/cart/CartDrawer";
 import PendingCartEffect from "@/app/ui/cart/PendingCartEffect";
-import LazyCartDrawer from "@/app/ui/cart/LazyCartDrawer";
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();
@@ -16,7 +16,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
 
   return (
     <CartProvider>
-      <LazyCartDrawer />
+      <CartDrawer />
       <PendingCartEffect />
       <Navbar />
       {children}
