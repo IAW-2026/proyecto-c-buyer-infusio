@@ -39,7 +39,7 @@ export default function CartSummary({ items }: { items: CartItem[] }) {
     setLoading(true);
     setError(null);
 
-    const res = await fetch("/api/cart/checkout", {
+    const res = await fetch("/cart/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address }),

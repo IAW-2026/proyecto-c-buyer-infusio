@@ -24,7 +24,7 @@ export default function CartItemRow({ item }: { item: CartItem }) {
     if (newQty < 1) return;
     setLoading(true);
     setQuantity(newQty);
-    await fetch(`/api/cart/items/${item.id}`, {
+    await fetch(`/cart/items/${item.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity: newQty }),
@@ -35,7 +35,7 @@ export default function CartItemRow({ item }: { item: CartItem }) {
 
   async function remove() {
     setLoading(true);
-    await fetch(`/api/cart/items/${item.id}`, { method: "DELETE" });
+    await fetch(`/cart/items/${item.id}`, { method: "DELETE" });
     router.refresh();
   }
 

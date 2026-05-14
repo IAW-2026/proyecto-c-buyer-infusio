@@ -54,7 +54,7 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
     }
     setLoading(true);
     setError(null);
-    const res = await fetch("/api/cart/checkout", {
+    const res = await fetch("/cart/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: { ...form, note } }),
@@ -121,24 +121,8 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
           </Field>
 
           <Field label="PAÍS / REGIÓN">
-            <div className="relative">
-              <select
-                name="country"
-                value={form.country}
-                onChange={handleChange}
-                className="w-full border border-tan bg-cream px-4 py-3 text-sm text-brown focus:outline-none focus:border-brown transition-colors appearance-none pr-10"
-              >
-                <option>Argentina</option>
-                <option>Chile</option>
-                <option>Uruguay</option>
-                <option>Paraguay</option>
-                <option>Brasil</option>
-              </select>
-              <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-                  <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
+            <div className="w-full border border-tan bg-tan/20 px-4 py-3 text-sm text-brown select-none">
+              Argentina
             </div>
           </Field>
 

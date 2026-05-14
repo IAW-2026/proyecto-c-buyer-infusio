@@ -15,7 +15,7 @@ export default function PendingCartEffect() {
     let item: Record<string, unknown>;
     try { item = JSON.parse(raw); } catch { return; }
 
-    fetch("/api/cart/items", {
+    fetch("/cart/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(item),

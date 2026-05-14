@@ -70,7 +70,7 @@ export default function AddToCartControls({
     // Confirm with server in background
     setLoading(true);
     try {
-      const res = await fetch("/api/cart/items", {
+      const res = await fetch("/cart/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity }),

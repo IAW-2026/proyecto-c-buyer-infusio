@@ -221,7 +221,7 @@ export default async function OrderDetailPage({
           }))}
         />
         <a
-          href={`/api/orders/${id}/invoice`}
+          href={`/orders/${id}/invoice`}
           className="px-10 py-3.5 text-[10px] tracking-[0.2em] text-brown border border-brown hover:bg-tan/30 transition-colors"
         >
           DESCARGAR FACTURA

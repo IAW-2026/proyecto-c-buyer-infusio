@@ -35,7 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/cart/items");
+      const res = await fetch("/cart/items");
       if (res.ok) {
         const data = await res.json();
         setItems(data.items ?? []);

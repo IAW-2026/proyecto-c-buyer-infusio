@@ -19,7 +19,7 @@ export default function CartDrawer() {
   function updateQty(itemId: string, newQty: number) {
     if (newQty < 1) return;
     applyOptimistic(prev => prev.map(i => i.id === itemId ? { ...i, quantity: newQty } : i));
-    fetch(`/api/cart/items/${itemId}`, {
+    fetch(`/cart/items/${itemId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity: newQty }),
@@ -28,7 +28,7 @@ export default function CartDrawer() {
 
   function removeItem(itemId: string) {
     applyOptimistic(prev => prev.filter(i => i.id !== itemId));
-    fetch(`/api/cart/items/${itemId}`, { method: "DELETE" }).catch(() => refresh());
+    fetch(`/cart/items/${itemId}`, { method: "DELETE" }).catch(() => refresh());
   }
 
   function handleCheckout() {

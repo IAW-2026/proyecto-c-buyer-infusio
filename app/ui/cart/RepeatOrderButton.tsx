@@ -27,7 +27,7 @@ export default function RepeatOrderButton({ items }: Props) {
     try {
       await Promise.all(
         items.map((item) =>
-          fetch("/api/cart/items", {
+          fetch("/cart/items", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
