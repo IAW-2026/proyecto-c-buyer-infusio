@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { useCart } from "./CartContext";
 
 interface AddToCartControlsProps {
@@ -26,6 +27,7 @@ export default function AddToCartControls({
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { userId } = useAuth();
   const { refresh, openCartSilent, applyOptimistic } = useCart();
 
   const btnCls =
@@ -42,9 +44,18 @@ export default function AddToCartControls({
   }
 
   async function handleAdd() {
+    if (!userId) {
+      sessionStorage.setItem(
+        "pendingCartItem",
+        JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity })
+      );
+      const { pathname, search } = new URL(window.location.href);
+      router.push(`/sign-in?redirect_url=${encodeURIComponent(pathname + search)}`);
+      return;
+    }
+
     const tempId = `optimistic_${productId}`;
 
-    // Optimistically add to cart and open drawer immediately
     applyOptimistic((prev) => {
       const existing = prev.find((i) => i.productId === productId);
       if (existing) {
@@ -67,31 +78,16 @@ export default function AddToCartControls({
     });
     openCartSilent();
 
-    // Confirm with server in background
     setLoading(true);
     try {
-      const res = await fetch("/cart/items", {
+      await fetch("/cart/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity }),
       });
-
-      if (res.status === 401) {
-        // Revert optimistic state, save for after sign-in
-        applyOptimistic((prev) => prev.filter((i) => i.id !== tempId));
-        sessionStorage.setItem(
-          "pendingCartItem",
-          JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity })
-        );
-        const { pathname, search } = new URL(window.location.href);
-        router.push(`/sign-in?redirect_url=${encodeURIComponent(pathname + search)}`);
-        return;
-      }
-
-      // Replace temp item with real DB data
       refresh();
     } catch {
-      refresh(); // revert on network error
+      refresh();
     } finally {
       setLoading(false);
     }
