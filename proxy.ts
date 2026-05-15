@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-up(.*)",
   // All API routes are public at proxy level — individual routes handle auth themselves
   "/api/(.*)",
+  "/cart/items(.*)",     // Added because folder structure changed and this route is now under /cart
+  "/cart/checkout",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
