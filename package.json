@@ -1,0 +1,49 @@
+{
+  "name": "proyecto-c-buyer-infusio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@clerk/backend": "^3.4.4",
+    "@clerk/nextjs": "^7.2.7",
+    "@google/generative-ai": "^0.24.1",
+    "@maptiler/sdk": "^4.0.1",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@react-pdf/renderer": "^4.5.1",
+    "dotenv": "^17.4.2",
+    "next": "16.2.4",
+    "pdfkit": "^0.18.0",
+    "pg": "^8.20.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "svix": "^1.92.2"
+  },
+  "browserslist": [
+    "chrome >= 93",
+    "firefox >= 90",
+    "safari >= 15",
+    "edge >= 93"
+  ],
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "prisma": "^7.8.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}
