@@ -32,6 +32,7 @@ export type PurchaseOrderMinAggregateOutputType = {
   status: $Enums.PurchaseOrderStatus | null
   shippingId: string | null
   paymentId: string | null
+  paymentUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +45,7 @@ export type PurchaseOrderMaxAggregateOutputType = {
   status: $Enums.PurchaseOrderStatus | null
   shippingId: string | null
   paymentId: string | null
+  paymentUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -57,6 +59,7 @@ export type PurchaseOrderCountAggregateOutputType = {
   userAddress: number
   shippingId: number
   paymentId: number
+  paymentUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -71,6 +74,7 @@ export type PurchaseOrderMinAggregateInputType = {
   status?: true
   shippingId?: true
   paymentId?: true
+  paymentUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -83,6 +87,7 @@ export type PurchaseOrderMaxAggregateInputType = {
   status?: true
   shippingId?: true
   paymentId?: true
+  paymentUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -96,6 +101,7 @@ export type PurchaseOrderCountAggregateInputType = {
   userAddress?: true
   shippingId?: true
   paymentId?: true
+  paymentUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -182,6 +188,7 @@ export type PurchaseOrderGroupByOutputType = {
   userAddress: runtime.JsonValue
   shippingId: string | null
   paymentId: string | null
+  paymentUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: PurchaseOrderCountAggregateOutputType | null
@@ -216,6 +223,7 @@ export type PurchaseOrderWhereInput = {
   userAddress?: Prisma.JsonFilter<"PurchaseOrder">
   shippingId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   paymentId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
+  paymentUrl?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PurchaseOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PurchaseOrder"> | Date | string
   cart?: Prisma.XOR<Prisma.CartScalarRelationFilter, Prisma.CartWhereInput>
@@ -232,6 +240,7 @@ export type PurchaseOrderOrderByWithRelationInput = {
   userAddress?: Prisma.SortOrder
   shippingId?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   cart?: Prisma.CartOrderByWithRelationInput
@@ -251,6 +260,7 @@ export type PurchaseOrderWhereUniqueInput = Prisma.AtLeast<{
   userAddress?: Prisma.JsonFilter<"PurchaseOrder">
   shippingId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   paymentId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
+  paymentUrl?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PurchaseOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PurchaseOrder"> | Date | string
   cart?: Prisma.XOR<Prisma.CartScalarRelationFilter, Prisma.CartWhereInput>
@@ -267,6 +277,7 @@ export type PurchaseOrderOrderByWithAggregationInput = {
   userAddress?: Prisma.SortOrder
   shippingId?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PurchaseOrderCountOrderByAggregateInput
@@ -286,6 +297,7 @@ export type PurchaseOrderScalarWhereWithAggregatesInput = {
   userAddress?: Prisma.JsonWithAggregatesFilter<"PurchaseOrder">
   shippingId?: Prisma.StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
   paymentId?: Prisma.StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
+  paymentUrl?: Prisma.StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PurchaseOrder"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PurchaseOrder"> | Date | string
 }
@@ -297,6 +309,7 @@ export type PurchaseOrderCreateInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cart: Prisma.CartCreateNestedOneWithoutPurchaseOrderInput
@@ -313,6 +326,7 @@ export type PurchaseOrderUncheckedCreateInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   packages?: Prisma.PackageUncheckedCreateNestedManyWithoutPurchaseOrderInput
@@ -325,6 +339,7 @@ export type PurchaseOrderUpdateInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cart?: Prisma.CartUpdateOneRequiredWithoutPurchaseOrderNestedInput
@@ -341,6 +356,7 @@ export type PurchaseOrderUncheckedUpdateInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   packages?: Prisma.PackageUncheckedUpdateManyWithoutPurchaseOrderNestedInput
@@ -355,6 +371,7 @@ export type PurchaseOrderCreateManyInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -366,6 +383,7 @@ export type PurchaseOrderUpdateManyMutationInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -379,6 +397,7 @@ export type PurchaseOrderUncheckedUpdateManyInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -407,6 +426,7 @@ export type PurchaseOrderCountOrderByAggregateInput = {
   userAddress?: Prisma.SortOrder
   shippingId?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -419,6 +439,7 @@ export type PurchaseOrderMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   shippingId?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -431,6 +452,7 @@ export type PurchaseOrderMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   shippingId?: Prisma.SortOrder
   paymentId?: Prisma.SortOrder
+  paymentUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -539,6 +561,7 @@ export type PurchaseOrderCreateWithoutUserInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cart: Prisma.CartCreateNestedOneWithoutPurchaseOrderInput
@@ -553,6 +576,7 @@ export type PurchaseOrderUncheckedCreateWithoutUserInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   packages?: Prisma.PackageUncheckedCreateNestedManyWithoutPurchaseOrderInput
@@ -596,6 +620,7 @@ export type PurchaseOrderScalarWhereInput = {
   userAddress?: Prisma.JsonFilter<"PurchaseOrder">
   shippingId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   paymentId?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
+  paymentUrl?: Prisma.StringNullableFilter<"PurchaseOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PurchaseOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PurchaseOrder"> | Date | string
 }
@@ -607,6 +632,7 @@ export type PurchaseOrderCreateWithoutCartInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPurchaseOrdersInput
@@ -621,6 +647,7 @@ export type PurchaseOrderUncheckedCreateWithoutCartInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   packages?: Prisma.PackageUncheckedCreateNestedManyWithoutPurchaseOrderInput
@@ -649,6 +676,7 @@ export type PurchaseOrderUpdateWithoutCartInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPurchaseOrdersNestedInput
@@ -663,6 +691,7 @@ export type PurchaseOrderUncheckedUpdateWithoutCartInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   packages?: Prisma.PackageUncheckedUpdateManyWithoutPurchaseOrderNestedInput
@@ -675,6 +704,7 @@ export type PurchaseOrderCreateWithoutPackagesInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cart: Prisma.CartCreateNestedOneWithoutPurchaseOrderInput
@@ -690,6 +720,7 @@ export type PurchaseOrderUncheckedCreateWithoutPackagesInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -717,6 +748,7 @@ export type PurchaseOrderUpdateWithoutPackagesInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cart?: Prisma.CartUpdateOneRequiredWithoutPurchaseOrderNestedInput
@@ -732,6 +764,7 @@ export type PurchaseOrderUncheckedUpdateWithoutPackagesInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -744,6 +777,7 @@ export type PurchaseOrderCreateManyUserInput = {
   userAddress: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: string | null
   paymentId?: string | null
+  paymentUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -755,6 +789,7 @@ export type PurchaseOrderUpdateWithoutUserInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cart?: Prisma.CartUpdateOneRequiredWithoutPurchaseOrderNestedInput
@@ -769,6 +804,7 @@ export type PurchaseOrderUncheckedUpdateWithoutUserInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   packages?: Prisma.PackageUncheckedUpdateManyWithoutPurchaseOrderNestedInput
@@ -782,6 +818,7 @@ export type PurchaseOrderUncheckedUpdateManyWithoutUserInput = {
   userAddress?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   shippingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -826,6 +863,7 @@ export type PurchaseOrderSelect<ExtArgs extends runtime.Types.Extensions.Interna
   userAddress?: boolean
   shippingId?: boolean
   paymentId?: boolean
+  paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   cart?: boolean | Prisma.CartDefaultArgs<ExtArgs>
@@ -843,6 +881,7 @@ export type PurchaseOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   userAddress?: boolean
   shippingId?: boolean
   paymentId?: boolean
+  paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   cart?: boolean | Prisma.CartDefaultArgs<ExtArgs>
@@ -858,6 +897,7 @@ export type PurchaseOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   userAddress?: boolean
   shippingId?: boolean
   paymentId?: boolean
+  paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   cart?: boolean | Prisma.CartDefaultArgs<ExtArgs>
@@ -873,11 +913,12 @@ export type PurchaseOrderSelectScalar = {
   userAddress?: boolean
   shippingId?: boolean
   paymentId?: boolean
+  paymentUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PurchaseOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "appId" | "cartId" | "userId" | "status" | "userAddress" | "shippingId" | "paymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["purchaseOrder"]>
+export type PurchaseOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "appId" | "cartId" | "userId" | "status" | "userAddress" | "shippingId" | "paymentId" | "paymentUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["purchaseOrder"]>
 export type PurchaseOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   cart?: boolean | Prisma.CartDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -909,6 +950,7 @@ export type $PurchaseOrderPayload<ExtArgs extends runtime.Types.Extensions.Inter
     userAddress: runtime.JsonValue
     shippingId: string | null
     paymentId: string | null
+    paymentUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["purchaseOrder"]>
@@ -1345,6 +1387,7 @@ export interface PurchaseOrderFieldRefs {
   readonly userAddress: Prisma.FieldRef<"PurchaseOrder", 'Json'>
   readonly shippingId: Prisma.FieldRef<"PurchaseOrder", 'String'>
   readonly paymentId: Prisma.FieldRef<"PurchaseOrder", 'String'>
+  readonly paymentUrl: Prisma.FieldRef<"PurchaseOrder", 'String'>
   readonly createdAt: Prisma.FieldRef<"PurchaseOrder", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PurchaseOrder", 'DateTime'>
 }

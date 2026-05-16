@@ -112,6 +112,7 @@ model PurchaseOrder {
   userAddress Json                // Snapshot of shipping address at time of order
   shippingId  String?             // Assigned by Shipping App
   paymentId   String?             // Assigned by Payments App
+  paymentUrl  String?             // Payment redirect URL returned by seller at order creation
   packages    Package[]
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt

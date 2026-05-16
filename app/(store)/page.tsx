@@ -28,6 +28,9 @@ const DISPLAY_LABELS: Record<string, string> = {
 const normalize = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
+const descriptionMatches = (description: string, q: string) =>
+  new RegExp(`\\b${q}\\b`).test(normalize(description));
+
 // Price buckets per section type
 type PriceBucket = { label: string; value: string; lo: number; hi: number };
 
@@ -176,12 +179,12 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     const isMachine = primaryCat.includes("maquina");
 
     if (isMachine) {
-      return normalize(p.name).includes(q) || primaryCat.includes(q);
+      return primaryCat.includes(q);
     }
 
     return (
       normalize(p.name).includes(q) ||
-      normalize(p.description ?? "").includes(q) ||
+      descriptionMatches(p.description ?? "", q) ||
       p.categories.some((c) => normalize(c).includes(q))
     );
   });
@@ -240,7 +243,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-                <Pagination currentPage={currentPage} totalPages={totalPages} query={query} />
+                <Pagination currentPage={currentPage} totalPages={totalPages} query={query} accent={accent} />
               </>
             )}
           </div>

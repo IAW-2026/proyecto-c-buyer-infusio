@@ -4,13 +4,19 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   query?: string;
+  accent?: "olive" | "terracotta" | "slate";
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
   query,
+  accent = "olive",
 }: PaginationProps) {
+  const activeCls =
+    accent === "terracotta" ? "bg-terracotta text-cream" :
+    accent === "slate"      ? "bg-[#DFD9DE] text-brown"  :
+    /* olive */               "bg-olive text-cream";
   if (totalPages <= 1) return null;
 
   const href = (page: number) => {
@@ -23,15 +29,15 @@ export default function Pagination({
   const pages = getPageRange(currentPage, totalPages);
 
   return (
-    <nav aria-label="Pagination" className="mt-8 flex items-center justify-center gap-1">
+    <nav aria-label="Pagination" className="mt-20 flex items-center justify-center gap-2">
       <Link
         href={href(currentPage - 1)}
         aria-label="Previous page"
         aria-disabled={currentPage <= 1}
-        className={`rounded px-3 py-2 text-sm font-medium ${
+        className={`px-2 text-xs tracking-[0.15em] transition-colors ${
           currentPage <= 1
-            ? "pointer-events-none text-gray-300"
-            : "text-gray-700 hover:bg-gray-100"
+            ? "pointer-events-none text-brown/30"
+            : "text-brown hover:text-olive"
         }`}
       >
         ← Prev
@@ -39,7 +45,7 @@ export default function Pagination({
 
       {pages.map((page, i) =>
         page === "…" ? (
-          <span key={`ellipsis-${i}`} className="px-2 py-2 text-sm text-gray-400">
+          <span key={`ellipsis-${i}`} className="px-1 text-xs text-brown/40">
             …
           </span>
         ) : (
@@ -48,10 +54,10 @@ export default function Pagination({
             href={href(page as number)}
             aria-label={`Page ${page}`}
             aria-current={page === currentPage ? "page" : undefined}
-            className={`rounded px-3 py-2 text-sm font-medium ${
+            className={`w-9 h-9 flex items-center justify-center text-xs tracking-[0.15em] font-medium transition-colors ${
               page === currentPage
-                ? "bg-green-700 text-white"
-                : "text-gray-700 hover:bg-gray-100"
+                ? activeCls
+                : "border border-tan text-brown hover:border-brown hover:bg-tan/30"
             }`}
           >
             {page}
@@ -63,10 +69,10 @@ export default function Pagination({
         href={href(currentPage + 1)}
         aria-label="Next page"
         aria-disabled={currentPage >= totalPages}
-        className={`rounded px-3 py-2 text-sm font-medium ${
+        className={`px-2 text-xs tracking-[0.15em] transition-colors ${
           currentPage >= totalPages
-            ? "pointer-events-none text-gray-300"
-            : "text-gray-700 hover:bg-gray-100"
+            ? "pointer-events-none text-brown/30"
+            : "text-brown hover:text-olive"
         }`}
       >
         Next →

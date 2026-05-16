@@ -70,19 +70,48 @@ export interface SellerProduct {
   };
 }
 
-export interface OrderItem {
+export interface CartItemPayload {
   product_id: string;
   product_name: string;
+  product_variant: string | null;
+  product_image_url: string | null;
   unit_price: number;
   quantity: number;
   subtotal: number;
 }
 
-export interface CreatePurchaseOrderResponse {
+export interface SellerPurchaseOrder {
   purchase_order_id: string;
+  user_id: string;
+  shopping_cart_id: string;
+  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  created_at: string;
+  shipping_id: string | null;
+  payment_id: string | null;
+  payment_url: string;
   shipping_cost: number;
   currency: string;
-  checkout_url: string;
+  address: {
+    street?: string;
+    city?: string;
+    province?: string;
+    postal_code?: string;
+    firstName?: string;
+    lastName?: string;
+    apartment?: string;
+    country?: string;
+    [key: string]: string | undefined;
+  };
+  cart_items: Array<{
+    id: string;
+    cart_id: string;
+    product_id: string;
+    product_name: string;
+    product_variant: string | null;
+    product_image_url: string | null;
+    price_at_time: number;
+    quantity: number;
+  }>;
 }
 
 export interface PaymentUrlResponse {
@@ -173,32 +202,45 @@ export async function getProductById(
 
 export async function createPurchaseOrder(
   userId: string,
+  cartId: string,
   address: Record<string, string | undefined>,
-  items: OrderItem[],
+  cartItems: CartItemPayload[],
   token?: string
-): Promise<CreatePurchaseOrderResponse> {
-  return apiFetch<CreatePurchaseOrderResponse>(
+): Promise<SellerPurchaseOrder> {
+  return apiFetch<SellerPurchaseOrder>(
     `${SELLER_API_URL}/purchase_order`,
     {
       method: "POST",
-      body: JSON.stringify({ user_id: userId, address, items }),
+      body: JSON.stringify({ user_id: userId, shopping_cart_id: cartId, address, cart_items: cartItems }),
       cache: "no-store",
     },
     token
   );
 }
 
-// Returns the Mercado Pago checkout URL for a confirmed purchase order
-export async function getPaymentUrl(
-  purchaseOrderId: string,
+export async function getOrdersByUser(
+  userId: string,
   token?: string
-): Promise<PaymentUrlResponse> {
-  return apiFetch<PaymentUrlResponse>(
-    `${SELLER_API_URL}/orders/${purchaseOrderId}/payment-url`,
+): Promise<SellerPurchaseOrder[]> {
+  const data = await apiFetch<{ orders: SellerPurchaseOrder[] }>(
+    `${SELLER_API_URL}/purchase_orders?user_id=${encodeURIComponent(userId)}`,
+    { cache: "no-store" },
+    token
+  );
+  return data.orders;
+}
+
+export async function getOrderById(
+  orderId: string,
+  token?: string
+): Promise<SellerPurchaseOrder> {
+  return apiFetch<SellerPurchaseOrder>(
+    `${SELLER_API_URL}/purchase_orders/${orderId}`,
     { cache: "no-store" },
     token
   );
 }
+
 
 // ─── Shipping App ─────────────────────────────────────────────────────────────
 

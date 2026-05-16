@@ -49,7 +49,7 @@ export default async function AnalyticsPage() {
         db.user.count({ where: { roles: { has: "VENDOR" } } }),
       ]),
       db.purchaseOrder.count({ where: { createdAt: { gte: oneWeekAgo } } }),
-      db.cart.count({ where: { status: "NOT_CHECKED_OUT" } }),
+      db.cart.count({ where: { status: "NOT_CHECKED_OUT", items: { some: {} } } }),
       db.package.aggregate({ _sum: { amount: true } }),
       db.cart.findMany({
         where: { status: "NOT_CHECKED_OUT", items: { some: {} } },

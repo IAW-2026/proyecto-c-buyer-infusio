@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/app/lib/prisma";
+import { getOrderById } from "@/app/lib/services/externalApis";
 import { renderToBuffer, Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import React from "react";
 
@@ -59,31 +59,24 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const order = await db.purchaseOrder.findUnique({
-    where: { id },
-    include: { cart: { include: { items: true } }, packages: true },
-  });
+  const token = await getToken();
+  const order = await getOrderById(id, token ?? undefined).catch(() => null);
 
-  if (!order || order.userId !== userId) {
+  if (!order || order.user_id !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const items = order.cart.items;
-  const subtotal = items.reduce((s, i) => s + Number(i.priceAtTime) * i.quantity, 0);
-  const shippingCost = order.packages.reduce((s, p) => s + Number(p.shippingCost), 0);
+  const items = order.cart_items;
+  const subtotal = items.reduce((s, i) => s + i.price_at_time * i.quantity, 0);
+  const shippingCost = order.shipping_cost;
   const total = subtotal + shippingCost;
 
-  const address = order.userAddress as {
-    firstName?: string; lastName?: string;
-    street?: string; apartment?: string;
-    city?: string; province?: string;
-    postalCode?: string; country?: string;
-  } | null;
+  const address = order.address;
 
-  const orderDate = new Date(order.createdAt).toLocaleDateString("es-AR", {
+  const orderDate = new Date(order.created_at).toLocaleDateString("es-AR", {
     day: "2-digit", month: "long", year: "numeric",
   });
 
@@ -107,7 +100,7 @@ export async function GET(
         React.createElement(
           View,
           null,
-          React.createElement(Text, { style: styles.orderTitle }, `Factura #IF-${order.id.slice(-4).toUpperCase()}`),
+          React.createElement(Text, { style: styles.orderTitle }, `Factura #IF-${order.purchase_order_id.slice(-4).toUpperCase()}`),
           React.createElement(Text, { style: styles.orderDate }, orderDate)
         )
       ),
@@ -129,7 +122,7 @@ export async function GET(
             ? React.createElement(Text, { style: styles.metaSubtext }, `${address.street}${address.apartment ? `, ${address.apartment}` : ""}`)
             : null,
           address?.city
-            ? React.createElement(Text, { style: styles.metaSubtext }, `${address.city}, ${address.province ?? ""} ${address.postalCode ?? ""}`)
+            ? React.createElement(Text, { style: styles.metaSubtext }, `${address.city}, ${address.province ?? ""} ${address.postal_code ?? ""}`)
             : null,
           address?.country
             ? React.createElement(Text, { style: styles.metaSubtext }, address.country)
@@ -140,8 +133,8 @@ export async function GET(
           { style: styles.metaBlock },
           React.createElement(Text, { style: styles.metaLabel }, "MÉTODO DE PAGO"),
           React.createElement(Text, { style: styles.metaText }, "Mercado Pago"),
-          order.paymentId
-            ? React.createElement(Text, { style: styles.metaSubtext }, `Ref: ${order.paymentId}`)
+          order.payment_id
+            ? React.createElement(Text, { style: styles.metaSubtext }, `Ref: ${order.payment_id}`)
             : null
         )
       ),
@@ -166,14 +159,14 @@ export async function GET(
           React.createElement(
             View,
             { style: { flex: 1 } },
-            React.createElement(Text, { style: styles.itemName }, item.productName),
-            item.productVariant
-              ? React.createElement(Text, { style: styles.itemVariant }, item.productVariant)
+            React.createElement(Text, { style: styles.itemName }, item.product_name),
+            item.product_variant
+              ? React.createElement(Text, { style: styles.itemVariant }, item.product_variant)
               : null
           ),
           React.createElement(Text, { style: styles.itemQty }, String(item.quantity)),
-          React.createElement(Text, { style: styles.itemPrice }, fmt(Number(item.priceAtTime))),
-          React.createElement(Text, { style: styles.itemSubtotal }, fmt(Number(item.priceAtTime) * item.quantity))
+          React.createElement(Text, { style: styles.itemPrice }, fmt(item.price_at_time)),
+          React.createElement(Text, { style: styles.itemSubtotal }, fmt(item.price_at_time * item.quantity))
         )
       ),
 
@@ -216,7 +209,7 @@ export async function GET(
   return new NextResponse(buffer, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="factura-IF-${order.id.slice(-4).toUpperCase()}.pdf"`,
+      "Content-Disposition": `attachment; filename="factura-IF-${order.purchase_order_id.slice(-4).toUpperCase()}.pdf"`,
     },
   });
 }

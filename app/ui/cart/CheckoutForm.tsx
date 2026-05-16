@@ -17,7 +17,7 @@ interface OrderData {
   purchase_order_id: string;
   shipping_cost: number;
   currency: string;
-  checkout_url: string;
+  payment_url: string;
 }
 
 export default function CheckoutForm({ items }: { items: CartItem[] }) {
@@ -183,7 +183,7 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
 
           <div className="pt-2">
             <button
-              onClick={() => router.push(orderData!.checkout_url)}
+              onClick={() => router.push(orderData!.payment_url)}
               className="w-full py-4 text-[11px] tracking-[0.2em] text-cream bg-olive hover:bg-brown transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
               IR A PAGAR

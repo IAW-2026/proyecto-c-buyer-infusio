@@ -11,7 +11,7 @@ type Accent = "olive" | "terracotta" | "slate";
 
 function getAccent(categories: string[]): Accent {
   const all = categories.join(" ").toLowerCase();
-  if (["mates", "bombilla", "termo", "accesorio", "combo", "máquina", "maquina"].some((k) => all.includes(k))) return "slate";
+  if (["mates", "bombilla", "termo", "accesorio", "máquina", "maquina"].some((k) => all.includes(k))) return "slate";
   if (all.includes("café") || all.includes("cafe") || all.includes("coffee")) return "terracotta";
   return "olive";
 }

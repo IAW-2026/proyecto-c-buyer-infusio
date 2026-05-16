@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/app/lib/prisma";
-import { getShipmentTracking } from "@/app/lib/services/externalApis";
+import { getOrdersByUser, getShipmentTracking } from "@/app/lib/services/externalApis";
 import OrdersTable, { type OrderRow } from "@/app/ui/OrdersTable";
 
 export default async function OrdersPage() {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
 
   if (!userId) {
     return (
@@ -23,34 +22,31 @@ export default async function OrdersPage() {
     );
   }
 
-  const rawOrders = await db.purchaseOrder.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    include: { cart: { include: { items: true } } },
-  });
+  const token = await getToken();
+  const rawOrders = await getOrdersByUser(userId, token ?? undefined);
 
   const trackingMap = Object.fromEntries(
     await Promise.all(
       rawOrders
-        .filter((o) => o.shippingId)
+        .filter((o) => o.shipping_id)
         .map(async (o) => [
-          o.id,
-          await getShipmentTracking(o.shippingId!).catch(() => null),
+          o.purchase_order_id,
+          await getShipmentTracking(o.shipping_id!, token ?? undefined).catch(() => null),
         ])
     )
   );
 
   const orders: OrderRow[] = rawOrders.map((o) => ({
-    id: o.id,
-    createdAt: o.createdAt,
+    id: o.purchase_order_id,
+    createdAt: new Date(o.created_at),
     status: o.status,
-    shippingId: o.shippingId,
-    items: o.cart.items.map((item) => ({
+    shippingId: o.shipping_id,
+    items: o.cart_items.map((item) => ({
       id: item.id,
-      productName: item.productName,
-      productVariant: item.productVariant,
-      productImageUrl: item.productImageUrl,
-      priceAtTime: Number(item.priceAtTime),
+      productName: item.product_name,
+      productVariant: item.product_variant,
+      productImageUrl: item.product_image_url,
+      priceAtTime: item.price_at_time,
       quantity: item.quantity,
     })),
   }));

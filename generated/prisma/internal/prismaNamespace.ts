@@ -1436,6 +1436,7 @@ export const PurchaseOrderScalarFieldEnum = {
   userAddress: 'userAddress',
   shippingId: 'shippingId',
   paymentId: 'paymentId',
+  paymentUrl: 'paymentUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

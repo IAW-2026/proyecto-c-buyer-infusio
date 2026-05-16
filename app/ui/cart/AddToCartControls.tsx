@@ -31,9 +31,9 @@ export default function AddToCartControls({
   const { refresh, openCartSilent, applyOptimistic } = useCart();
 
   const btnCls =
-    accent === "terracotta" ? "bg-terracotta hover:bg-brown text-cream" :
+    accent === "terracotta" ? "bg-terracotta hover:bg-[#833f29] text-cream" :
     accent === "slate"      ? "bg-[#DFD9DE] hover:bg-[#c8c1c7] text-brown" :
-    /* olive */                "bg-olive hover:bg-brown text-cream";
+    /* olive */                "bg-olive hover:bg-[#5b5f49] text-cream";
 
   if (isOutOfStock) {
     return (
