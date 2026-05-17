@@ -42,10 +42,24 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <svg className="h-12 w-12 opacity-20 text-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
+              <svg
+                className="h-16 w-16 opacity-[0.18] text-brown"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={0.8}
+              >
+                {/* steam */}
+                <path d="M8 5c-.6-.6-.6-1.4 0-2" />
+                <path d="M12 5c-.6-.6-.6-1.4 0-2" />
+                {/* mug body */}
+                <path d="M4 7h13v9a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                {/* handle */}
+                <path d="M17 10h1.5a2 2 0 010 4H17" />
+                {/* saucer */}
+                <line x1="2" y1="20" x2="20" y2="20" />
               </svg>
             </div>
           )}
