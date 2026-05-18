@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getProductById } from "@/app/lib/services/externalApis";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "@/app/ui/cart/AddToCartControls";
+import FavouriteButton from "@/app/ui/favourites/FavouriteButton";
 import AccessoryDetailLayout from "@/app/ui/product/AccessoryDetailLayout";
 import SensoryChart from "@/app/ui/product/SensoryChart";
 import { getAccessoryRitual } from "@/app/lib/gemini";
@@ -226,6 +227,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   isOutOfStock={isOutOfStock}
                   accent={accent}
                 />
+                <div className="mt-2">
+                  <FavouriteButton
+                    variant="row"
+                    product={{
+                      productId: product.id,
+                      productName: product.name,
+                      productImageUrl: product.imageUrl ?? null,
+                      price: Number(product.price),
+                      location: product.location ?? null,
+                      categories: product.categories,
+                      description: product.description ?? null,
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Metadata */}

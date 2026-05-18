@@ -6,6 +6,9 @@ import Footer from "@/app/ui/Footer";
 import { CartProvider } from "@/app/ui/cart/CartContext";
 import CartDrawer from "@/app/ui/cart/CartDrawer";
 import PendingCartEffect from "@/app/ui/cart/PendingCartEffect";
+import { FavouritesProvider } from "@/app/ui/favourites/FavouritesContext";
+import PendingFavouriteEffect from "@/app/ui/favourites/PendingFavouriteEffect";
+import FlyingFavourite from "@/app/ui/favourites/FlyingFavourite";
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();
@@ -16,11 +19,15 @@ export default async function StoreLayout({ children }: { children: React.ReactN
 
   return (
     <CartProvider>
-      <CartDrawer />
-      <PendingCartEffect />
-      <Navbar />
-      {children}
-      <Footer />
+      <FavouritesProvider>
+        <CartDrawer />
+        <PendingCartEffect />
+        <PendingFavouriteEffect />
+        <FlyingFavourite />
+        <Navbar />
+        {children}
+        <Footer />
+      </FavouritesProvider>
     </CartProvider>
   );
 }

@@ -35,12 +35,25 @@ model Address {
   createdAt  DateTime @default(now())
 }
 
-// ─── Favourites (productId is the Seller App's ID — no local FK) ──────────────
-model FavouriteProduct {
+// ─── Favourites ───────────────────────────────────────────────────────────────
+model FavouriteShare {
+  id        String   @id @default(cuid())
   userId    String
-  productId String // Seller App's product ID
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     Json
   createdAt DateTime @default(now())
+}
+
+model FavouriteProduct {
+  userId          String
+  productId       String
+  productName     String
+  productImageUrl String?
+  price           Float
+  location        String?
+  categories      String[]
+  description     String?
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
 
   @@id([userId, productId])
 }

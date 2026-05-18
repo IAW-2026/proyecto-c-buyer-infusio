@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { AuthButtons } from "./AuthButtons";
 import CartNavButton from "./cart/CartNavButton";
 import MobileNav from "./MobileNav";
+import FavouritesNavButton from "./favourites/FavouritesNavButton";
 
 const navLinks = [
   { href: "/?query=cafe", label: "CAFÉ" },
@@ -51,6 +52,7 @@ export default async function Navbar() {
 
           {/* Desktop Auth */}
           <div className="hidden lg:flex shrink-0 items-center gap-3">
+            <FavouritesNavButton className={linkClass} />
             <AuthButtons isSignedIn={!!userId} />
           </div>
 
@@ -65,6 +67,9 @@ export default async function Navbar() {
                 ))}
                 {userId && (
                   <Link href="/orders" className={mobileLinkClass}>PEDIDOS</Link>
+                )}
+                {userId && (
+                  <Link href="/favourites" className={mobileLinkClass}>FAVOURITES</Link>
                 )}
                 <CartNavButton userId={userId} className={mobileLinkClass} />
               </nav>

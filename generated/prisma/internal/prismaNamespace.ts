@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Address: 'Address',
+  FavouriteShare: 'FavouriteShare',
   FavouriteProduct: 'FavouriteProduct',
   Product: 'Product',
   Cart: 'Cart',
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "address" | "favouriteProduct" | "product" | "cart" | "cartItem" | "purchaseOrder" | "package" | "packageItem" | "paymentOrder" | "dispute" | "shipment"
+    modelProps: "user" | "address" | "favouriteShare" | "favouriteProduct" | "product" | "cart" | "cartItem" | "purchaseOrder" | "package" | "packageItem" | "paymentOrder" | "dispute" | "shipment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -560,6 +561,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AddressCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AddressCountAggregateOutputType> | number
+        }
+      }
+    }
+    FavouriteShare: {
+      payload: Prisma.$FavouriteSharePayload<ExtArgs>
+      fields: Prisma.FavouriteShareFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FavouriteShareFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FavouriteShareFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>
+        }
+        findFirst: {
+          args: Prisma.FavouriteShareFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FavouriteShareFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>
+        }
+        findMany: {
+          args: Prisma.FavouriteShareFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>[]
+        }
+        create: {
+          args: Prisma.FavouriteShareCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>
+        }
+        createMany: {
+          args: Prisma.FavouriteShareCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FavouriteShareCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>[]
+        }
+        delete: {
+          args: Prisma.FavouriteShareDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>
+        }
+        update: {
+          args: Prisma.FavouriteShareUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>
+        }
+        deleteMany: {
+          args: Prisma.FavouriteShareDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FavouriteShareUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FavouriteShareUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>[]
+        }
+        upsert: {
+          args: Prisma.FavouriteShareUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FavouriteSharePayload>
+        }
+        aggregate: {
+          args: Prisma.FavouriteShareAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFavouriteShare>
+        }
+        groupBy: {
+          args: Prisma.FavouriteShareGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FavouriteShareGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FavouriteShareCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FavouriteShareCountAggregateOutputType> | number
         }
       }
     }
@@ -1370,9 +1445,25 @@ export const AddressScalarFieldEnum = {
 export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
+export const FavouriteShareScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  items: 'items',
+  createdAt: 'createdAt'
+} as const
+
+export type FavouriteShareScalarFieldEnum = (typeof FavouriteShareScalarFieldEnum)[keyof typeof FavouriteShareScalarFieldEnum]
+
+
 export const FavouriteProductScalarFieldEnum = {
   userId: 'userId',
   productId: 'productId',
+  productName: 'productName',
+  productImageUrl: 'productImageUrl',
+  price: 'price',
+  location: 'location',
+  categories: 'categories',
+  description: 'description',
   createdAt: 'createdAt'
 } as const
 
@@ -1520,19 +1611,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1616,6 +1707,34 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
  * Reference to a field of type 'Decimal'
  */
 export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -1640,20 +1759,6 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1710,20 +1815,6 @@ export type EnumDisputeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'DisputeStatus[]'
  */
 export type ListEnumDisputeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DisputeStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1838,6 +1929,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   address?: Prisma.AddressOmit
+  favouriteShare?: Prisma.FavouriteShareOmit
   favouriteProduct?: Prisma.FavouriteProductOmit
   product?: Prisma.ProductOmit
   cart?: Prisma.CartOmit

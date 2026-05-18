@@ -20,45 +20,95 @@ export type FavouriteProductModel = runtime.Types.Result.DefaultSelection<Prisma
 
 export type AggregateFavouriteProduct = {
   _count: FavouriteProductCountAggregateOutputType | null
+  _avg: FavouriteProductAvgAggregateOutputType | null
+  _sum: FavouriteProductSumAggregateOutputType | null
   _min: FavouriteProductMinAggregateOutputType | null
   _max: FavouriteProductMaxAggregateOutputType | null
+}
+
+export type FavouriteProductAvgAggregateOutputType = {
+  price: number | null
+}
+
+export type FavouriteProductSumAggregateOutputType = {
+  price: number | null
 }
 
 export type FavouriteProductMinAggregateOutputType = {
   userId: string | null
   productId: string | null
+  productName: string | null
+  productImageUrl: string | null
+  price: number | null
+  location: string | null
+  description: string | null
   createdAt: Date | null
 }
 
 export type FavouriteProductMaxAggregateOutputType = {
   userId: string | null
   productId: string | null
+  productName: string | null
+  productImageUrl: string | null
+  price: number | null
+  location: string | null
+  description: string | null
   createdAt: Date | null
 }
 
 export type FavouriteProductCountAggregateOutputType = {
   userId: number
   productId: number
+  productName: number
+  productImageUrl: number
+  price: number
+  location: number
+  categories: number
+  description: number
   createdAt: number
   _all: number
 }
 
 
+export type FavouriteProductAvgAggregateInputType = {
+  price?: true
+}
+
+export type FavouriteProductSumAggregateInputType = {
+  price?: true
+}
+
 export type FavouriteProductMinAggregateInputType = {
   userId?: true
   productId?: true
+  productName?: true
+  productImageUrl?: true
+  price?: true
+  location?: true
+  description?: true
   createdAt?: true
 }
 
 export type FavouriteProductMaxAggregateInputType = {
   userId?: true
   productId?: true
+  productName?: true
+  productImageUrl?: true
+  price?: true
+  location?: true
+  description?: true
   createdAt?: true
 }
 
 export type FavouriteProductCountAggregateInputType = {
   userId?: true
   productId?: true
+  productName?: true
+  productImageUrl?: true
+  price?: true
+  location?: true
+  categories?: true
+  description?: true
   createdAt?: true
   _all?: true
 }
@@ -101,6 +151,18 @@ export type FavouriteProductAggregateArgs<ExtArgs extends runtime.Types.Extensio
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: FavouriteProductAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: FavouriteProductSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: FavouriteProductMinAggregateInputType
@@ -131,6 +193,8 @@ export type FavouriteProductGroupByArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   _count?: FavouriteProductCountAggregateInputType | true
+  _avg?: FavouriteProductAvgAggregateInputType
+  _sum?: FavouriteProductSumAggregateInputType
   _min?: FavouriteProductMinAggregateInputType
   _max?: FavouriteProductMaxAggregateInputType
 }
@@ -138,8 +202,16 @@ export type FavouriteProductGroupByArgs<ExtArgs extends runtime.Types.Extensions
 export type FavouriteProductGroupByOutputType = {
   userId: string
   productId: string
+  productName: string
+  productImageUrl: string | null
+  price: number
+  location: string | null
+  categories: string[]
+  description: string | null
   createdAt: Date
   _count: FavouriteProductCountAggregateOutputType | null
+  _avg: FavouriteProductAvgAggregateOutputType | null
+  _sum: FavouriteProductSumAggregateOutputType | null
   _min: FavouriteProductMinAggregateOutputType | null
   _max: FavouriteProductMaxAggregateOutputType | null
 }
@@ -165,6 +237,12 @@ export type FavouriteProductWhereInput = {
   NOT?: Prisma.FavouriteProductWhereInput | Prisma.FavouriteProductWhereInput[]
   userId?: Prisma.StringFilter<"FavouriteProduct"> | string
   productId?: Prisma.StringFilter<"FavouriteProduct"> | string
+  productName?: Prisma.StringFilter<"FavouriteProduct"> | string
+  productImageUrl?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
+  price?: Prisma.FloatFilter<"FavouriteProduct"> | number
+  location?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
+  categories?: Prisma.StringNullableListFilter<"FavouriteProduct">
+  description?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FavouriteProduct"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -172,6 +250,12 @@ export type FavouriteProductWhereInput = {
 export type FavouriteProductOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productName?: Prisma.SortOrder
+  productImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  price?: Prisma.SortOrder
+  location?: Prisma.SortOrderInput | Prisma.SortOrder
+  categories?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -183,6 +267,12 @@ export type FavouriteProductWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.FavouriteProductWhereInput | Prisma.FavouriteProductWhereInput[]
   userId?: Prisma.StringFilter<"FavouriteProduct"> | string
   productId?: Prisma.StringFilter<"FavouriteProduct"> | string
+  productName?: Prisma.StringFilter<"FavouriteProduct"> | string
+  productImageUrl?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
+  price?: Prisma.FloatFilter<"FavouriteProduct"> | number
+  location?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
+  categories?: Prisma.StringNullableListFilter<"FavouriteProduct">
+  description?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FavouriteProduct"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "userId_productId">
@@ -190,10 +280,18 @@ export type FavouriteProductWhereUniqueInput = Prisma.AtLeast<{
 export type FavouriteProductOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productName?: Prisma.SortOrder
+  productImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  price?: Prisma.SortOrder
+  location?: Prisma.SortOrderInput | Prisma.SortOrder
+  categories?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.FavouriteProductCountOrderByAggregateInput
+  _avg?: Prisma.FavouriteProductAvgOrderByAggregateInput
   _max?: Prisma.FavouriteProductMaxOrderByAggregateInput
   _min?: Prisma.FavouriteProductMinOrderByAggregateInput
+  _sum?: Prisma.FavouriteProductSumOrderByAggregateInput
 }
 
 export type FavouriteProductScalarWhereWithAggregatesInput = {
@@ -202,11 +300,23 @@ export type FavouriteProductScalarWhereWithAggregatesInput = {
   NOT?: Prisma.FavouriteProductScalarWhereWithAggregatesInput | Prisma.FavouriteProductScalarWhereWithAggregatesInput[]
   userId?: Prisma.StringWithAggregatesFilter<"FavouriteProduct"> | string
   productId?: Prisma.StringWithAggregatesFilter<"FavouriteProduct"> | string
+  productName?: Prisma.StringWithAggregatesFilter<"FavouriteProduct"> | string
+  productImageUrl?: Prisma.StringNullableWithAggregatesFilter<"FavouriteProduct"> | string | null
+  price?: Prisma.FloatWithAggregatesFilter<"FavouriteProduct"> | number
+  location?: Prisma.StringNullableWithAggregatesFilter<"FavouriteProduct"> | string | null
+  categories?: Prisma.StringNullableListFilter<"FavouriteProduct">
+  description?: Prisma.StringNullableWithAggregatesFilter<"FavouriteProduct"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FavouriteProduct"> | Date | string
 }
 
 export type FavouriteProductCreateInput = {
   productId: string
+  productName: string
+  productImageUrl?: string | null
+  price: number
+  location?: string | null
+  categories?: Prisma.FavouriteProductCreatecategoriesInput | string[]
+  description?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFavouriteProductsInput
 }
@@ -214,11 +324,23 @@ export type FavouriteProductCreateInput = {
 export type FavouriteProductUncheckedCreateInput = {
   userId: string
   productId: string
+  productName: string
+  productImageUrl?: string | null
+  price: number
+  location?: string | null
+  categories?: Prisma.FavouriteProductCreatecategoriesInput | string[]
+  description?: string | null
   createdAt?: Date | string
 }
 
 export type FavouriteProductUpdateInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFavouriteProductsNestedInput
 }
@@ -226,23 +348,47 @@ export type FavouriteProductUpdateInput = {
 export type FavouriteProductUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FavouriteProductCreateManyInput = {
   userId: string
   productId: string
+  productName: string
+  productImageUrl?: string | null
+  price: number
+  location?: string | null
+  categories?: Prisma.FavouriteProductCreatecategoriesInput | string[]
+  description?: string | null
   createdAt?: Date | string
 }
 
 export type FavouriteProductUpdateManyMutationInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FavouriteProductUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -256,6 +402,14 @@ export type FavouriteProductOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type FavouriteProductUserIdProductIdCompoundUniqueInput = {
   userId: string
   productId: string
@@ -264,19 +418,43 @@ export type FavouriteProductUserIdProductIdCompoundUniqueInput = {
 export type FavouriteProductCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productName?: Prisma.SortOrder
+  productImageUrl?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  categories?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type FavouriteProductAvgOrderByAggregateInput = {
+  price?: Prisma.SortOrder
 }
 
 export type FavouriteProductMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productName?: Prisma.SortOrder
+  productImageUrl?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type FavouriteProductMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productName?: Prisma.SortOrder
+  productImageUrl?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type FavouriteProductSumOrderByAggregateInput = {
+  price?: Prisma.SortOrder
 }
 
 export type FavouriteProductCreateNestedManyWithoutUserInput = {
@@ -321,13 +499,42 @@ export type FavouriteProductUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.FavouriteProductScalarWhereInput | Prisma.FavouriteProductScalarWhereInput[]
 }
 
+export type FavouriteProductCreatecategoriesInput = {
+  set: string[]
+}
+
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type FavouriteProductUpdatecategoriesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 export type FavouriteProductCreateWithoutUserInput = {
   productId: string
+  productName: string
+  productImageUrl?: string | null
+  price: number
+  location?: string | null
+  categories?: Prisma.FavouriteProductCreatecategoriesInput | string[]
+  description?: string | null
   createdAt?: Date | string
 }
 
 export type FavouriteProductUncheckedCreateWithoutUserInput = {
   productId: string
+  productName: string
+  productImageUrl?: string | null
+  price: number
+  location?: string | null
+  categories?: Prisma.FavouriteProductCreatecategoriesInput | string[]
+  description?: string | null
   createdAt?: Date | string
 }
 
@@ -363,26 +570,56 @@ export type FavouriteProductScalarWhereInput = {
   NOT?: Prisma.FavouriteProductScalarWhereInput | Prisma.FavouriteProductScalarWhereInput[]
   userId?: Prisma.StringFilter<"FavouriteProduct"> | string
   productId?: Prisma.StringFilter<"FavouriteProduct"> | string
+  productName?: Prisma.StringFilter<"FavouriteProduct"> | string
+  productImageUrl?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
+  price?: Prisma.FloatFilter<"FavouriteProduct"> | number
+  location?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
+  categories?: Prisma.StringNullableListFilter<"FavouriteProduct">
+  description?: Prisma.StringNullableFilter<"FavouriteProduct"> | string | null
   createdAt?: Prisma.DateTimeFilter<"FavouriteProduct"> | Date | string
 }
 
 export type FavouriteProductCreateManyUserInput = {
   productId: string
+  productName: string
+  productImageUrl?: string | null
+  price: number
+  location?: string | null
+  categories?: Prisma.FavouriteProductCreatecategoriesInput | string[]
+  description?: string | null
   createdAt?: Date | string
 }
 
 export type FavouriteProductUpdateWithoutUserInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FavouriteProductUncheckedUpdateWithoutUserInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FavouriteProductUncheckedUpdateManyWithoutUserInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productName?: Prisma.StringFieldUpdateOperationsInput | string
+  productImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categories?: Prisma.FavouriteProductUpdatecategoriesInput | string[]
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -391,6 +628,12 @@ export type FavouriteProductUncheckedUpdateManyWithoutUserInput = {
 export type FavouriteProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   userId?: boolean
   productId?: boolean
+  productName?: boolean
+  productImageUrl?: boolean
+  price?: boolean
+  location?: boolean
+  categories?: boolean
+  description?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["favouriteProduct"]>
@@ -398,6 +641,12 @@ export type FavouriteProductSelect<ExtArgs extends runtime.Types.Extensions.Inte
 export type FavouriteProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   userId?: boolean
   productId?: boolean
+  productName?: boolean
+  productImageUrl?: boolean
+  price?: boolean
+  location?: boolean
+  categories?: boolean
+  description?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["favouriteProduct"]>
@@ -405,6 +654,12 @@ export type FavouriteProductSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
 export type FavouriteProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   userId?: boolean
   productId?: boolean
+  productName?: boolean
+  productImageUrl?: boolean
+  price?: boolean
+  location?: boolean
+  categories?: boolean
+  description?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["favouriteProduct"]>
@@ -412,10 +667,16 @@ export type FavouriteProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
 export type FavouriteProductSelectScalar = {
   userId?: boolean
   productId?: boolean
+  productName?: boolean
+  productImageUrl?: boolean
+  price?: boolean
+  location?: boolean
+  categories?: boolean
+  description?: boolean
   createdAt?: boolean
 }
 
-export type FavouriteProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "productId" | "createdAt", ExtArgs["result"]["favouriteProduct"]>
+export type FavouriteProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "productId" | "productName" | "productImageUrl" | "price" | "location" | "categories" | "description" | "createdAt", ExtArgs["result"]["favouriteProduct"]>
 export type FavouriteProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -434,6 +695,12 @@ export type $FavouriteProductPayload<ExtArgs extends runtime.Types.Extensions.In
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     userId: string
     productId: string
+    productName: string
+    productImageUrl: string | null
+    price: number
+    location: string | null
+    categories: string[]
+    description: string | null
     createdAt: Date
   }, ExtArgs["result"]["favouriteProduct"]>
   composites: {}
@@ -861,6 +1128,12 @@ export interface Prisma__FavouriteProductClient<T, Null = never, ExtArgs extends
 export interface FavouriteProductFieldRefs {
   readonly userId: Prisma.FieldRef<"FavouriteProduct", 'String'>
   readonly productId: Prisma.FieldRef<"FavouriteProduct", 'String'>
+  readonly productName: Prisma.FieldRef<"FavouriteProduct", 'String'>
+  readonly productImageUrl: Prisma.FieldRef<"FavouriteProduct", 'String'>
+  readonly price: Prisma.FieldRef<"FavouriteProduct", 'Float'>
+  readonly location: Prisma.FieldRef<"FavouriteProduct", 'String'>
+  readonly categories: Prisma.FieldRef<"FavouriteProduct", 'String[]'>
+  readonly description: Prisma.FieldRef<"FavouriteProduct", 'String'>
   readonly createdAt: Prisma.FieldRef<"FavouriteProduct", 'DateTime'>
 }
     

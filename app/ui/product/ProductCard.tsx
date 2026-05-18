@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { SellerProduct } from "@/app/lib/services/externalApis";
 import AddToCartControls from "@/app/ui/cart/AddToCartControls";
+import FavouriteButton from "@/app/ui/favourites/FavouriteButton";
 
 interface ProductCardProps {
   product: SellerProduct;
@@ -73,10 +74,23 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
         {isLowStock && (
-          <span className="absolute top-3 right-3 px-3 py-1 text-xs tracking-widest text-cream bg-terracotta rounded-full">
+          <span className="absolute top-3 left-3 px-3 py-1 text-xs tracking-widest text-cream bg-terracotta rounded-full">
             ÚLTIMAS {product.stock}
           </span>
         )}
+        <div className="absolute top-3 right-3">
+          <FavouriteButton
+            product={{
+              productId: product.id,
+              productName: product.name,
+              productImageUrl: product.imageUrl ?? null,
+              price: Number(product.price),
+              location: product.location ?? null,
+              categories: product.categories,
+              description: product.description ?? null,
+            }}
+          />
+        </div>
       </div>
 
       {/* Info — flex column so the button is always pushed to the bottom */}
