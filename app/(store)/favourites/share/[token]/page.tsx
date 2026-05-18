@@ -48,7 +48,7 @@ export default async function FavouriteSharePage({ params }: PageProps) {
   const share = await db.favouriteShare.findUnique({ where: { id: token } });
   if (!share) notFound();
 
-  const items = share.items as FavouriteItem[];
+  const items = share.items as unknown as FavouriteItem[];
   const user = await db.user.findUnique({ where: { id: share.userId } });
   const firstName = user?.name ?? "Alguien";
 
