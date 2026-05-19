@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getProducts, type SellerProduct } from "@/app/lib/services/externalApis";
 import ProductCard from "@/app/ui/product/ProductCard";
 import Pagination from "@/app/ui/Pagination";
@@ -6,6 +7,7 @@ import FeatureCards from "@/app/ui/sections/FeatureCards";
 import HeroSection from "@/app/ui/sections/HeroSection";
 import EdicionLimitada from "@/app/ui/sections/EdicionLimitada";
 import FilterSidebar, { type FilterGroup } from "@/app/ui/product/FilterSidebar";
+import PaymentToast from "@/app/ui/cart/PaymentToast";
 
 const PAGE_SIZE = 12;
 
@@ -152,6 +154,9 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   if (!query) {
     return (
       <>
+        <Suspense>
+          <PaymentToast />
+        </Suspense>
         <MorningRitual />
         <FeatureCards />
         <HeroSection />

@@ -14,6 +14,7 @@
 
 const SELLER_API_URL = process.env.SELLER_API_URL!;
 const SHIPPING_API_URL = process.env.SHIPPING_API_URL!;
+const SHIPPING_APP_KEY = process.env.SHIPPING_APP_KEY!;
 const PAYMENTS_API_URL = process.env.PAYMENTS_API_URL!;
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
@@ -127,13 +128,14 @@ export interface ShippingCostResponse {
 }
 
 export type ShipmentStatusValue =
-  | "pending"
-  | "prepared"
-  | "dispatched"
-  | "in_transit"
-  | "delivered"
-  | "cancelled"
-  | "incident";
+  | "CONFIRMED"
+  | "PREPARING"
+  | "IN_TRANSIT"
+  | "ARRIVED_CITY"
+  | "OUT_FOR_DELIVERY"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "WITH_ISSUE";
 
 export interface ShipmentTrackingResponse {
   shipping_id: string;
@@ -264,13 +266,11 @@ export async function getShippingCost(
 }
 
 export async function getShipmentTracking(
-  shippingId: string,
-  token?: string
+  shippingId: string
 ): Promise<ShipmentTrackingResponse> {
   return apiFetch<ShipmentTrackingResponse>(
     `${SHIPPING_API_URL}/${shippingId}`,
-    { cache: "no-store" },
-    token
+    { cache: "no-store", headers: { Authorization: `Bearer ${SHIPPING_APP_KEY}` } }
   );
 }
 

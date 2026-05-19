@@ -18,6 +18,7 @@ interface OrderData {
   shipping_cost: number;
   currency: string;
   payment_url: string;
+  cartId: string;
 }
 
 export default function CheckoutForm({ items }: { items: CartItem[] }) {
@@ -170,7 +171,7 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
             <div className="flex justify-between text-xs tracking-[0.12em]">
               <span className="text-muted-foreground">ENVÍO</span>
               <span className="text-brown">
-                ${orderData!.shipping_cost.toLocaleString("es-AR", { minimumFractionDigits: 2 })} {orderData!.currency}
+                ${orderData!.shipping_cost.toLocaleString("es-AR", { minimumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex justify-between items-baseline pt-4 border-t border-tan">
@@ -183,7 +184,15 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
 
           <div className="pt-2">
             <button
-              onClick={() => router.push(orderData!.payment_url)}
+              onClick={async () => {
+                sessionStorage.setItem("failedCartId", orderData!.cartId);
+                await fetch("/cart/confirm", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ cartId: orderData!.cartId }),
+                });
+                router.push(orderData!.payment_url);
+              }}
               className="w-full py-4 text-[11px] tracking-[0.2em] text-cream bg-olive hover:bg-brown transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
               IR A PAGAR

@@ -31,7 +31,7 @@ export default async function OrdersPage() {
         .filter((o) => o.shipping_id)
         .map(async (o) => [
           o.purchase_order_id,
-          await getShipmentTracking(o.shipping_id!, token ?? undefined).catch(() => null),
+          await getShipmentTracking(o.shipping_id!).catch(() => null),
         ])
     )
   );
@@ -60,7 +60,11 @@ export default async function OrdersPage() {
         Mis Pedidos
       </h1>
 
-      <OrdersTable orders={orders} trackingMap={trackingMap} />
+      <OrdersTable
+        orders={orders}
+        trackingMap={trackingMap}
+        trackingBase={new URL(process.env.SHIPPING_API_URL ?? "http://localhost:3000/api/shipping").origin + "/tracking"}
+      />
     </div>
   );
 }

@@ -24,10 +24,16 @@ function PagoContent() {
       <p className="font-serif text-5xl text-brown mt-6 mb-12">{formatted}</p>
 
       <button
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/?payment_success=true")}
         className="px-12 py-4 text-[11px] tracking-[0.2em] text-cream bg-olive hover:bg-brown transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
       >
         SIMULAR PAGO EXITOSO
+      </button>
+      <button
+        onClick={() => router.push("/?payment_failed=true")}
+        className="mt-4 px-12 py-4 text-[11px] tracking-[0.2em] text-cream bg-terracotta hover:bg-brown transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+      >
+        SIMULAR PAGO FALLIDO
       </button>
     </div>
   );

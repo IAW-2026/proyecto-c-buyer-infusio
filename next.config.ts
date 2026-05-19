@@ -21,7 +21,7 @@ const csp = [
   `img-src 'self' data: blob: ${imgSrc}`,
   "font-src 'self'",
   `connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.com https://api.maptiler.com wss://*.clerk.accounts.dev`,
-  "frame-src https://api.maptiler.com",
+  "frame-src https://api.maptiler.com https://proyecto-c-shipping-infusio.vercel.app https://*.clerk.accounts.dev",
   "frame-ancestors 'self'",
   "worker-src blob:",
 ].join("; ");

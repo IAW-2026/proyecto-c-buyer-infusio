@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import type { ShipmentTrackingResponse, ShipmentStatusValue } from "@/app/lib/services/externalApis";
+import type { ShipmentTrackingResponse } from "@/app/lib/services/externalApis";
 
 export interface OrderCartItem {
   id: string;
@@ -24,6 +24,7 @@ export interface OrderRow {
 interface Props {
   orders: OrderRow[];
   trackingMap: Record<string, ShipmentTrackingResponse | null>;
+  trackingBase: string;
 }
 
 type Tab = "todas" | "activos" | "historial";
@@ -38,37 +39,27 @@ const TABS: { id: Tab; label: string }[] = [
 
 type BadgeInfo = { label: string; cls: string };
 
-function getStatusBadge(order: OrderRow, tracking: ShipmentTrackingResponse | null): BadgeInfo {
-  if (order.status === "CANCELLED") return { label: "CANCELADO", cls: "bg-[#eedede] text-[#904545]" };
-  if (!tracking) return { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
-
-  const map: Record<ShipmentStatusValue, BadgeInfo> = {
-    pending:    { label: "EN PREPARACIÓN", cls: "bg-[#e5e3ef] text-[#6a629a]" },
-    prepared:   { label: "EN PREPARACIÓN", cls: "bg-[#e5e3ef] text-[#6a629a]" },
-    dispatched: { label: "EN PREPARACIÓN", cls: "bg-[#e5e3ef] text-[#6a629a]" },
-    in_transit: { label: "EN TRÁNSITO",    cls: "bg-[#f2e8c8] text-[#8a7030]" },
-    delivered:  { label: "ENTREGADO",      cls: "bg-[#dce6d8] text-[#4e7048]" },
-    cancelled:  { label: "CANCELADO",      cls: "bg-[#eedede] text-[#904545]" },
-    incident:   { label: "INCIDENTE",      cls: "bg-[#eedede] text-[#904545]" },
-  };
-  return map[tracking.status] ?? { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
+function getStatusBadge(order: OrderRow): BadgeInfo {
+  if (order.status === "CANCELLED")  return { label: "CANCELADO",     cls: "bg-[#eedede] text-[#904545]" };
+  if (order.status === "CONFIRMED")  return { label: "CONFIRMADO",    cls: "bg-[#dce6d8] text-[#4e7048]" };
+  return                                    { label: "PROCESANDO",    cls: "bg-tan/60 text-brown" };
 }
 
 function isOrderActive(order: OrderRow, tracking: ShipmentTrackingResponse | null) {
   if (order.status === "CANCELLED") return false;
   if (!tracking) return true;
-  return !["delivered", "cancelled"].includes(tracking.status);
+  return !["DELIVERED", "CANCELLED"].includes(tracking.status);
 }
 
 function isOrderHistorical(order: OrderRow, tracking: ShipmentTrackingResponse | null) {
   if (order.status === "CANCELLED") return true;
-  if (tracking && ["delivered", "cancelled"].includes(tracking.status)) return true;
+  if (tracking && ["DELIVERED", "CANCELLED"].includes(tracking.status)) return true;
   return false;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function OrdersTable({ orders, trackingMap }: Props) {
+export default function OrdersTable({ orders, trackingMap, trackingBase }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("todas");
 
   const filtered = orders.filter((o) => {
@@ -138,7 +129,7 @@ export default function OrdersTable({ orders, trackingMap }: Props) {
             <tbody>
               {filtered.map((order) => {
                 const tracking = trackingMap[order.id] ?? null;
-                const badge    = getStatusBadge(order, tracking);
+                const badge    = getStatusBadge(order);
                 const total    = order.items.reduce((s, i) => s + i.priceAtTime * i.quantity, 0);
 
                 return (
@@ -157,9 +148,9 @@ export default function OrdersTable({ orders, trackingMap }: Props) {
                           <span className={`inline-block px-3 py-1 text-[10px] tracking-[0.12em] rounded-full whitespace-nowrap ${badge.cls}`}>
                             {badge.label}
                           </span>
-                          {order.shippingId && isOrderActive(order, tracking) && (
+                          {order.shippingId && trackingBase && isOrderActive(order, tracking) && (
                             <Link
-                              href={`/api/shipping/shipping-url/${order.shippingId}`}
+                              href={`${trackingBase}?code=${order.shippingId}`} target="_blank" rel="noopener noreferrer"
                               className="text-[11px] text-terracotta hover:text-brown transition-colors whitespace-nowrap"
                             >
                               Ver detalles de envío →
@@ -193,7 +184,7 @@ export default function OrdersTable({ orders, trackingMap }: Props) {
           <div className="lg:hidden mt-4 space-y-4">
             {filtered.map((order) => {
               const tracking = trackingMap[order.id] ?? null;
-              const badge    = getStatusBadge(order, tracking);
+              const badge    = getStatusBadge(order);
               const total    = order.items.reduce((s, i) => s + i.priceAtTime * i.quantity, 0);
 
               return (
@@ -217,8 +208,8 @@ export default function OrdersTable({ orders, trackingMap }: Props) {
                     </span>
                   </div>
 
-                  {order.shippingId && isOrderActive(order, tracking) && (
-                    <Link href={`/api/shipping/shipping-url/${order.shippingId}`} className="block text-[11px] text-terracotta hover:text-brown transition-colors">
+                  {order.shippingId && trackingBase && isOrderActive(order, tracking) && (
+                    <Link href={`${trackingBase}?code=${order.shippingId}`} target="_blank" rel="noopener noreferrer" className="block text-[11px] text-terracotta hover:text-brown transition-colors">
                       Ver detalles de envío →
                     </Link>
                   )}

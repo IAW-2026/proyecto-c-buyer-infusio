@@ -26,6 +26,40 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // If an order already exists for this cart (e.g. user clicked twice), return it
+  const existing = await db.purchaseOrder.findUnique({
+    where: { cartId: shopping_cart_id },
+    include: { packages: { include: { items: true } } },
+  });
+  if (existing) {
+    const origin = new URL(request.url).origin;
+    const existingShipping = existing.packages.reduce((s, p) => s + Number(p.shippingCost), 0);
+    const existingSubtotal = existing.packages.flatMap((p) => p.items).reduce((s, i) => s + Number(i.subtotal), 0);
+    return NextResponse.json({
+      purchase_order_id: existing.id,
+      user_id: existing.userId,
+      shopping_cart_id: existing.cartId,
+      status: existing.status,
+      created_at: existing.createdAt.toISOString(),
+      shipping_id: existing.shippingId ?? null,
+      payment_id: existing.paymentId ?? null,
+      payment_url: existing.paymentUrl ?? `${origin}/api/payments/payment-url?order_id=${existing.id}&amount=${existingSubtotal + existingShipping}`,
+      shipping_cost: existingShipping,
+      currency: "ARS",
+      address,
+      cart_items: cart_items.map((item, idx) => ({
+        id: `item-${idx}`,
+        cart_id: shopping_cart_id,
+        product_id: item.product_id,
+        product_name: item.product_name,
+        product_variant: item.product_variant ?? null,
+        product_image_url: item.product_image_url ?? null,
+        price_at_time: item.unit_price,
+        quantity: item.quantity,
+      })),
+    }, { status: 200 });
+  }
+
   const subtotal = cart_items.reduce((s, i) => s + i.subtotal, 0);
 
   const destNum = parseInt(address?.postal_code ?? "1000", 10);

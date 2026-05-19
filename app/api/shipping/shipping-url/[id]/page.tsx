@@ -5,13 +5,14 @@ import type { ShipmentStatusValue } from "@/app/lib/services/externalApis";
 type BadgeInfo = { label: string; cls: string };
 
 const STATUS_MAP: Record<ShipmentStatusValue, BadgeInfo> = {
-  pending:    { label: "EN PREPARACIÓN", cls: "bg-tan/60 text-brown" },
-  prepared:   { label: "EN PREPARACIÓN", cls: "bg-tan/60 text-brown" },
-  dispatched: { label: "EN PREPARACIÓN", cls: "bg-tan/60 text-brown" },
-  in_transit: { label: "EN TRÁNSITO",    cls: "bg-terracotta/20 text-terracotta" },
-  delivered:  { label: "ENTREGADO",      cls: "bg-olive/20 text-olive" },
-  cancelled:  { label: "CANCELADO",      cls: "bg-red-100 text-red-700" },
-  incident:   { label: "INCIDENTE",      cls: "bg-red-100 text-red-700" },
+  CONFIRMED:        { label: "EN PREPARACIÓN",    cls: "bg-tan/60 text-brown" },
+  PREPARING:        { label: "EN PREPARACIÓN",    cls: "bg-tan/60 text-brown" },
+  IN_TRANSIT:       { label: "EN TRÁNSITO",       cls: "bg-terracotta/20 text-terracotta" },
+  ARRIVED_CITY:     { label: "LLEGÓ A TU CIUDAD", cls: "bg-terracotta/20 text-terracotta" },
+  OUT_FOR_DELIVERY: { label: "EN REPARTO",        cls: "bg-terracotta/20 text-terracotta" },
+  DELIVERED:        { label: "ENTREGADO",         cls: "bg-olive/20 text-olive" },
+  CANCELLED:        { label: "CANCELADO",         cls: "bg-red-100 text-red-700" },
+  WITH_ISSUE:       { label: "CON INCIDENTE",     cls: "bg-red-100 text-red-700" },
 };
 
 export default async function ShippingUrlPage({

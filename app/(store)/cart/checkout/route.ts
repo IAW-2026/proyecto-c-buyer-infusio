@@ -57,15 +57,11 @@ export async function POST(request: NextRequest) {
 
   const order = await createPurchaseOrder(userId, cart.id, sellerAddress, cartItems, token ?? undefined);
 
-  await db.cart.update({
-    where: { id: cart.id },
-    data: { status: "CHECKED_OUT" },
-  });
-
   return NextResponse.json({
     purchase_order_id: order.purchase_order_id,
     shipping_cost: order.shipping_cost,
     currency: order.currency,
     payment_url: order.payment_url,
+    cartId: cart.id,
   });
 }
