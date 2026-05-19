@@ -41,13 +41,14 @@ const ORDER_STATUS_CLS: Record<PurchaseOrderStatus, string> = {
 type BadgeInfo = { label: string; cls: string };
 
 const SHIP_BADGE: Record<ShipmentStatusValue, BadgeInfo> = {
-  pending:    { label: "EN PREPARACIÓN", cls: "bg-[#e5e3ef] text-[#6a629a]" },
-  prepared:   { label: "EN PREPARACIÓN", cls: "bg-[#e5e3ef] text-[#6a629a]" },
-  dispatched: { label: "EN PREPARACIÓN", cls: "bg-[#e5e3ef] text-[#6a629a]" },
-  in_transit: { label: "EN TRÁNSITO",    cls: "bg-[#f2e8c8] text-[#8a7030]" },
-  delivered:  { label: "ENTREGADO",      cls: "bg-[#dce6d8] text-[#4e7048]" },
-  cancelled:  { label: "CANCELADO",      cls: "bg-[#eedede] text-[#904545]" },
-  incident:   { label: "INCIDENTE",      cls: "bg-[#eedede] text-[#904545]" },
+  CONFIRMED:        { label: "EN PREPARACIÓN",    cls: "bg-[#e5e3ef] text-[#6a629a]" },
+  PREPARING:        { label: "EN PREPARACIÓN",    cls: "bg-[#e5e3ef] text-[#6a629a]" },
+  IN_TRANSIT:       { label: "EN TRÁNSITO",       cls: "bg-[#f2e8c8] text-[#8a7030]" },
+  ARRIVED_CITY:     { label: "LLEGÓ A TU CIUDAD", cls: "bg-[#f2e8c8] text-[#8a7030]" },
+  OUT_FOR_DELIVERY: { label: "EN REPARTO",        cls: "bg-[#f2e8c8] text-[#8a7030]" },
+  DELIVERED:        { label: "ENTREGADO",         cls: "bg-[#dce6d8] text-[#4e7048]" },
+  CANCELLED:        { label: "CANCELADO",         cls: "bg-[#eedede] text-[#904545]" },
+  WITH_ISSUE:       { label: "CON INCIDENTE",     cls: "bg-[#eedede] text-[#904545]" },
 };
 
 function formatId(id: string) {
