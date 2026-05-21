@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface CartItem {
-  priceAtTime: number | string;
+  priceAtTime: number;
   quantity: number;
 }
 
@@ -21,7 +21,7 @@ export default function CartSummary({ items }: { items: CartItem[] }) {
   });
 
   const subtotal = items.reduce(
-    (sum, item) => sum + Number(item.priceAtTime) * item.quantity,
+    (sum, item) => sum + item.priceAtTime * item.quantity,
     0
   );
 

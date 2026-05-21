@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { db } from "@/app/lib/prisma";
 import { Prisma, type PurchaseOrderStatus } from "@/generated/prisma/client";
 import type { UserRole } from "@/generated/prisma/enums";
@@ -8,6 +9,13 @@ import {
   getProductInsights,
   getRevenueForecast,
 } from "@/app/lib/gemini";
+
+const GEMINI_TTL = { revalidate: 300 } as const; // 5-minute cache
+
+const cachedGetStoreInsights    = unstable_cache(getStoreInsights,    ["gemini-store-insights"],    GEMINI_TTL);
+const cachedGetAbandonedInsights = unstable_cache(getAbandonedCartInsights, ["gemini-abandoned"],  GEMINI_TTL);
+const cachedGetProductInsights  = unstable_cache(getProductInsights,  ["gemini-products"],         GEMINI_TTL);
+const cachedGetRevenueForecast  = unstable_cache(getRevenueForecast,  ["gemini-revenue-forecast"], GEMINI_TTL);
 
 const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
   PENDING:   "Procesando",
@@ -75,7 +83,7 @@ export default async function AnalyticsPage() {
     ].filter((r) => r.count > 0);
     recentOrders = ro;
     totalCarts = tc;
-    totalRevenue = Number(rev._sum.amount ?? 0);
+    totalRevenue = (rev._sum.amount ?? new Prisma.Decimal(0)).toNumber();
     abandonedCarts = ac;
     topProductRows = tp;
     recentPackages = rp;
@@ -88,7 +96,7 @@ export default async function AnalyticsPage() {
 
   // Abandoned cart stats
   const totalLostRevenue = abandonedCarts.reduce(
-    (sum, cart) => sum + cart.items.reduce((s, i) => s + Number(i.priceAtTime) * i.quantity, 0),
+    (sum, cart) => sum + cart.items.reduce((s, i) => s + i.priceAtTime.toNumber() * i.quantity, 0),
     0
   );
   const productCounts: Record<string, number> = {};
@@ -105,8 +113,8 @@ export default async function AnalyticsPage() {
   // Top products
   const topProducts = topProductRows.map((p) => ({
     name: p.productName,
-    unitsSold: Number(p._sum.quantity ?? 0),
-    revenue: Number(p._sum.subtotal ?? 0),
+    unitsSold: p._sum.quantity ?? 0,
+    revenue: (p._sum.subtotal ?? new Prisma.Decimal(0)).toNumber(),
   }));
 
   // Weekly revenue grouped in JS (avoids raw SQL)
@@ -118,15 +126,16 @@ export default async function AnalyticsPage() {
     d.setDate(d.getDate() - dayOfWeek);
     d.setHours(0, 0, 0, 0);
     const key = d.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
-    weekMap[key] = (weekMap[key] ?? 0) + Number(p.amount);
+    weekMap[key] = (weekMap[key] ?? 0) + p.amount.toNumber();
   }
   const weeklyRevenue = Object.entries(weekMap)
     .reverse()
     .map(([week, amount]) => ({ week, amount }));
 
-  // All Gemini calls in parallel — failures are silently ignored
+
+  // All Gemini calls in parallel — failures are silently ignored, results cached 5 min
   const [insightsResult, abandonedResult, productsResult, trendResult] = await Promise.allSettled([
-    getStoreInsights({
+    cachedGetStoreInsights({
       totalRevenue,
       totalPurchases: totalOrders,
       recentPurchases: recentOrders,
@@ -134,13 +143,13 @@ export default async function AnalyticsPage() {
       totalUsers,
       purchasesByStatus: ordersByStatus.map((s) => ({ status: s.status, count: s._count.id })),
     }),
-    getAbandonedCartInsights({
+    cachedGetAbandonedInsights({
       cartCount: abandonedCarts.length,
       totalLostRevenue,
       topProducts: topAbandonedProducts,
     }),
-    getProductInsights({ topProducts }),
-    getRevenueForecast({ weeklyRevenue }),
+    cachedGetProductInsights({ topProducts }),
+    cachedGetRevenueForecast({ weeklyRevenue }),
   ]);
 
   const aiInsights  = insightsResult.status  === "fulfilled" ? insightsResult.value  : null;

@@ -85,9 +85,9 @@ export default async function PurchasesPage({
     items: o.cart.items.map((item) => ({
       productName: item.productName,
       quantity: item.quantity,
-      priceAtTime: Number(item.priceAtTime),
+      priceAtTime: item.priceAtTime.toNumber(),
     })),
-    total: o.packages.reduce((s, p) => s + Number(p.amount), 0),
+    total: o.packages.reduce((s, p) => s + p.amount.toNumber(), 0),
   }));
 
   return (

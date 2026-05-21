@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { db } from "@/app/lib/prisma";
-import { type PurchaseOrderStatus } from "@/generated/prisma/client";
+import { Prisma, type PurchaseOrderStatus } from "@/generated/prisma/client";
 import Link from "next/link";
 import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
 import ExportDropdown from "@/app/ui/admin/ExportDropdown";
@@ -81,7 +81,7 @@ export default async function AdminPage({
     orders = o;
     totalUsers = u;
     newUsersThisWeek = uw;
-    totalRevenue = Number(rev._sum.amount ?? 0);
+    totalRevenue = (rev._sum.amount ?? new Prisma.Decimal(0)).toNumber();
   } catch {
     dbError = true;
   }
@@ -180,7 +180,7 @@ export default async function AdminPage({
                   ? items.map((i) => `${i.productName} (${i.quantity})`).join(", ")
                   : "—";
                 const total = o.packages.length > 0
-                  ? `$${o.packages.reduce((s, p) => s + Number(p.amount), 0).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
+                  ? `$${o.packages.reduce((s, p) => s + p.amount.toNumber(), 0).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
                   : "—";
 
                 return (

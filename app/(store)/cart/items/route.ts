@@ -13,7 +13,11 @@ export async function GET() {
     include: { items: true },
   });
 
-  return NextResponse.json({ items: cart?.items ?? [] });
+  const items = (cart?.items ?? []).map((item) => ({
+    ...item,
+    priceAtTime: item.priceAtTime.toNumber(),
+  }));
+  return NextResponse.json({ items });
 }
 
 export async function POST(request: NextRequest) {

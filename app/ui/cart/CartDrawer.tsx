@@ -8,7 +8,7 @@ import { useCart } from "./CartContext";
 const GRAIN_BG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E")`;
 
 export default function CartDrawer() {
-  const { isOpen, items, closeCart, refresh, applyOptimistic } = useCart();
+  const { isOpen, items, closeCart, updateItemQty, removeItem } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -16,28 +16,13 @@ export default function CartDrawer() {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  function updateQty(itemId: string, newQty: number) {
-    if (newQty < 1) return;
-    applyOptimistic(prev => prev.map(i => i.id === itemId ? { ...i, quantity: newQty } : i));
-    fetch(`/cart/items/${itemId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quantity: newQty }),
-    }).catch(() => refresh());
-  }
-
-  function removeItem(itemId: string) {
-    applyOptimistic(prev => prev.filter(i => i.id !== itemId));
-    fetch(`/cart/items/${itemId}`, { method: "DELETE" }).catch(() => refresh());
-  }
-
   function handleCheckout() {
     closeCart();
     router.push("/cart");
   }
 
   const subtotal = items.reduce(
-    (sum, item) => sum + Number(item.priceAtTime) * item.quantity,
+    (sum, item) => sum + item.priceAtTime * item.quantity,
     0
   );
 
@@ -123,7 +108,7 @@ export default function CartDrawer() {
             ) : (
               <div>
                 {items.map((item) => {
-                  const lineTotal = Number(item.priceAtTime) * item.quantity;
+                  const lineTotal = item.priceAtTime * item.quantity;
                   return (
                     <div
                       key={item.id}
@@ -167,7 +152,7 @@ export default function CartDrawer() {
                         <div className="flex items-center justify-between mt-auto pt-3">
                           <div className="flex items-center border border-tan/80">
                             <button
-                              onClick={() => updateQty(item.id, item.quantity - 1)}
+                              onClick={() => updateItemQty(item.id, item.quantity - 1)}
                               disabled={item.quantity <= 1}
                               className="w-8 h-8 flex items-center justify-center text-sm hover:bg-tan/50 disabled:opacity-30 transition-colors select-none"
                               style={{ color: "#4A2C1D" }}
@@ -179,7 +164,7 @@ export default function CartDrawer() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQty(item.id, item.quantity + 1)}
+                              onClick={() => updateItemQty(item.id, item.quantity + 1)}
                               className="w-8 h-8 flex items-center justify-center text-sm hover:bg-tan/50 transition-colors select-none"
                               style={{ color: "#4A2C1D" }}
                               aria-label="Aumentar cantidad"

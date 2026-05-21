@@ -28,7 +28,7 @@ export default function AddToCartControls({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { userId } = useAuth();
-  const { refresh, openCartSilent, applyOptimistic } = useCart();
+  const { addItem } = useCart();
 
   const btnCls =
     accent === "terracotta" ? "bg-terracotta hover:bg-[#833f29] text-cream" :
@@ -54,40 +54,9 @@ export default function AddToCartControls({
       return;
     }
 
-    const tempId = `optimistic_${productId}`;
-
-    applyOptimistic((prev) => {
-      const existing = prev.find((i) => i.productId === productId);
-      if (existing) {
-        return prev.map((i) =>
-          i.productId === productId ? { ...i, quantity: i.quantity + quantity } : i
-        );
-      }
-      return [
-        ...prev,
-        {
-          id: tempId,
-          productId,
-          productName,
-          productVariant: productVariant ?? null,
-          productImageUrl: productImageUrl ?? null,
-          priceAtTime,
-          quantity,
-        },
-      ];
-    });
-    openCartSilent();
-
     setLoading(true);
     try {
-      await fetch("/cart/items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity }),
-      });
-      refresh();
-    } catch {
-      refresh();
+      await addItem({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity });
     } finally {
       setLoading(false);
     }

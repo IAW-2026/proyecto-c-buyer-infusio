@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface CartItem {
   id: string;
@@ -9,7 +9,16 @@ export interface CartItem {
   productName: string;
   productVariant: string | null;
   productImageUrl: string | null;
-  priceAtTime: number | string;
+  priceAtTime: number;
+  quantity: number;
+}
+
+export interface AddItemInput {
+  productId: string;
+  productName: string;
+  productVariant?: string | null;
+  productImageUrl?: string | null;
+  priceAtTime: number;
   quantity: number;
 }
 
@@ -18,10 +27,11 @@ interface CartContextValue {
   items: CartItem[];
   loading: boolean;
   openCart: () => void;
-  openCartSilent: () => void;
   closeCart: () => void;
   refresh: () => Promise<void>;
-  applyOptimistic: (updater: (prev: CartItem[]) => CartItem[]) => void;
+  addItem: (item: AddItemInput) => Promise<void>;
+  updateItemQty: (itemId: string, newQty: number) => void;
+  removeItem: (itemId: string) => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -31,6 +41,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  const isBroadcastRefresh = useRef(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -39,6 +51,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         setItems(data.items ?? []);
+        // Notify other tabs only when this refresh was not itself triggered by a broadcast
+        if (!isBroadcastRefresh.current) {
+          channelRef.current?.postMessage("cart-updated");
+        }
       }
       // On error (401, network) keep existing items — avoids clearing optimistic state
     } catch {
@@ -47,6 +63,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof BroadcastChannel === "undefined") return;
+    const channel = new BroadcastChannel("cart-sync");
+    channelRef.current = channel;
+    channel.onmessage = () => {
+      isBroadcastRefresh.current = true;
+      refresh().finally(() => { isBroadcastRefresh.current = false; });
+    };
+    return () => channel.close();
+  }, [refresh]);
 
   useEffect(() => {
     if (userId === undefined) return; // Clerk still initialising
@@ -58,23 +85,64 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [userId, refresh]);
 
-  const applyOptimistic = useCallback(
-    (updater: (prev: CartItem[]) => CartItem[]) => setItems(updater),
-    []
-  );
+  const addItem = useCallback(async (item: AddItemInput) => {
+    const tempId = `optimistic_${item.productId}`;
+    setItems((prev) => {
+      const existing = prev.find((i) => i.productId === item.productId);
+      if (existing) {
+        return prev.map((i) =>
+          i.productId === item.productId ? { ...i, quantity: i.quantity + item.quantity } : i
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: tempId,
+          productId: item.productId,
+          productName: item.productName,
+          productVariant: item.productVariant ?? null,
+          productImageUrl: item.productImageUrl ?? null,
+          priceAtTime: item.priceAtTime,
+          quantity: item.quantity,
+        },
+      ];
+    });
+    setIsOpen(true);
+    try {
+      await fetch("/cart/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+    } finally {
+      refresh();
+    }
+  }, [refresh]);
+
+  const updateItemQty = useCallback((itemId: string, newQty: number) => {
+    if (newQty < 1) return;
+    setItems((prev) => prev.map((i) => i.id === itemId ? { ...i, quantity: newQty } : i));
+    fetch(`/cart/items/${itemId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quantity: newQty }),
+    }).catch(() => refresh());
+  }, [refresh]);
+
+  const removeItem = useCallback((itemId: string) => {
+    setItems((prev) => prev.filter((i) => i.id !== itemId));
+    fetch(`/cart/items/${itemId}`, { method: "DELETE" }).catch(() => refresh());
+  }, [refresh]);
 
   const openCart = useCallback(() => {
     setIsOpen(true);
     refresh();
   }, [refresh]);
 
-  // Opens drawer without triggering a refresh — use after optimistic add
-  const openCartSilent = useCallback(() => setIsOpen(true), []);
-
   const closeCart = useCallback(() => setIsOpen(false), []);
 
   return (
-    <CartContext.Provider value={{ isOpen, items, loading, openCart, openCartSilent, closeCart, refresh, applyOptimistic }}>
+    <CartContext.Provider value={{ isOpen, items, loading, openCart, closeCart, refresh, addItem, updateItemQty, removeItem }}>
       {children}
     </CartContext.Provider>
   );

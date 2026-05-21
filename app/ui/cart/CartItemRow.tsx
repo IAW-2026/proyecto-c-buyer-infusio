@@ -9,7 +9,7 @@ interface CartItem {
   productId: string;
   productName: string;
   productImageUrl: string | null;
-  priceAtTime: number | string;
+  priceAtTime: number;
   quantity: number;
 }
 
@@ -18,7 +18,7 @@ export default function CartItemRow({ item }: { item: CartItem }) {
   const [quantity, setQuantity] = useState(item.quantity);
   const [loading, setLoading] = useState(false);
 
-  const price = Number(item.priceAtTime);
+  const price = item.priceAtTime;
 
   async function updateQuantity(newQty: number) {
     if (newQty < 1) return;
