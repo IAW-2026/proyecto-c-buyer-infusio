@@ -6,12 +6,13 @@ import PurchasesTable, { type AdminOrderRow } from "@/app/ui/admin/PurchasesTabl
 import { getShipmentTracking, type ShipmentStatusValue } from "@/app/lib/services/externalApis";
 
 const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:   "PROCESANDO",
-  CONFIRMED: "CONFIRMADO",
-  CANCELLED: "CANCELADO",
+  PENDING:           "PROCESANDO",
+  AWAITING_PAYMENT:  "PENDIENTE",
+  CONFIRMED:         "CONFIRMADO",
+  CANCELLED:         "CANCELADO",
 };
 
-const ALL_STATUSES: PurchaseOrderStatus[] = ["PENDING", "CONFIRMED", "CANCELLED"];
+const ALL_STATUSES: PurchaseOrderStatus[] = ["PENDING", "AWAITING_PAYMENT", "CONFIRMED", "CANCELLED"];
 
 function formatId(id: string) {
   return `#INF-${id.slice(-4).toUpperCase()}`;
@@ -38,11 +39,11 @@ export default async function PurchasesPage({
   };
 
   let rawOrders: RawOrder[] = [];
-  let totalCount = 0;
+  let countByStatus: Partial<Record<PurchaseOrderStatus, number>> = {};
   let dbError = false;
 
   try {
-    [rawOrders, totalCount] = await Promise.all([
+    const [orders, statusGroups] = await Promise.all([
       db.purchaseOrder.findMany({
         where: activeStatus ? { status: activeStatus } : undefined,
         include: {
@@ -52,11 +53,15 @@ export default async function PurchasesPage({
         },
         orderBy: { createdAt: "desc" },
       }),
-      db.purchaseOrder.count({ where: activeStatus ? { status: activeStatus } : undefined }),
+      db.purchaseOrder.groupBy({ by: ["status"], _count: { id: true } }),
     ]);
+    rawOrders = orders;
+    countByStatus = Object.fromEntries(statusGroups.map((s) => [s.status, s._count.id]));
   } catch {
     dbError = true;
   }
+
+  const totalCount = Object.values(countByStatus).reduce((s, n) => s + (n ?? 0), 0);
 
   // Fetch shipping statuses in parallel for orders that have a shippingId
   const trackingMap: Record<string, ShipmentStatusValue | null> = {};
@@ -120,7 +125,7 @@ export default async function PurchasesPage({
                 : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
             }`}
           >
-            {STATUS_LABEL[s]}
+            {STATUS_LABEL[s]} ({countByStatus[s] ?? 0})
           </Link>
         ))}
       </div>

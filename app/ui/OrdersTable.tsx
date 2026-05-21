@@ -18,6 +18,7 @@ export interface OrderRow {
   createdAt: Date;
   status: string;
   shippingId: string | null;
+  paymentUrl: string;
   items: OrderCartItem[];
 }
 
@@ -27,12 +28,13 @@ interface Props {
   trackingBase: string;
 }
 
-type Tab = "todas" | "activos" | "historial";
+type Tab = "todos" | "pendientes" | "activos" | "compras";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "todas",     label: "VER TODAS MIS COMPRAS" },
-  { id: "activos",   label: "PEDIDOS ACTIVOS" },
-  { id: "historial", label: "HISTORIAL DE COMPRAS" },
+  { id: "todos",      label: "VER TODOS MIS PEDIDOS" },
+  { id: "pendientes", label: "PEDIDOS PENDIENTES" },
+  { id: "activos",    label: "PEDIDOS ACTIVOS" },
+  { id: "compras",    label: "VER TODAS MIS COMPRAS" },
 ];
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -40,13 +42,15 @@ const TABS: { id: Tab; label: string }[] = [
 type BadgeInfo = { label: string; cls: string };
 
 function getStatusBadge(order: OrderRow): BadgeInfo {
-  if (order.status === "CANCELLED")  return { label: "CANCELADO",     cls: "bg-[#eedede] text-[#904545]" };
-  if (order.status === "CONFIRMED")  return { label: "CONFIRMADO",    cls: "bg-[#dce6d8] text-[#4e7048]" };
-  return                                    { label: "PROCESANDO",    cls: "bg-tan/60 text-brown" };
+  if (order.status === "CANCELLED")        return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
+  if (order.status === "CONFIRMED")        return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
+  if (order.status === "AWAITING_PAYMENT") return { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" };
+  return                                          { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
 }
 
 function isOrderActive(order: OrderRow, tracking: ShipmentTrackingResponse | null) {
   if (order.status === "CANCELLED") return false;
+  if (order.status === "AWAITING_PAYMENT") return false;
   if (!tracking) return true;
   return !["DELIVERED", "CANCELLED"].includes(tracking.status);
 }
@@ -60,12 +64,13 @@ function isOrderHistorical(order: OrderRow, tracking: ShipmentTrackingResponse |
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function OrdersTable({ orders, trackingMap, trackingBase }: Props) {
-  const [activeTab, setActiveTab] = useState<Tab>("todas");
+  const [activeTab, setActiveTab] = useState<Tab>("todos");
 
   const filtered = orders.filter((o) => {
     const t = trackingMap[o.id] ?? null;
-    if (activeTab === "activos")   return isOrderActive(o, t);
-    if (activeTab === "historial") return isOrderHistorical(o, t);
+    if (activeTab === "pendientes") return o.status === "AWAITING_PAYMENT";
+    if (activeTab === "activos")    return isOrderActive(o, t);
+    if (activeTab === "compras")    return o.status === "CONFIRMED";
     return true;
   });
 
@@ -93,7 +98,7 @@ export default function OrdersTable({ orders, trackingMap, trackingBase }: Props
           <p className="font-serif text-2xl text-brown italic">No hay pedidos en esta categoría.</p>
           {orders.length > 0 && (
             <button
-              onClick={() => setActiveTab("todas")}
+              onClick={() => setActiveTab("todos")}
               className="mt-6 text-xs tracking-[0.15em] text-olive hover:text-brown transition-colors"
             >
               VER TODOS →
@@ -145,16 +150,25 @@ export default function OrdersTable({ orders, trackingMap, trackingBase }: Props
                       </td>
                       <td className="py-5 pr-4">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <span className={`inline-block px-3 py-1 text-[10px] tracking-[0.12em] rounded-full whitespace-nowrap ${badge.cls}`}>
+                          <span className={`inline-block min-w-27.5 text-center px-3 py-1 text-[10px] tracking-[0.12em] rounded-full whitespace-nowrap ${badge.cls}`}>
                             {badge.label}
                           </span>
-                          {order.shippingId && trackingBase && isOrderActive(order, tracking) && (
-                            <Link
-                              href={`${trackingBase}?code=${order.shippingId}`} target="_blank" rel="noopener noreferrer"
+                          {order.status === "AWAITING_PAYMENT" ? (
+                            <a
+                              href={order.paymentUrl}
                               className="text-[11px] text-terracotta hover:text-brown transition-colors whitespace-nowrap"
                             >
-                              Ver detalles de envío →
-                            </Link>
+                              Reintentar compra →
+                            </a>
+                          ) : (
+                            order.shippingId && trackingBase && isOrderActive(order, tracking) && (
+                              <Link
+                                href={`${trackingBase}?code=${order.shippingId}`} target="_blank" rel="noopener noreferrer"
+                                className="text-[11px] text-terracotta hover:text-brown transition-colors whitespace-nowrap"
+                              >
+                                Ver detalles de envío →
+                              </Link>
+                            )
                           )}
                         </div>
                       </td>
@@ -208,10 +222,19 @@ export default function OrdersTable({ orders, trackingMap, trackingBase }: Props
                     </span>
                   </div>
 
-                  {order.shippingId && trackingBase && isOrderActive(order, tracking) && (
-                    <Link href={`${trackingBase}?code=${order.shippingId}`} target="_blank" rel="noopener noreferrer" className="block text-[11px] text-terracotta hover:text-brown transition-colors">
-                      Ver detalles de envío →
-                    </Link>
+                  {order.status === "AWAITING_PAYMENT" ? (
+                    <a
+                      href={order.paymentUrl}
+                      className="block text-[11px] text-terracotta hover:text-brown transition-colors"
+                    >
+                      Reintentar compra →
+                    </a>
+                  ) : (
+                    order.shippingId && trackingBase && isOrderActive(order, tracking) && (
+                      <Link href={`${trackingBase}?code=${order.shippingId}`} target="_blank" rel="noopener noreferrer" className="block text-[11px] text-terracotta hover:text-brown transition-colors">
+                        Ver detalles de envío →
+                      </Link>
+                    )
                   )}
 
                   <Link

@@ -41,6 +41,7 @@ export default async function OrdersPage() {
     createdAt: new Date(o.created_at),
     status: o.status,
     shippingId: o.shipping_id,
+    paymentUrl: o.payment_url,
     items: o.cart_items.map((item) => ({
       id: item.id,
       productName: item.product_name,

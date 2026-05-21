@@ -26,9 +26,10 @@ function formatDate(date: Date): string {
 }
 
 const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:   "PROCESANDO",
-  CONFIRMED: "CONFIRMADO",
-  CANCELLED: "CANCELADO",
+  PENDING:          "PROCESANDO",
+  AWAITING_PAYMENT: "PENDIENTE",
+  CONFIRMED:        "CONFIRMADO",
+  CANCELLED:        "CANCELADO",
 };
 
 // ─── PDF styles ───────────────────────────────────────────────────────────────

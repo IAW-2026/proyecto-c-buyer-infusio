@@ -28,9 +28,10 @@ export default async function OrderDetailPage({
   const total = subtotal + shippingCost;
 
   const badge: BadgeInfo =
-    order.status === "CANCELLED" ? { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" } :
-    order.status === "CONFIRMED" ? { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" } :
-                                   { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
+    order.status === "CANCELLED"        ? { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" } :
+    order.status === "CONFIRMED"        ? { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" } :
+    order.status === "AWAITING_PAYMENT" ? { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" } :
+                                          { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
 
   const address = order.address;
 
@@ -183,6 +184,14 @@ export default async function OrderDetailPage({
                 <p className="text-xs text-muted-foreground mt-1">
                   N° de operación: {order.payment_id}
                 </p>
+              )}
+              {order.status === "AWAITING_PAYMENT" && order.payment_url && (
+                <a
+                  href={order.payment_url}
+                  className="mt-4 inline-block px-8 py-3 text-[10px] tracking-[0.2em] text-cream bg-terracotta hover:bg-brown transition-colors"
+                >
+                  REINTENTAR COMPRA
+                </a>
               )}
             </div>
           </div>

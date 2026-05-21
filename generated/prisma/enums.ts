@@ -19,6 +19,7 @@ export type CartStatus = (typeof CartStatus)[keyof typeof CartStatus]
 
 export const PurchaseOrderStatus = {
   PENDING: 'PENDING',
+  AWAITING_PAYMENT: 'AWAITING_PAYMENT',
   CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED'
 } as const

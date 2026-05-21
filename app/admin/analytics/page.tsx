@@ -18,9 +18,10 @@ const cachedGetProductInsights  = unstable_cache(getProductInsights,  ["gemini-p
 const cachedGetRevenueForecast  = unstable_cache(getRevenueForecast,  ["gemini-revenue-forecast"], GEMINI_TTL);
 
 const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:   "Procesando",
-  CONFIRMED: "Confirmado",
-  CANCELLED: "Cancelado",
+  PENDING:           "Procesando",
+  AWAITING_PAYMENT:  "Pendiente",
+  CONFIRMED:         "Confirmado",
+  CANCELLED:         "Cancelado",
 };
 
 const ROLE_LABEL: Record<UserRole, string> = {

@@ -85,7 +85,7 @@ export interface SellerPurchaseOrder {
   purchase_order_id: string;
   user_id: string;
   shopping_cart_id: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  status: "PENDING" | "AWAITING_PAYMENT" | "CONFIRMED" | "CANCELLED";
   created_at: string;
   shipping_id: string | null;
   payment_id: string | null;

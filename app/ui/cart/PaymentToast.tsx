@@ -64,6 +64,44 @@ function PaymentFailedModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ─── Payment Pending (inconclusive) ──────────────────────────────────────────
+
+function PaymentPendingModal({ onClose }: { onClose: () => void }) {
+  const router = useRouter();
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="flex justify-center mb-7">
+        <div className="w-16 h-16 rounded-full border-2 border-[#c8902a] flex items-center justify-center">
+          <svg width="26" height="26" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#c8902a]">
+            <line x1="10" y1="4" x2="10" y2="13" />
+            <circle cx="10" cy="16.5" r="1" fill="currentColor" stroke="none" />
+          </svg>
+        </div>
+      </div>
+      <h2 className="font-serif text-3xl text-brown mb-4">Pago en proceso</h2>
+      <p className="text-sm italic text-muted-foreground leading-relaxed mb-8">
+        Tu pago quedó en proceso y el resultado todavía no fue confirmado.
+        Podés verificar el estado en Mis Pedidos.
+      </p>
+      <div className="space-y-3">
+        <button
+          onClick={() => { onClose(); router.push("/orders"); }}
+          className="w-full py-4 text-[11px] tracking-[0.2em] text-cream bg-[#c8902a] hover:bg-brown transition-colors"
+        >
+          VER MIS PEDIDOS
+        </button>
+        <button
+          onClick={onClose}
+          className="w-full py-4 text-[11px] tracking-[0.2em] text-brown border border-brown/30 hover:bg-tan/30 transition-colors"
+        >
+          SEGUIR NAVEGANDO
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 // ─── Payment Success ──────────────────────────────────────────────────────────
 
 function PaymentSuccessModal({ onClose }: { onClose: () => void }) {
@@ -106,13 +144,14 @@ export default function PaymentModals() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { refresh } = useCart();
-  const [modal, setModal] = useState<"failed" | "success" | null>(null);
+  const [modal, setModal] = useState<"failed" | "pending" | "success" | null>(null);
 
   useEffect(() => {
     const failed  = searchParams.get("payment_failed")  === "true";
     const success = searchParams.get("payment_success") === "true";
+    const pending = searchParams.get("payment_pending") === "true";
 
-    if (!failed && !success) return;
+    if (!failed && !success && !pending) return;
 
     router.replace("/", { scroll: false });
 
@@ -122,9 +161,21 @@ export default function PaymentModals() {
       return;
     }
 
+    if (pending) {
+      const orderId = sessionStorage.getItem("pendingOrderId");
+      sessionStorage.removeItem("pendingOrderId");
+      sessionStorage.removeItem("failedCartId");
+      if (orderId) {
+        fetch(`/cart/orders/${orderId}`, { method: "PATCH" }).catch(() => {});
+      }
+      setModal("pending");
+      return;
+    }
+
     // failed path — restore cart then show modal
     const cartId = sessionStorage.getItem("failedCartId");
     sessionStorage.removeItem("failedCartId");
+    sessionStorage.removeItem("pendingOrderId");
 
     if (cartId) {
       fetch("/cart/restore", {
@@ -145,6 +196,7 @@ export default function PaymentModals() {
   }, []);
 
   if (modal === "failed")  return <PaymentFailedModal  onClose={() => setModal(null)} />;
+  if (modal === "pending") return <PaymentPendingModal onClose={() => setModal(null)} />;
   if (modal === "success") return <PaymentSuccessModal onClose={() => setModal(null)} />;
   return null;
 }

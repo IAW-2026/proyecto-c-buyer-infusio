@@ -186,6 +186,7 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
             <button
               onClick={async () => {
                 sessionStorage.setItem("failedCartId", orderData!.cartId);
+                sessionStorage.setItem("pendingOrderId", orderData!.purchase_order_id);
                 await fetch("/cart/confirm", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },

@@ -35,6 +35,12 @@ function PagoContent() {
       >
         SIMULAR PAGO FALLIDO
       </button>
+      <button
+        onClick={() => router.push("/?payment_pending=true")}
+        className="mt-4 px-12 py-4 text-[11px] tracking-[0.2em] text-[#8a7030] bg-[#f2e8c8] hover:bg-[#e8d9a8] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+      >
+        SIMULAR PAGO INCONCLUSO
+      </button>
     </div>
   );
 }

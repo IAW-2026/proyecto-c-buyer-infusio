@@ -27,15 +27,17 @@ interface Props {
 }
 
 const ORDER_STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:   "PROCESANDO",
-  CONFIRMED: "CONFIRMADO",
-  CANCELLED: "CANCELADO",
+  PENDING:           "PROCESANDO",
+  AWAITING_PAYMENT:  "PENDIENTE",
+  CONFIRMED:         "CONFIRMADO",
+  CANCELLED:         "CANCELADO",
 };
 
 const ORDER_STATUS_CLS: Record<PurchaseOrderStatus, string> = {
-  PENDING:   "bg-tan/60 text-brown",
-  CONFIRMED: "bg-[#dce6d8] text-[#4e7048]",
-  CANCELLED: "bg-[#eedede] text-[#904545]",
+  PENDING:           "bg-tan/60 text-brown",
+  AWAITING_PAYMENT:  "bg-[#f2e8c8] text-[#8a7030]",
+  CONFIRMED:         "bg-[#dce6d8] text-[#4e7048]",
+  CANCELLED:         "bg-[#eedede] text-[#904545]",
 };
 
 type BadgeInfo = { label: string; cls: string };

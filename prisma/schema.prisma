@@ -133,6 +133,7 @@ model PurchaseOrder {
 
 enum PurchaseOrderStatus {
   PENDING
+  AWAITING_PAYMENT
   CONFIRMED
   CANCELLED
 }
