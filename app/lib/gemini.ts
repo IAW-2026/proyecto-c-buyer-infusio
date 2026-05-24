@@ -118,6 +118,195 @@ ${FORMAT_RULES}`;
   return result.response.text();
 }
 
+// ─── Weekly action plan ───────────────────────────────────────────────────────
+
+export interface WeeklyActionPlanStats {
+  totalRevenue: number;
+  recentPurchases: number;
+  abandonedCartCount: number;
+  totalLostRevenue: number;
+  topProducts: { name: string; unitsSold: number }[];
+  cancelledOrders: number;
+  totalOrders: number;
+}
+
+export async function getWeeklyActionPlan(stats: WeeklyActionPlanStats): Promise<string> {
+  const topList = stats.topProducts
+    .slice(0, 5)
+    .map((p, i) => `${i + 1}. ${p.name} (${p.unitsSold} uds)`)
+    .join(", ");
+
+  const prompt = `${BASE_CONTEXT}
+
+Estado actual del negocio:
+- Ingresos totales: $${stats.totalRevenue.toLocaleString("es-AR")} ARS
+- Pedidos recientes (últimos 7 días): ${stats.recentPurchases}
+- Carritos abandonados: ${stats.abandonedCartCount} (valor en riesgo: $${stats.totalLostRevenue.toLocaleString("es-AR")} ARS)
+- Pedidos cancelados: ${stats.cancelledOrders} de ${stats.totalOrders} totales
+- Top productos: ${topList || "sin datos"}
+
+Dada esta situación, generá exactamente 3 acciones concretas y prioritarias que el administrador debería ejecutar esta semana para mejorar el negocio.
+Cada acción debe ser específica, medible y accionable. Numeralas del 1 al 3.
+${FORMAT_RULES}`;
+
+  const result = await model().generateContent(prompt);
+  return result.response.text();
+}
+
+// ─── Business health score ────────────────────────────────────────────────────
+
+export interface BusinessHealthStats {
+  totalRevenue: number;
+  recentPurchases: number;
+  totalUsers: number;
+  abandonedCartCount: number;
+  confirmedOrders: number;
+  cancelledOrders: number;
+  totalOrders: number;
+}
+
+export async function getBusinessHealthScore(
+  stats: BusinessHealthStats
+): Promise<{ score: number; label: string; explanation: string } | null> {
+  const prompt = `${BASE_CONTEXT}
+
+Métricas actuales:
+- Ingresos totales: $${stats.totalRevenue.toLocaleString("es-AR")} ARS
+- Pedidos recientes (7 días): ${stats.recentPurchases}
+- Usuarios registrados: ${stats.totalUsers}
+- Carritos abandonados sin compra: ${stats.abandonedCartCount}
+- Pedidos confirmados: ${stats.confirmedOrders} de ${stats.totalOrders} totales
+- Pedidos cancelados: ${stats.cancelledOrders} de ${stats.totalOrders} totales
+
+Evaluá la salud general del negocio con un puntaje del 0 al 100.
+Respondé ÚNICAMENTE con JSON válido en este formato exacto, sin texto adicional:
+{"score": <número entero 0-100>, "label": "<una sola palabra en español>", "explanation": "<2 oraciones en español rioplatense explicando el puntaje>"}`;
+
+  try {
+    const result = await model().generateContent(prompt);
+    const text = result.response.text().trim();
+    const jsonStart = text.indexOf("{");
+    const jsonEnd = text.lastIndexOf("}");
+    if (jsonStart === -1 || jsonEnd === -1) return null;
+    return JSON.parse(text.slice(jsonStart, jsonEnd + 1)) as {
+      score: number;
+      label: string;
+      explanation: string;
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ─── Anomaly alerts ───────────────────────────────────────────────────────────
+
+export interface AnomalyStats {
+  weeklyRevenue: { week: string; amount: number }[];
+  cancelledOrders: number;
+  totalOrders: number;
+  abandonedCartCount: number;
+  recentPurchases: number;
+}
+
+export async function getAnomalyAlerts(stats: AnomalyStats): Promise<string[]> {
+  const trendList = stats.weeklyRevenue
+    .map((w) => `${w.week}: $${w.amount.toLocaleString("es-AR")}`)
+    .join(", ");
+
+  const cancellationRate =
+    stats.totalOrders > 0
+      ? ((stats.cancelledOrders / stats.totalOrders) * 100).toFixed(1)
+      : "0";
+
+  const prompt = `${BASE_CONTEXT}
+
+Datos para análisis de anomalías:
+- Ingresos semanales (reciente a antiguo): ${trendList || "sin datos"}
+- Tasa de cancelación: ${cancellationRate}% (${stats.cancelledOrders} de ${stats.totalOrders})
+- Carritos abandonados activos: ${stats.abandonedCartCount}
+- Pedidos últimos 7 días: ${stats.recentPurchases}
+
+Identificá hasta 2 anomalías o patrones preocupantes en estos datos.
+Si no hay nada preocupante, devolvé un array vacío.
+Respondé ÚNICAMENTE con JSON válido: ["alerta 1", "alerta 2"] o []. Sin texto adicional.`;
+
+  try {
+    const result = await model().generateContent(prompt);
+    const text = result.response.text().trim();
+    const arrStart = text.indexOf("[");
+    const arrEnd = text.lastIndexOf("]");
+    if (arrStart === -1 || arrEnd === -1) return [];
+    return JSON.parse(text.slice(arrStart, arrEnd + 1)) as string[];
+  } catch {
+    return [];
+  }
+}
+
+// ─── Customer segmentation ────────────────────────────────────────────────────
+
+export interface CustomerSegmentStats {
+  totalUsers: number;
+  clientCount: number;
+  vendorCount: number;
+  totalOrders: number;
+  confirmedOrders: number;
+  recentPurchases: number;
+}
+
+export async function getCustomerSegmentation(stats: CustomerSegmentStats): Promise<string> {
+  const conversionRate =
+    stats.totalUsers > 0
+      ? ((stats.totalOrders / stats.totalUsers) * 100).toFixed(1)
+      : "0";
+
+  const prompt = `${BASE_CONTEXT}
+
+Datos de la base de usuarios:
+- Total usuarios registrados: ${stats.totalUsers} (${stats.clientCount} compradores, ${stats.vendorCount} vendedores)
+- Total pedidos realizados: ${stats.totalOrders} (${stats.confirmedOrders} confirmados)
+- Pedidos recientes (7 días): ${stats.recentPurchases}
+- Tasa de conversión usuario→compra: ${conversionRate}%
+
+Dame exactamente 2 insights sobre la base de clientes: qué dice sobre el perfil de comprador, y qué estrategia recomendás para aumentar la retención o conversión.
+${FORMAT_RULES}`;
+
+  const result = await model().generateContent(prompt);
+  return result.response.text();
+}
+
+// ─── Favourite insights ───────────────────────────────────────────────────────
+
+export interface FavouriteInsightsStats {
+  totalFavourites: number;
+  shareCount: number;
+  topProducts: { name: string; count: number }[];
+  topCategories: { category: string; count: number }[];
+}
+
+export async function getFavouriteInsights(stats: FavouriteInsightsStats): Promise<string> {
+  const productList = stats.topProducts
+    .slice(0, 5)
+    .map((p, i) => `${i + 1}. ${p.name} (${p.count} personas)`)
+    .join(", ");
+  const categoryList = stats.topCategories
+    .map((c) => `${c.category} (${c.count})`)
+    .join(", ");
+
+  const prompt = `${BASE_CONTEXT}
+
+Datos sobre los productos guardados como favoritos por los usuarios:
+- Total de favoritos activos: ${stats.totalFavourites}
+- Listas compartidas generadas: ${stats.shareCount}
+- Productos más guardados: ${productList || "sin datos"}
+- Categorías más guardadas: ${categoryList || "sin datos"}
+
+Dame exactamente 2 insights sobre el comportamiento de favoritos: qué revela sobre las preferencias de los clientes y qué acción concreta recomendás para aprovechar este dato.
+${FORMAT_RULES}`;
+
+  const result = await model().generateContent(prompt);
+  return result.response.text();
+}
+
 // ─── Revenue trend & forecast ─────────────────────────────────────────────────
 
 export interface RevenueTrendStats {
