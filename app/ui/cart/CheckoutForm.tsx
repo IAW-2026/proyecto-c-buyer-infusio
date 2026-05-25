@@ -53,8 +53,25 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
       setError("Completá todos los campos de dirección marcados como obligatorios.");
       return;
     }
+
     setLoading(true);
     setError(null);
+
+    try {
+      const q = `${street}, ${city}, ${province}, Argentina`;
+      const geo = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`);
+      if (geo.ok) {
+        const { found } = await geo.json();
+        if (!found) {
+          setError("No encontramos esta dirección. Verificá la calle, ciudad y provincia ingresadas.");
+          setLoading(false);
+          return;
+        }
+      }
+    } catch {
+      // geocoding unavailable — fail-open and allow checkout to proceed
+    }
+
     const res = await fetch("/cart/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -135,7 +152,7 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
               disabled={loading}
               className="w-full py-4 text-[11px] tracking-[0.2em] text-cream bg-olive hover:bg-brown disabled:opacity-40 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
             >
-              {loading ? "PROCESANDO..." : "COMPLETAR PEDIDO"}
+              {loading ? "VERIFICANDO..." : "COMPLETAR PEDIDO"}
             </button>
           </div>
         </form>

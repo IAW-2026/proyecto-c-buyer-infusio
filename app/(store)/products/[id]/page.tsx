@@ -37,7 +37,7 @@ function getSensoryTags(product: SellerProduct): string[] {
 }
 
 function getMapUrl(location?: string): string {
-  const BASE = "https://api.maptiler.com/maps/019dd957-b0d1-7513-b4d6-057a16743b1b/?key=ug3rGSABewk6deNe9A35";
+  const BASE = `https://api.maptiler.com/maps/019dd957-b0d1-7513-b4d6-057a16743b1b/?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`;
   const loc = location?.toLowerCase() ?? "";
 
   if (loc.includes("corrientes"))                                    return `${BASE}#7/-27.5/-58.8`;
