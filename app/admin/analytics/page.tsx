@@ -415,7 +415,7 @@ export default async function AnalyticsPage() {
           </p>
           {topFavProducts.length > 0 && (
             <div className="mb-6">
-              <TopFavouritesChart data={topFavProducts} />
+              <TopFavouritesChart data={topFavProducts} totalFavourites={totalFavourites} totalUsers={totalUsers} />
             </div>
           )}
           {aiFavourites && <GeminiText text={aiFavourites} />}
