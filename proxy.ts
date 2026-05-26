@@ -6,6 +6,9 @@ const isPublicRoute = createRouteMatcher([
   "/edicion-limitada(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/returns(.*)",
+  "/contact(.*)",
+  "/assistant(.*)",
   // All API routes are public at proxy level — individual routes handle auth themselves
   "/api/(.*)",
   "/cart/items(.*)",     // Added because folder structure changed and this route is now under /cart

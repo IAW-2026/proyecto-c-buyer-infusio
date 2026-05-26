@@ -32,6 +32,9 @@ importers:
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
+      groq-sdk:
+        specifier: ^1.2.0
+        version: 1.2.0
       next:
         specifier: 16.2.4
         version: 16.2.4(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2000,6 +2003,10 @@ packages:
 
   graphmatch@1.1.1:
     resolution: {integrity: sha512-5ykVn/EXM1hF0XCaWh05VbYvEiOL2lY1kBxZtaYsyvjp7cmWOU1XsAdfQBwClraEofXDT197lFbXOEVMHpvQOg==}
+
+  groq-sdk@1.2.0:
+    resolution: {integrity: sha512-pMhSYXWcjiqvbOeKdv2zjci1BYjGdp04a40hnmQmJpKJyB6oa+gRndAqE128gwR0NLgYO+Wt1fIF46KNHcplsw==}
+    hasBin: true
 
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
@@ -5171,6 +5178,8 @@ snapshots:
   grammex@3.1.12: {}
 
   graphmatch@1.1.1: {}
+
+  groq-sdk@1.2.0: {}
 
   has-bigints@1.1.0: {}
 

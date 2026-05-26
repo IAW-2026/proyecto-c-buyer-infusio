@@ -1,28 +1,42 @@
 import Link from "next/link";
 
-const footerLinks = {
+interface FooterLink {
+  label: string;
+  href: string;
+  ariaLabel: string;
+  external?: boolean;
+}
+
+const footerLinks: Record<string, { title: string; links: FooterLink[] }> = {
   shop: {
     title: "TIENDA",
     links: [
-      { label: "Café", href: "/?query=cafe", ariaLabel: "Ver productos de café" },
+      { label: "Café",       href: "/?query=cafe",       ariaLabel: "Ver productos de café" },
       { label: "Infusiones", href: "/?query=infusiones", ariaLabel: "Ver infusiones" },
       { label: "Accesorios", href: "/?query=accesorios", ariaLabel: "Ver accesorios" },
+      { label: "Máquinas",   href: "/?query=maquinas",   ariaLabel: "Ver máquinas" },
     ],
   },
   info: {
     title: "INFORMACIÓN",
     links: [
-      { label: "Política de envíos", href: "/", ariaLabel: "Política de envíos" },
-      { label: "Devoluciones", href: "/", ariaLabel: "Política de devoluciones" },
-      { label: "Contacto", href: "/", ariaLabel: "Contacto" },
+      {
+        label: "Política de envíos",
+        href: "https://proyecto-c-shipping-infusio.vercel.app/shipping-policies",
+        ariaLabel: "Política de envíos",
+        external: true,
+      },
+      { label: "Devoluciones",      href: "/returns",   ariaLabel: "Política de devoluciones" },
+      { label: "Contacto",          href: "/contact",   ariaLabel: "Contacto" },
+      { label: "Asistente Virtual", href: "/assistant", ariaLabel: "Asistente virtual de Infusio" },
     ],
   },
   account: {
     title: "MI CUENTA",
     links: [
-      { label: "Mis pedidos", href: "/orders", ariaLabel: "Ver mis pedidos" },
-      { label: "Carrito", href: "/cart", ariaLabel: "Ver carrito" },
-      { label: "Favoritos", href: "/favourites", ariaLabel: "Ver favoritos" },
+      { label: "Mis pedidos", href: "/orders",     ariaLabel: "Ver mis pedidos" },
+      { label: "Carrito",     href: "/cart",       ariaLabel: "Ver carrito" },
+      { label: "Favoritos",   href: "/favourites", ariaLabel: "Ver favoritos" },
     ],
   },
 };
@@ -49,13 +63,25 @@ export default function Footer() {
               <ul className="flex flex-col gap-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      aria-label={link.ariaLabel}
-                      className="text-sm text-muted-foreground hover:text-brown transition-colors"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        aria-label={link.ariaLabel}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-brown transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        aria-label={link.ariaLabel}
+                        className="text-sm text-muted-foreground hover:text-brown transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

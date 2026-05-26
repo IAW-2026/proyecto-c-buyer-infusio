@@ -17,6 +17,7 @@
     "@prisma/client": "^7.8.0",
     "@react-pdf/renderer": "^4.5.1",
     "dotenv": "^17.4.2",
+    "groq-sdk": "^1.2.0",
     "next": "16.2.4",
     "pdfkit": "^0.18.0",
     "pg": "^8.20.0",
