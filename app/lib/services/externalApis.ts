@@ -56,6 +56,7 @@ export interface SellerProduct {
   unit?: string;
   isLimitedEdition?: boolean;
   badge?: string;
+  availableUntil?: string | null;
   colors?: string[];
   specs?: {
     materials?: string;

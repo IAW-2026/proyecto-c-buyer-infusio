@@ -71,8 +71,9 @@ model Product {
   unit             String
   imageUrl         String?
   location         String?
-  isLimitedEdition Boolean  @default(false)
+  isLimitedEdition Boolean   @default(false)
   badge            String?
+  availableUntil   DateTime?
   colors           String[] @default([])
   specs            Json?
   createdAt        DateTime @default(now())

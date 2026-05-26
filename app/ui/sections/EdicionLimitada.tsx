@@ -5,17 +5,17 @@ const releases = [
   {
     src: "/images/coffee-bag.jpg",
     alt: "Café de origen",
-    href: "/edicion-limitada?tab=cafe",
+    href: "/limited-edition?tab=cafe",
   },
   {
     src: "/images/green-tea.jpg",
     alt: "Té verde",
-    href: "/edicion-limitada?tab=infusiones",
+    href: "/limited-edition?tab=infusiones",
   },
   {
     src: "/images/brewing-setup.jpg",
     alt: "Set de preparación",
-    href: "/edicion-limitada?tab=accesorios",
+    href: "/limited-edition?tab=accesorios",
   },
 ];
 
@@ -25,7 +25,7 @@ export default function EdicionLimitada() {
       <div className="max-w-350 mx-auto">
         <div className="flex items-center justify-between mb-10">
           <Link
-            href="/edicion-limitada"
+            href="/limited-edition"
             className="font-serif text-3xl lg:text-4xl text-brown hover:opacity-70 transition-opacity"
           >
             Edición Limitada

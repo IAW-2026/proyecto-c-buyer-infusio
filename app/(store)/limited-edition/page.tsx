@@ -17,15 +17,16 @@ const TABS = [
 type TabValue = (typeof TABS)[number]["value"];
 
 function tabHref(value: TabValue) {
-  return value ? `/edicion-limitada?tab=${value}` : "/edicion-limitada";
+  return value ? `/limited-edition?tab=${value}` : "/limited-edition";
 }
 
 function matchesTab(product: SellerProduct, tab: TabValue): boolean {
   if (!tab) return true;
   const cats = product.categories.join(" ").toLowerCase();
-  if (tab === "cafe")       return cats.includes("café") || cats.includes("cafe") || cats.includes("coffee");
+  const isMachine = cats.includes("máquina") || cats.includes("maquina");
+  if (tab === "cafe")       return (cats.includes("café") || cats.includes("cafe") || cats.includes("coffee")) && !isMachine;
   if (tab === "infusiones") return cats.includes("yerba") || cats.includes("té") || cats.includes("tereré") || cats.includes("infusion");
-  if (tab === "accesorios") return cats.includes("mates") || cats.includes("bombilla") || cats.includes("termo") || cats.includes("accesorio") || cats.includes("combo") || cats.includes("máquina") || cats.includes("maquina");
+  if (tab === "accesorios") return cats.includes("mates") || cats.includes("bombilla") || cats.includes("termo") || cats.includes("accesorio") || cats.includes("combo") || isMachine;
   return true;
 }
 
@@ -41,8 +42,9 @@ export default async function EdicionLimitadaPage({ searchParams }: PageProps) {
     // Seller API unreachable — show empty state
   }
 
+  const now = new Date();
   const limited = allProducts
-    .filter((p) => p.isLimitedEdition)
+    .filter((p) => p.isLimitedEdition && (!p.availableUntil || new Date(p.availableUntil) > now))
     .filter((p) => matchesTab(p, activeTab));
 
   return (
@@ -50,7 +52,7 @@ export default async function EdicionLimitadaPage({ searchParams }: PageProps) {
       {/* Header */}
       <div className="pt-20 lg:pt-28 pb-12 px-6 text-center border-b border-tan">
         <p className="text-xs tracking-[0.25em] text-terracotta italic mb-6">
-          SEASONAL LIMITED EDITIONS
+          EDICIONES LIMITADAS DE TEMPORADA
         </p>
         <h1 className="font-serif text-6xl lg:text-7xl text-brown mb-8">Cosechas Raras</h1>
         <p className="text-sm italic text-muted-foreground max-w-xl mx-auto leading-relaxed">

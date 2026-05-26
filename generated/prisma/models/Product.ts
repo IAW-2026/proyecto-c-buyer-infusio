@@ -48,6 +48,7 @@ export type ProductMinAggregateOutputType = {
   location: string | null
   isLimitedEdition: boolean | null
   badge: string | null
+  availableUntil: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -64,6 +65,7 @@ export type ProductMaxAggregateOutputType = {
   location: string | null
   isLimitedEdition: boolean | null
   badge: string | null
+  availableUntil: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -81,6 +83,7 @@ export type ProductCountAggregateOutputType = {
   location: number
   isLimitedEdition: number
   badge: number
+  availableUntil: number
   colors: number
   specs: number
   createdAt: number
@@ -111,6 +114,7 @@ export type ProductMinAggregateInputType = {
   location?: true
   isLimitedEdition?: true
   badge?: true
+  availableUntil?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -127,6 +131,7 @@ export type ProductMaxAggregateInputType = {
   location?: true
   isLimitedEdition?: true
   badge?: true
+  availableUntil?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +149,7 @@ export type ProductCountAggregateInputType = {
   location?: true
   isLimitedEdition?: true
   badge?: true
+  availableUntil?: true
   colors?: true
   specs?: true
   createdAt?: true
@@ -250,6 +256,7 @@ export type ProductGroupByOutputType = {
   location: string | null
   isLimitedEdition: boolean
   badge: string | null
+  availableUntil: Date | null
   colors: string[]
   specs: runtime.JsonValue | null
   createdAt: Date
@@ -292,6 +299,7 @@ export type ProductWhereInput = {
   location?: Prisma.StringNullableFilter<"Product"> | string | null
   isLimitedEdition?: Prisma.BoolFilter<"Product"> | boolean
   badge?: Prisma.StringNullableFilter<"Product"> | string | null
+  availableUntil?: Prisma.DateTimeNullableFilter<"Product"> | Date | string | null
   colors?: Prisma.StringNullableListFilter<"Product">
   specs?: Prisma.JsonNullableFilter<"Product">
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -311,6 +319,7 @@ export type ProductOrderByWithRelationInput = {
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   isLimitedEdition?: Prisma.SortOrder
   badge?: Prisma.SortOrderInput | Prisma.SortOrder
+  availableUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   colors?: Prisma.SortOrder
   specs?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -333,6 +342,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   location?: Prisma.StringNullableFilter<"Product"> | string | null
   isLimitedEdition?: Prisma.BoolFilter<"Product"> | boolean
   badge?: Prisma.StringNullableFilter<"Product"> | string | null
+  availableUntil?: Prisma.DateTimeNullableFilter<"Product"> | Date | string | null
   colors?: Prisma.StringNullableListFilter<"Product">
   specs?: Prisma.JsonNullableFilter<"Product">
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -352,6 +362,7 @@ export type ProductOrderByWithAggregationInput = {
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   isLimitedEdition?: Prisma.SortOrder
   badge?: Prisma.SortOrderInput | Prisma.SortOrder
+  availableUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   colors?: Prisma.SortOrder
   specs?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -379,6 +390,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   location?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   isLimitedEdition?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   badge?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  availableUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"Product"> | Date | string | null
   colors?: Prisma.StringNullableListFilter<"Product">
   specs?: Prisma.JsonNullableWithAggregatesFilter<"Product">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -398,6 +410,7 @@ export type ProductCreateInput = {
   location?: string | null
   isLimitedEdition?: boolean
   badge?: string | null
+  availableUntil?: Date | string | null
   colors?: Prisma.ProductCreatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -417,6 +430,7 @@ export type ProductUncheckedCreateInput = {
   location?: string | null
   isLimitedEdition?: boolean
   badge?: string | null
+  availableUntil?: Date | string | null
   colors?: Prisma.ProductCreatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -436,6 +450,7 @@ export type ProductUpdateInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isLimitedEdition?: Prisma.BoolFieldUpdateOperationsInput | boolean
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  availableUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   colors?: Prisma.ProductUpdatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -455,6 +470,7 @@ export type ProductUncheckedUpdateInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isLimitedEdition?: Prisma.BoolFieldUpdateOperationsInput | boolean
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  availableUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   colors?: Prisma.ProductUpdatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -474,6 +490,7 @@ export type ProductCreateManyInput = {
   location?: string | null
   isLimitedEdition?: boolean
   badge?: string | null
+  availableUntil?: Date | string | null
   colors?: Prisma.ProductCreatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -493,6 +510,7 @@ export type ProductUpdateManyMutationInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isLimitedEdition?: Prisma.BoolFieldUpdateOperationsInput | boolean
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  availableUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   colors?: Prisma.ProductUpdatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -512,6 +530,7 @@ export type ProductUncheckedUpdateManyInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isLimitedEdition?: Prisma.BoolFieldUpdateOperationsInput | boolean
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  availableUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   colors?: Prisma.ProductUpdatecolorsInput | string[]
   specs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -531,6 +550,7 @@ export type ProductCountOrderByAggregateInput = {
   location?: Prisma.SortOrder
   isLimitedEdition?: Prisma.SortOrder
   badge?: Prisma.SortOrder
+  availableUntil?: Prisma.SortOrder
   colors?: Prisma.SortOrder
   specs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -554,6 +574,7 @@ export type ProductMaxOrderByAggregateInput = {
   location?: Prisma.SortOrder
   isLimitedEdition?: Prisma.SortOrder
   badge?: Prisma.SortOrder
+  availableUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -570,6 +591,7 @@ export type ProductMinOrderByAggregateInput = {
   location?: Prisma.SortOrder
   isLimitedEdition?: Prisma.SortOrder
   badge?: Prisma.SortOrder
+  availableUntil?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -608,6 +630,10 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type ProductUpdatecolorsInput = {
   set?: string[]
   push?: string | string[]
@@ -628,6 +654,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   location?: boolean
   isLimitedEdition?: boolean
   badge?: boolean
+  availableUntil?: boolean
   colors?: boolean
   specs?: boolean
   createdAt?: boolean
@@ -647,6 +674,7 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   location?: boolean
   isLimitedEdition?: boolean
   badge?: boolean
+  availableUntil?: boolean
   colors?: boolean
   specs?: boolean
   createdAt?: boolean
@@ -666,6 +694,7 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   location?: boolean
   isLimitedEdition?: boolean
   badge?: boolean
+  availableUntil?: boolean
   colors?: boolean
   specs?: boolean
   createdAt?: boolean
@@ -685,13 +714,14 @@ export type ProductSelectScalar = {
   location?: boolean
   isLimitedEdition?: boolean
   badge?: boolean
+  availableUntil?: boolean
   colors?: boolean
   specs?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sellerId" | "name" | "description" | "categories" | "price" | "stock" | "unit" | "imageUrl" | "location" | "isLimitedEdition" | "badge" | "colors" | "specs" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sellerId" | "name" | "description" | "categories" | "price" | "stock" | "unit" | "imageUrl" | "location" | "isLimitedEdition" | "badge" | "availableUntil" | "colors" | "specs" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 
 export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Product"
@@ -709,6 +739,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     location: string | null
     isLimitedEdition: boolean
     badge: string | null
+    availableUntil: Date | null
     colors: string[]
     specs: runtime.JsonValue | null
     createdAt: Date
@@ -1148,6 +1179,7 @@ export interface ProductFieldRefs {
   readonly location: Prisma.FieldRef<"Product", 'String'>
   readonly isLimitedEdition: Prisma.FieldRef<"Product", 'Boolean'>
   readonly badge: Prisma.FieldRef<"Product", 'String'>
+  readonly availableUntil: Prisma.FieldRef<"Product", 'DateTime'>
   readonly colors: Prisma.FieldRef<"Product", 'String[]'>
   readonly specs: Prisma.FieldRef<"Product", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>

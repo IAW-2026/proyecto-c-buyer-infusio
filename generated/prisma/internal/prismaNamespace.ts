@@ -1483,6 +1483,7 @@ export const ProductScalarFieldEnum = {
   location: 'location',
   isLimitedEdition: 'isLimitedEdition',
   badge: 'badge',
+  availableUntil: 'availableUntil',
   colors: 'colors',
   specs: 'specs',
   createdAt: 'createdAt',

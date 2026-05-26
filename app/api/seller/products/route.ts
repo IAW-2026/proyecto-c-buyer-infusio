@@ -19,6 +19,7 @@ export async function GET() {
     location: p.location ?? undefined,
     isLimitedEdition: p.isLimitedEdition,
     badge: p.badge ?? undefined,
+    availableUntil: p.availableUntil?.toISOString() ?? null,
     colors: p.colors,
     specs: p.specs as SellerProduct["specs"] ?? undefined,
   }));
