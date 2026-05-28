@@ -232,6 +232,128 @@ async function main() {
   }
   console.log(`  ${ORDERS.length} demo orders upserted`);
 
+  // ─── Orders for cliente@infusio.com (every possible status) ─────────────────
+  await prisma.purchaseOrder.deleteMany({ where: { userId: clientClerk.id, id: { startsWith: "order_client_" } } });
+
+  const clientUserId = clientClerk.id;
+  const clientAddress = { street: "Calle Florida 500", city: "Rosario", province: "Santa Fe", postalCode: "2000" };
+
+  const CLIENT_ORDERS: {
+    id: string; cartId: string;
+    status: "PENDING" | "AWAITING_PAYMENT" | "CONFIRMED" | "CANCELLED";
+    shippingId: string | null; daysAgo: number; shippingCost: number;
+    items: { productId: string; name: string; image: string | null; price: number; qty: number }[];
+  }[] = [
+    // 1. PENDING — just placed, not yet paid
+    { id: "order_client_001", cartId: "cart_client_001", status: "PENDING", shippingId: null, daysAgo: 0, shippingCost: 0,
+      items: [{ productId: "prod_009", name: "Café Yirgacheffe Etiopía", image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, qty: 1 }] },
+    // 2. AWAITING_PAYMENT — payment initiated
+    { id: "order_client_002", cartId: "cart_client_002", status: "AWAITING_PAYMENT", shippingId: null, daysAgo: 2, shippingCost: 0,
+      items: [
+        { productId: "prod_010", name: "Espresso Blend Brasileño", image: "https://www.connectroasters.com/cdn/shop/files/Connect112125-8.jpg?v=1763930646&width=1946", price: 3600, qty: 2 },
+        { productId: "prod_006", name: "Té Verde Taragüi Menta Poleo", image: "https://statics.dinoonline.com.ar/imagenes/large_460x460/2020123_l.jpg", price: 890, qty: 1 },
+      ] },
+    // 3. CONFIRMED — shipping created, not dispatched yet
+    { id: "order_client_003", cartId: "cart_client_003", status: "CONFIRMED", shippingId: "ship_pending_002", daysAgo: 3, shippingCost: 1500,
+      items: [{ productId: "prod_001", name: "Yerba Mate Rosamonte Especial", image: "https://http2.mlstatic.com/D_NQ_NP_654535-MLA92396918908_092025-O.webp", price: 2850, qty: 2 }] },
+    // 4. CONFIRMED — in transit
+    { id: "order_client_004", cartId: "cart_client_004", status: "CONFIRMED", shippingId: "ship_transit_003", daysAgo: 6, shippingCost: 2800,
+      items: [
+        { productId: "prod_011", name: "Café Sidamo Etiopía Natural", image: "https://beanswithoutborders.com/cdn/shop/files/No-text-Ethiopia-sidama-coffee-beans-natural-flavor.png?v=1767841523&width=1445", price: 5200, qty: 1 },
+        { productId: "prod_004", name: "Bombilla Acero Inox Pico de Loro", image: "https://acdn-us.mitiendanube.com/stores/004/274/329/products/pico-de-loro-acero-1-d208ed4b8e792db12617592794656043-1024-1024.webp", price: 1200, qty: 1 },
+      ] },
+    // 5. CONFIRMED — in transit (second, different items)
+    { id: "order_client_005", cartId: "cart_client_005", status: "CONFIRMED", shippingId: "ship_transit_004", daysAgo: 9, shippingCost: 1500,
+      items: [
+        { productId: "prod_003", name: "Mate Calabaza Imperial Curado", image: "https://acdn-us.mitiendanube.com/stores/005/262/890/products/imp1-539d6d4d80116ffbce17316867237631-640-0.webp", price: 4500, qty: 1 },
+        { productId: "prod_002", name: "Yerba Mate CBSé Energía Pomelo", image: "https://http2.mlstatic.com/D_NQ_NP_927424-MLU72565713266_112023-O.webp", price: 3100, qty: 1 },
+      ] },
+    // 6. CONFIRMED — delivered
+    { id: "order_client_006", cartId: "cart_client_006", status: "CONFIRMED", shippingId: "ship_delivered_003", daysAgo: 25, shippingCost: 2800,
+      items: [
+        { productId: "prod_007", name: "Set Mate + Bombilla Artesanal", image: "https://acdn-us.mitiendanube.com/stores/003/024/004/products/img_5168-877e4a2f4754a8696517423171106674-480-0.webp", price: 5800, qty: 1 },
+        { productId: "prod_005", name: "Termo Stanley Classic Verde", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvAwrS7ZrOMVhlT5P3R-Jl87w46X7PWJ5vWg&s", price: 28000, qty: 1 },
+      ] },
+    // 7. CONFIRMED — delivered (older order, multiple items)
+    { id: "order_client_007", cartId: "cart_client_007", status: "CONFIRMED", shippingId: "ship_delivered_004", daysAgo: 60, shippingCost: 4200,
+      items: [
+        { productId: "prod_012", name: "Yerba Mate Amanda Tradicional", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVIE1QfLr6Wxp4HxU_Xon0389jiolMPKQUPw&s", price: 4200, qty: 3 },
+        { productId: "prod_008", name: "Hierbas para Tereré Frío", image: "https://jesper.com.ar/wp-content/uploads/2023/04/te-verde-terere-bolsa500g.jpg", price: 1650, qty: 2 },
+      ] },
+    // 8. CONFIRMED — shipping incident
+    { id: "order_client_008", cartId: "cart_client_008", status: "CONFIRMED", shippingId: "ship_incident_002", daysAgo: 12, shippingCost: 1500,
+      items: [{ productId: "prod_036", name: "Café Arábica Colombia", image: null, price: 6200, qty: 1 }] },
+    // 9. CANCELLED — before payment
+    { id: "order_client_009", cartId: "cart_client_009", status: "CANCELLED", shippingId: null, daysAgo: 15, shippingCost: 0,
+      items: [{ productId: "prod_013", name: "Mate de Cerámica Artesanal", image: null, price: 6500, qty: 1 }] },
+    // 10. CANCELLED — after confirmation
+    { id: "order_client_010", cartId: "cart_client_010", status: "CANCELLED", shippingId: null, daysAgo: 35, shippingCost: 0,
+      items: [
+        { productId: "prod_017", name: "Termo Doble Pared 1L Negro", image: null, price: 15000, qty: 1 },
+        { productId: "prod_022", name: "Molinillo Manual Cerámica", image: null, price: 11000, qty: 1 },
+      ] },
+  ];
+
+  for (const o of CLIENT_ORDERS) {
+    const createdAt = new Date(Date.now() - o.daysAgo * 86_400_000);
+    await prisma.cart.upsert({
+      where: { id: o.cartId },
+      create: {
+        id: o.cartId, userId: clientUserId, status: "CHECKED_OUT", createdAt,
+        items: { create: o.items.map((item) => ({ productId: item.productId, productName: item.name, productImageUrl: item.image, priceAtTime: item.price, quantity: item.qty })) },
+      },
+      update: {},
+    });
+    await prisma.purchaseOrder.upsert({
+      where: { id: o.id },
+      create: { id: o.id, cartId: o.cartId, userId: clientUserId, status: o.status, userAddress: clientAddress, shippingId: o.shippingId, createdAt },
+      update: {},
+    });
+    if (o.shippingCost > 0) {
+      const amount = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+      await prisma.package.upsert({
+        where: { id: `pkg_client_${o.id}` },
+        create: { id: `pkg_client_${o.id}`, purchaseOrderId: o.id, sellerId: "seller_001", buyerId: clientUserId, amount, shippingCost: o.shippingCost, shippingId: o.shippingId, createdAt },
+        update: {},
+      });
+    }
+  }
+  console.log(`  ${CLIENT_ORDERS.length} client orders upserted`);
+
+  // ─── Favourites for cliente@infusio.com ──────────────────────────────────────
+  const CLIENT_FAVOURITES = [
+    { productId: "prod_009", productName: "Café Yirgacheffe Etiopía",      productImageUrl: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, location: "Etiopía",                    categories: ["café"],                    description: "Notas florales de jazmín y limón, acidez brillante. Perfil de tueste claro." },
+    { productId: "prod_001", productName: "Yerba Mate Rosamonte Especial", productImageUrl: "https://http2.mlstatic.com/D_NQ_NP_654535-MLA92396918908_092025-O.webp",                   price: 2850, location: "Corrientes, Argentina",       categories: ["yerba mate", "infusiones"], description: "Yerba mate suave y equilibrada, ideal para cebar mate largo." },
+    { productId: "prod_013", productName: "Mate de Cerámica Artesanal",    productImageUrl: null,                                                                                        price: 6500, location: "Buenos Aires, Argentina",     categories: ["mates", "accesorios"],     description: "Mate torneado a mano en taller ceramista porteño." },
+    { productId: "prod_017", productName: "Termo Doble Pared 1L Negro",    productImageUrl: null,                                                                                        price: 15000, location: "Ciudad Autónoma de Buenos Aires", categories: ["termos", "accesorios"], description: "Termo de vacío doble pared en acero inoxidable 316L. Mantiene 24 h." },
+    { productId: "prod_024", productName: "Té Verde Premium",              productImageUrl: null,                                                                                        price: 2800, location: "Misiones, Argentina",         categories: ["tés", "infusiones"],       description: "Hojas enteras de cosecha temprana. Notas de pasto fresco y melón." },
+    { productId: "prod_le_002", productName: "Café Geisha Panamá Washed",  productImageUrl: null,                                                                                        price: 9200, location: "Boquete, Panamá",             categories: ["café"],                    description: "La variedad más buscada del mundo. Notas de jazmín, bergamota y durazno blanco." },
+  ];
+
+  for (const fav of CLIENT_FAVOURITES) {
+    await prisma.favouriteProduct.upsert({
+      where: { userId_productId: { userId: clientUserId, productId: fav.productId } },
+      create: { userId: clientUserId, ...fav },
+      update: {},
+    });
+  }
+  console.log(`  ${CLIENT_FAVOURITES.length} client favourites upserted`);
+
+  // ─── Active cart for cliente@infusio.com (2 items, not checked out) ──────────
+  await prisma.cart.upsert({
+    where: { id: "cart_client_active" },
+    create: { id: "cart_client_active", userId: clientUserId, status: "NOT_CHECKED_OUT" },
+    update: { status: "NOT_CHECKED_OUT" },
+  });
+  await prisma.cartItem.deleteMany({ where: { cartId: "cart_client_active" } });
+  await prisma.cartItem.createMany({
+    data: [
+      { cartId: "cart_client_active", productId: "prod_011", productName: "Café Sidamo Etiopía Natural", productImageUrl: "https://beanswithoutborders.com/cdn/shop/files/No-text-Ethiopia-sidama-coffee-beans-natural-flavor.png?v=1767841523&width=1445", priceAtTime: 5200, quantity: 1 },
+      { cartId: "cart_client_active", productId: "prod_005", productName: "Termo Stanley Classic Verde",  productImageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvAwrS7ZrOMVhlT5P3R-Jl87w46X7PWJ5vWg&s",                                  priceAtTime: 28000, quantity: 1 },
+    ],
+  });
+  console.log("  Active cart with 2 items upserted for cliente@infusio.com");
+
   console.log(`\nSeed complete. Test password: ${TEST_PASSWORD}`);
   console.log(`  admin@infusio.com   → ${adminClerk.id}`);
   console.log(`  cliente@infusio.com → ${clientClerk.id}\n`);

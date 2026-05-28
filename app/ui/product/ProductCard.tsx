@@ -101,7 +101,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             {label.toUpperCase()}
           </p>
           <p className={`text-sm font-medium ${accentClass}`}>
-            $ {price}{product.unit && accent !== "slate" ? ` / ${product.unit}` : ""}
+            $ {price}{product.unit && accent !== "slate" && product.unit.toUpperCase() !== "SET COMPLETO" ? ` / ${product.unit}` : ""}
           </p>
         </div>
 

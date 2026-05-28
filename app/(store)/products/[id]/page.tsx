@@ -16,7 +16,7 @@ type Accent = "olive" | "terracotta";
 
 function isAccessory(categories: string[]): boolean {
   const c = categories.join(" ").toLowerCase();
-  return ["mates", "bombilla", "termo", "accesorio", "combo", "máquina", "maquina"].some((k) =>
+  return ["mates", "bombilla", "termo", "accesorio", "máquina", "maquina"].some((k) =>
     c.includes(k)
   );
 }
@@ -43,14 +43,25 @@ function getMapUrl(location?: string): string {
   if (loc.includes("corrientes"))                                    return `${BASE}#7/-27.5/-58.8`;
   if (loc.includes("entre r"))                                       return `${BASE}#7/-32.0/-60.0`;
   if (loc.includes("misiones"))                                      return `${BASE}#7/-27.4/-55.9`;
+  if (loc.includes("patagonia"))                                     return `${BASE}#5/-45.0/-68.0`;
   if (loc.includes("ciudad autónoma") || loc.includes("caba"))      return `${BASE}#11/-34.6/-58.4`;
   if (loc.includes("buenos aires"))                                  return `${BASE}#7/-34.6/-59.0`;
   if (loc.includes("argentina"))                                     return `${BASE}#4/-34.0/-64.0`;
   if (loc.includes("minas gerais"))                                  return `${BASE}#6/-19.9/-43.9`;
   if (loc.includes("brasil") || loc.includes("brazil"))             return `${BASE}#4/-14.2/-51.9`;
   if (loc.includes("etio"))                                          return `${BASE}#5/9.1/40.5`;
+  if (loc.includes("huila") || loc.includes("nariño"))              return `${BASE}#8/2.5/-75.6`;
+  if (loc.includes("colombia"))                                      return `${BASE}#5/4.6/-74.1`;
+  if (loc.includes("boquete") || loc.includes("panam"))             return `${BASE}#9/8.8/-82.4`;
+  if (loc.includes("nyeri") || loc.includes("keni") || loc.includes("kenya")) return `${BASE}#8/-0.4/36.9`;
+  if (loc.includes("assam") || loc.includes("india"))               return `${BASE}#7/26.1/93.6`;
+  if (loc.includes("uji"))                                           return `${BASE}#9/34.9/135.8`;
+  if (loc.includes("fujian"))                                        return `${BASE}#7/26.1/118.0`;
+  if (loc.includes("yunnan"))                                        return `${BASE}#7/25.0/102.7`;
+  if (loc.includes("jap"))                                           return `${BASE}#5/36.5/138.0`;
+  if (loc.includes("china"))                                         return `${BASE}#5/35.0/105.0`;
 
-  return `${BASE}#4/-34.0/-64.0`;
+  return `${BASE}#3/20.0/10.0`;
 }
 
 function getBrewingInfo(product: SellerProduct): { method: string; ratio: string; temp: string } {
