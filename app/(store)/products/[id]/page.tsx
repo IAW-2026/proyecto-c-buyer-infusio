@@ -261,10 +261,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   value: (() => { const c = product.categories[0] ?? ""; return c ? c.charAt(0).toUpperCase() + c.slice(1) : "—"; })(),
                 },
                 { key: "ORIGEN", value: product.location ?? "—" },
-                {
-                  key: "STOCK",
-                  value: isOutOfStock ? "Sin stock" : `${product.stock} disponibles`,
-                },
               ].map(({ key, value }, i, arr) => (
                 <div
                   key={key}

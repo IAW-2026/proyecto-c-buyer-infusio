@@ -41,7 +41,6 @@ export default function AccessoryDetailLayout({ product, ritual, accent }: Props
     [
       { key: "CATEGORÍA", value: cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : "—" },
       product.location ? { key: "ORIGEN", value: product.location } : null,
-      { key: "STOCK", value: isOutOfStock ? "Sin stock" : `${product.stock} disponibles` },
     ] as ({ key: string; value: string } | null)[]
   ).filter(Boolean) as { key: string; value: string }[];
 
