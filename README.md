@@ -4,7 +4,15 @@ Esta app corresponde al rol del comprador en los proyectos de tipo **C (Marketpl
 
 # Infusio — Buyer App
 
-Aplicación de compras de **Infusio**, una tienda artesanal argentina de cafés de especialidad, tés, yerba mate e infusiones. El catálogo permite filtrar por categoría, buscar por texto y acceder a una sección de ediciones limitadas. Cada producto incluye ficha detallada con mapa de origen (si es consumible). Los usuarios pueden agregar productos al carrito, completar el checkout con validación de dirección (escala nacional), y ser redirigidos al pago. Una vez confirmado el pedido, pueden seguir el estado del envío en tiempo real (redirigiéndose a la shipping app o por el detalle de la órden). También es posible guardar productos como favoritos y compartir la selección mediante un enlace público. La app incluye un asistente virtual con IA (Groq) para ayudar a descubrir productos según los gustos del usuario o asistirlo en el uso de nuevas herramientas, y un panel de administración con estadísticas de ventas, usuarios y comportamiento de la tienda potenciado por IA (Gemini).
+Aplicación de compras de **Infusio**, una tienda artesanal argentina de cafés de especialidad, tés, yerba mate e infusiones.
+
+- Catálogo con filtros por categoría, búsqueda por texto y sección de ediciones limitadas con fecha de vencimiento
+- Ficha detallada de cada producto con mapa de origen (productos consumibles)
+- Carrito con checkout, validación de dirección a escala nacional y redirección al pago
+- Seguimiento del envío en tiempo real desde el detalle de la orden
+- Favoritos con opción de compartir la selección mediante enlace público
+- Asistente virtual con IA (Groq) para descubrir productos y resolver dudas sobre la tienda
+- Panel de administración con estadísticas de ventas, usuarios y comportamiento, potenciado por IA (Gemini)
 
 **Deploy:** [https://proyecto-c-buyer-infusio.vercel.app](https://proyecto-c-buyer-infusio.vercel.app)
 
