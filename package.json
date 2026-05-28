@@ -27,10 +27,10 @@
     "svix": "^1.92.2"
   },
   "browserslist": [
-    "chrome >= 93",
-    "firefox >= 90",
-    "safari >= 15",
-    "edge >= 93"
+    "chrome >= 99",
+    "firefox >= 99",
+    "safari >= 15.4",
+    "edge >= 99"
   ],
   "prisma": {
     "seed": "tsx prisma/seed.ts"
