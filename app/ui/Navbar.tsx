@@ -4,6 +4,7 @@ import { AuthButtons } from "./AuthButtons";
 import CartNavButton from "./cart/CartNavButton";
 import MobileNav from "./MobileNav";
 import FavouritesNavButton from "./favourites/FavouritesNavButton";
+import AssistantNavButton from "./AssistantNavButton";
 
 const navLinks = [
   { href: "/?query=cafe", label: "CAFÉ" },
@@ -53,6 +54,7 @@ export default async function Navbar() {
           {/* Desktop Auth */}
           <div className="hidden lg:flex shrink-0 items-center gap-3">
             <FavouritesNavButton className={linkClass} />
+            <AssistantNavButton className="text-brown" />
             <AuthButtons isSignedIn={!!userId} />
           </div>
 
@@ -71,6 +73,7 @@ export default async function Navbar() {
                 {userId && (
                   <Link href="/favourites" className={mobileLinkClass}>FAVOURITES</Link>
                 )}
+                <Link href="/assistant" className={mobileLinkClass}>ASISTENTE</Link>
                 <CartNavButton userId={userId} className={mobileLinkClass} />
               </nav>
               <div className="flex gap-3 pt-4 border-t border-tan">

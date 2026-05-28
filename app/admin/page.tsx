@@ -5,28 +5,8 @@ import Link from "next/link";
 import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
 import ExportDropdown from "@/app/ui/admin/ExportDropdown";
 import AdminSearch from "@/app/ui/admin/AdminSearch";
+import AdminDashboardTable, { type DashboardOrderRow } from "@/app/ui/admin/AdminDashboardTable";
 
-const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:           "PROCESANDO",
-  AWAITING_PAYMENT:  "PENDIENTE",
-  CONFIRMED:         "CONFIRMADO",
-  CANCELLED:         "CANCELADO",
-};
-
-const STATUS_CLS: Record<PurchaseOrderStatus, string> = {
-  PENDING:           "bg-tan/60 text-brown",
-  AWAITING_PAYMENT:  "bg-[#f2e8c8] text-[#8a7030]",
-  CONFIRMED:         "bg-[#dce6d8] text-[#4e7048]",
-  CANCELLED:         "bg-[#eedede] text-[#904545]",
-};
-
-function formatOrderId(id: string) {
-  return `#INF-${id.slice(-4).toUpperCase()}`;
-}
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
-}
 
 export default async function AdminPage({
   searchParams,
@@ -169,38 +149,18 @@ export default async function AdminPage({
             </tr>
           </thead>
           <tbody>
-            {orders.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-16 text-center font-serif text-xl text-muted-foreground">
-                  No hay pedidos registrados todavía.
-                </td>
-              </tr>
-            ) : (
-              orders.map((o) => {
-                const items = o.cart.items;
-                const itemsLabel = items.length > 0
-                  ? items.map((i) => `${i.productName} (${i.quantity})`).join(", ")
-                  : "—";
-                const total = o.packages.length > 0
+            <AdminDashboardTable
+              orders={orders.map<DashboardOrderRow>((o) => ({
+                id: o.id,
+                status: o.status,
+                createdAt: o.createdAt.toISOString(),
+                userName: `${o.user.name} ${o.user.lastName}`,
+                items: o.cart.items,
+                total: o.packages.length > 0
                   ? `$${o.packages.reduce((s, p) => s + p.amount.toNumber(), 0).toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
-                  : "—";
-
-                return (
-                  <tr key={o.id} className="border-b border-tan/60">
-                    <td className="py-4 text-sm text-brown">{formatOrderId(o.id)}</td>
-                    <td className="py-4 text-sm text-brown">{o.user.name} {o.user.lastName}</td>
-                    <td className="py-4 text-sm text-muted-foreground">{formatDate(o.createdAt)}</td>
-                    <td className="py-4 text-sm text-muted-foreground max-w-xs truncate">{itemsLabel}</td>
-                    <td className="py-4 text-sm font-medium text-brown">{total}</td>
-                    <td className="py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs tracking-widest ${STATUS_CLS[o.status]}`}>
-                        {STATUS_LABEL[o.status]}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+                  : "—",
+              }))}
+            />
           </tbody>
         </table>
       </div>
