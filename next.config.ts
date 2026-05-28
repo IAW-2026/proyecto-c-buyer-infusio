@@ -20,7 +20,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${imgSrc}`,
   "font-src 'self'",
-  `connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.com https://api.maptiler.com wss://*.clerk.accounts.dev`,
+  `connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.com https://clerk-telemetry.com https://api.maptiler.com wss://*.clerk.accounts.dev`,
   "frame-src https://api.maptiler.com https://proyecto-c-shipping-infusio.vercel.app https://*.clerk.accounts.dev",
   "frame-ancestors 'self'",
   "worker-src blob:",
