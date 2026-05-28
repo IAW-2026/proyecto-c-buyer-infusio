@@ -15,7 +15,7 @@ export default function Pagination({
 }: PaginationProps) {
   const activeCls =
     accent === "terracotta" ? "bg-terracotta text-cream" :
-    accent === "slate"      ? "bg-[#DFD9DE] text-brown"  :
+    accent === "slate"      ? "bg-[#7A3B54] text-cream"  :
     /* olive */               "bg-olive text-cream";
   if (totalPages <= 1) return null;
 

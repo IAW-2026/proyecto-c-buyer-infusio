@@ -24,7 +24,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const accent = getAccent(product.categories);
   const accentClass =
     accent === "terracotta" ? "text-terracotta" :
-    accent === "slate"      ? "text-[#7A6B77]"  :
+    accent === "slate"      ? "text-[#7A3B54]"  :
     "text-olive";
   const label = product.location ?? product.categories[0]?.toUpperCase() ?? "";
 
@@ -101,7 +101,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             {label.toUpperCase()}
           </p>
           <p className={`text-sm font-medium ${accentClass}`}>
-            $ {price}{product.unit ? ` / ${product.unit}` : ""}
+            $ {price}{product.unit && accent !== "slate" ? ` / ${product.unit}` : ""}
           </p>
         </div>
 

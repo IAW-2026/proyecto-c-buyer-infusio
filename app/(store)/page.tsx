@@ -154,13 +154,6 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   if (!query) {
     return (
       <>
-        {/* Workaround: Next.js 16 + React 19 drops fetchpriority from priority images */}
-        <link
-          rel="preload"
-          as="image"
-          href="/_next/image?url=%2Fimages%2Fmorning-ritual.jpg&w=1080&q=75"
-          fetchPriority="high"
-        />
         <Suspense>
           <PaymentToast />
         </Suspense>

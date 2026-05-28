@@ -32,7 +32,7 @@ export default function AddToCartControls({
 
   const btnCls =
     accent === "terracotta" ? "bg-terracotta hover:bg-[#833f29] text-cream" :
-    accent === "slate"      ? "bg-[#DFD9DE] hover:bg-[#c8c1c7] text-brown" :
+    accent === "slate"      ? "bg-[#7A3B54] hover:bg-[#663147] text-cream" :
     /* olive */                "bg-olive hover:bg-[#5b5f49] text-cream";
 
   if (isOutOfStock) {

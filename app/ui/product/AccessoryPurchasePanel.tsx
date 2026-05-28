@@ -33,7 +33,7 @@ export default function AccessoryPurchasePanel({
   return (
     <>
       {colors.length > 0 && (
-        <div className="px-6 py-5 border-b border-[#DFD9DE]">
+        <div className="px-6 py-5 border-b border-[#ECD9DF]">
           <p className="text-xs tracking-[0.15em] text-muted-foreground mb-3">COLORWAY</p>
           <div className="flex gap-3">
             {colors.map((hex) => (

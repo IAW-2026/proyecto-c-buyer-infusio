@@ -60,7 +60,7 @@ export default function CartDrawer() {
           />
           <div
             className="absolute bottom-36 -left-10 w-56 h-56 rounded-full"
-            style={{ backgroundColor: "rgba(155, 145, 195, 0.22)" }}
+            style={{ backgroundColor: "rgba(122, 59, 84, 0.18)" }}
           />
         </div>
 
