@@ -376,7 +376,18 @@ async function main() {
       const amount = o.items.reduce((s, i) => s + i.price * i.qty, 0);
       await prisma.package.upsert({
         where: { id: `pkg_client_${o.id}` },
-        create: { id: `pkg_client_${o.id}`, purchaseOrderId: o.id, sellerId: o.sellerId, buyerId: clientUserId, amount, shippingCost: o.shippingCost, shippingId: o.shippingId, createdAt },
+        create: {
+          id: `pkg_client_${o.id}`, purchaseOrderId: o.id, sellerId: o.sellerId, buyerId: clientUserId, amount, shippingCost: o.shippingCost, shippingId: o.shippingId, createdAt,
+          items: {
+            create: o.items.map((item) => ({
+              productId: item.productId,
+              productName: item.name,
+              unitPrice: item.price,
+              quantity: item.qty,
+              subtotal: item.price * item.qty,
+            })),
+          },
+        },
         update: {},
       });
     }
