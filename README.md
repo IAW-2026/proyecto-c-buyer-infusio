@@ -27,7 +27,7 @@ Aplicación de compras de **Infusio**, una tienda artesanal argentina de cafés 
 
 ---
 
-# Importante
+## Importante
 
 - **Flujo de checkout:** El proceso de pago tiene tres pasos: el usuario confirma la orden → la app crea el pedido en el Seller App y obtiene una URL de pago → el usuario es redirigido al procesador de pagos externo. El retorno exitoso, fallido o pendiente es manejado por `PaymentToast`, que restaura el carrito si el pago fue fallido (la órden de pago dejó de existir). Esta app está conectada con el **Shipping App** desplegado, no a un mock local (el mock existe pero no lo utilizo), solo redirijo al usuario hacia su página para ver detalles de envío y políticas. 
 
