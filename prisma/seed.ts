@@ -248,67 +248,9 @@ async function main() {
     userAddress: { street: string; city: string; province: string; postalCode: string };
     items: { productId: string; name: string; image: string | null; price: number; qty: number }[];
   }[] = [
-    // 1. PENDING — just placed
+    // 1. CONFIRMED — SHIP-CB78, seller_001 → Mendoza (oldest, 60 days ago)
     {
-      id: "order_client_001", cartId: "cart_client_001", status: "PENDING",
-      shippingId: null, daysAgo: 0, shippingCost: 0, sellerId: "seller_001",
-      userAddress: { street: "San Martín 340", city: "Mendoza", province: "Mendoza", postalCode: "5500" },
-      items: [
-        { productId: "prod_001", name: "Yerba Mate Rosamonte Especial", image: "https://http2.mlstatic.com/D_NQ_NP_654535-MLA92396918908_092025-O.webp", price: 2850, qty: 2 },
-        { productId: "prod_006", name: "Té Verde Taragüi Menta Poleo", image: "https://statics.dinoonline.com.ar/imagenes/large_460x460/2020123_l.jpg", price: 890, qty: 1 },
-      ],
-    },
-    // 2. AWAITING_PAYMENT — payment link sent
-    {
-      id: "order_client_002", cartId: "cart_client_002", status: "AWAITING_PAYMENT",
-      shippingId: null, daysAgo: 2, shippingCost: 0, sellerId: "seller_005",
-      userAddress: { street: "Bv. Oroño 1500", city: "Rosario", province: "Santa Fe", postalCode: "2000" },
-      items: [
-        { productId: "prod_010", name: "Espresso Blend Brasileño", image: "https://www.connectroasters.com/cdn/shop/files/Connect112125-8.jpg?v=1763930646&width=1946", price: 3600, qty: 2 },
-        { productId: "prod_009", name: "Café Yirgacheffe Etiopía", image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, qty: 1 },
-      ],
-    },
-    // 3. CANCELLED — before payment
-    {
-      id: "order_client_003", cartId: "cart_client_003", status: "CANCELLED",
-      shippingId: null, daysAgo: 15, shippingCost: 0, sellerId: "seller_001",
-      userAddress: { street: "Calle 7 Nro. 843", city: "La Plata", province: "Buenos Aires", postalCode: "1900" },
-      items: [
-        { productId: "prod_003", name: "Mate Calabaza Imperial Curado", image: "https://acdn-us.mitiendanube.com/stores/005/262/890/products/imp1-539d6d4d80116ffbce17316867237631-640-0.webp", price: 4500, qty: 1 },
-      ],
-    },
-    // 4. CONFIRMED — SHIP-9512, seller_001 → Córdoba
-    {
-      id: "order_client_004", cartId: "cart_client_004", status: "CONFIRMED",
-      shippingId: "SHIP-9512", daysAgo: 5, shippingCost: 2500, sellerId: "seller_001",
-      userAddress: { street: "Av. General Paz 1200", city: "Córdoba", province: "Córdoba", postalCode: "5000" },
-      items: [
-        { productId: "prod_002", name: "Yerba Mate CBSé Energía Pomelo", image: "https://http2.mlstatic.com/D_NQ_NP_927424-MLU72565713266_112023-O.webp", price: 3100, qty: 1 },
-        { productId: "prod_008", name: "Hierbas para Tereré Frío", image: "https://jesper.com.ar/wp-content/uploads/2023/04/te-verde-terere-bolsa500g.jpg", price: 1650, qty: 2 },
-      ],
-    },
-    // 5. CONFIRMED — SHIP-5ADF, seller_001 → Tucumán
-    {
-      id: "order_client_005", cartId: "cart_client_005", status: "CONFIRMED",
-      shippingId: "SHIP-5ADF", daysAgo: 8, shippingCost: 2000, sellerId: "seller_001",
-      userAddress: { street: "Muñecas 671", city: "San Miguel de Tucumán", province: "Tucumán", postalCode: "4000" },
-      items: [
-        { productId: "prod_007", name: "Set Mate + Bombilla Artesanal", image: "https://acdn-us.mitiendanube.com/stores/003/024/004/products/img_5168-877e4a2f4754a8696517423171106674-480-0.webp", price: 5800, qty: 1 },
-        { productId: "prod_004", name: "Bombilla Acero Inox Pico de Loro", image: "https://acdn-us.mitiendanube.com/stores/004/274/329/products/pico-de-loro-acero-1-d208ed4b8e792db12617592794656043-1024-1024.webp", price: 1200, qty: 1 },
-      ],
-    },
-    // 6. CONFIRMED — SHIP-25CE, seller_001 → Rosario, Santa Fe
-    {
-      id: "order_client_006", cartId: "cart_client_006", status: "CONFIRMED",
-      shippingId: "SHIP-25CE", daysAgo: 20, shippingCost: 1500, sellerId: "seller_001",
-      userAddress: { street: "Calle Florida 500", city: "Rosario", province: "Santa Fe", postalCode: "2000" },
-      items: [
-        { productId: "prod_012", name: "Yerba Mate Amanda Tradicional", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVIE1QfLr6Wxp4HxU_Xon0389jiolMPKQUPw&s", price: 4200, qty: 3 },
-      ],
-    },
-    // 7. CONFIRMED — SHIP-CB78, seller_001 → Mendoza (older, delivered)
-    {
-      id: "order_client_007", cartId: "cart_client_007", status: "CONFIRMED",
+      id: "order_client_001", cartId: "cart_client_001", status: "CONFIRMED",
       shippingId: "SHIP-CB78", daysAgo: 60, shippingCost: 4200, sellerId: "seller_001",
       userAddress: { street: "Belgrano 890", city: "Mendoza", province: "Mendoza", postalCode: "5500" },
       items: [
@@ -316,19 +258,46 @@ async function main() {
         { productId: "prod_008", name: "Hierbas para Tereré Frío", image: "https://jesper.com.ar/wp-content/uploads/2023/04/te-verde-terere-bolsa500g.jpg", price: 1650, qty: 2 },
       ],
     },
-    // 8. CONFIRMED — SHIP-5720, seller_005 → Neuquén
+    // 2. CONFIRMED — SHIP-6171, seller_005 → Posadas, Misiones (45 days ago)
     {
-      id: "order_client_008", cartId: "cart_client_008", status: "CONFIRMED",
-      shippingId: "SHIP-5720", daysAgo: 10, shippingCost: 3500, sellerId: "seller_005",
-      userAddress: { street: "Av. Argentina 254", city: "Neuquén", province: "Neuquén", postalCode: "8300" },
+      id: "order_client_002", cartId: "cart_client_002", status: "CONFIRMED",
+      shippingId: "SHIP-6171", daysAgo: 45, shippingCost: 3500, sellerId: "seller_005",
+      userAddress: { street: "Av. Mitre 1234", city: "Posadas", province: "Misiones", postalCode: "3300" },
       items: [
-        { productId: "prod_009", name: "Café Yirgacheffe Etiopía", image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, qty: 1 },
+        { productId: "prod_010", name: "Espresso Blend Brasileño", image: "https://www.connectroasters.com/cdn/shop/files/Connect112125-8.jpg?v=1763930646&width=1946", price: 3600, qty: 2 },
         { productId: "prod_022", name: "Molinillo Manual Cerámica", image: "https://http2.mlstatic.com/D_614158-MLA89952426337_082025-O.webp", price: 11000, qty: 1 },
       ],
     },
-    // 9. CONFIRMED — SHIP-AEA5, seller_005 → Salta
+    // 3. CONFIRMED — SHIP-3B31, seller_005 → La Plata (30 days ago)
     {
-      id: "order_client_009", cartId: "cart_client_009", status: "CONFIRMED",
+      id: "order_client_003", cartId: "cart_client_003", status: "CONFIRMED",
+      shippingId: "SHIP-3B31", daysAgo: 30, shippingCost: 800, sellerId: "seller_005",
+      userAddress: { street: "Diagonal 73 Nro. 450", city: "La Plata", province: "Buenos Aires", postalCode: "1900" },
+      items: [
+        { productId: "prod_017", name: "Termo Doble Pared 1L Negro", image: "https://http2.mlstatic.com/D_NQ_NP_711960-MLA105356759167_012026-OO.png", price: 15000, qty: 1 },
+      ],
+    },
+    // 4. CONFIRMED — SHIP-25CE, seller_001 → Rosario, Santa Fe (20 days ago)
+    {
+      id: "order_client_004", cartId: "cart_client_004", status: "CONFIRMED",
+      shippingId: "SHIP-25CE", daysAgo: 20, shippingCost: 1500, sellerId: "seller_001",
+      userAddress: { street: "Calle Florida 500", city: "Rosario", province: "Santa Fe", postalCode: "2000" },
+      items: [
+        { productId: "prod_012", name: "Yerba Mate Amanda Tradicional", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVIE1QfLr6Wxp4HxU_Xon0389jiolMPKQUPw&s", price: 4200, qty: 3 },
+      ],
+    },
+    // 5. CANCELLED — before payment (15 days ago)
+    {
+      id: "order_client_005", cartId: "cart_client_005", status: "CANCELLED",
+      shippingId: null, daysAgo: 15, shippingCost: 0, sellerId: "seller_001",
+      userAddress: { street: "Calle 7 Nro. 843", city: "La Plata", province: "Buenos Aires", postalCode: "1900" },
+      items: [
+        { productId: "prod_003", name: "Mate Calabaza Imperial Curado", image: "https://acdn-us.mitiendanube.com/stores/005/262/890/products/imp1-539d6d4d80116ffbce17316867237631-640-0.webp", price: 4500, qty: 1 },
+      ],
+    },
+    // 6. CONFIRMED — SHIP-AEA5, seller_005 → Salta (14 days ago)
+    {
+      id: "order_client_006", cartId: "cart_client_006", status: "CONFIRMED",
       shippingId: "SHIP-AEA5", daysAgo: 14, shippingCost: 3000, sellerId: "seller_005",
       userAddress: { street: "Caseros 456", city: "Salta", province: "Salta", postalCode: "4400" },
       items: [
@@ -336,23 +305,54 @@ async function main() {
         { productId: "prod_036", name: "Café Arábica Colombia", image: "https://http2.mlstatic.com/D_707096-MLA88936372426_082025-O.webp", price: 6200, qty: 1 },
       ],
     },
-    // 10. CONFIRMED — SHIP-3B31, seller_005 → La Plata
+    // 7. CONFIRMED — SHIP-5720, seller_005 → Neuquén (10 days ago)
     {
-      id: "order_client_010", cartId: "cart_client_010", status: "CONFIRMED",
-      shippingId: "SHIP-3B31", daysAgo: 30, shippingCost: 800, sellerId: "seller_005",
-      userAddress: { street: "Diagonal 73 Nro. 450", city: "La Plata", province: "Buenos Aires", postalCode: "1900" },
+      id: "order_client_007", cartId: "cart_client_007", status: "CONFIRMED",
+      shippingId: "SHIP-5720", daysAgo: 10, shippingCost: 3500, sellerId: "seller_005",
+      userAddress: { street: "Av. Argentina 254", city: "Neuquén", province: "Neuquén", postalCode: "8300" },
       items: [
-        { productId: "prod_017", name: "Termo Doble Pared 1L Negro", image: "https://http2.mlstatic.com/D_NQ_NP_711960-MLA105356759167_012026-OO.png", price: 15000, qty: 1 },
+        { productId: "prod_009", name: "Café Yirgacheffe Etiopía", image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, qty: 1 },
+        { productId: "prod_022", name: "Molinillo Manual Cerámica", image: "https://http2.mlstatic.com/D_614158-MLA89952426337_082025-O.webp", price: 11000, qty: 1 },
       ],
     },
-    // 11. CONFIRMED — SHIP-6171, seller_005 → Posadas, Misiones
+    // 8. CONFIRMED — SHIP-5ADF, seller_001 → Tucumán (8 days ago)
     {
-      id: "order_client_011", cartId: "cart_client_011", status: "CONFIRMED",
-      shippingId: "SHIP-6171", daysAgo: 45, shippingCost: 3500, sellerId: "seller_005",
-      userAddress: { street: "Av. Mitre 1234", city: "Posadas", province: "Misiones", postalCode: "3300" },
+      id: "order_client_008", cartId: "cart_client_008", status: "CONFIRMED",
+      shippingId: "SHIP-5ADF", daysAgo: 8, shippingCost: 2000, sellerId: "seller_001",
+      userAddress: { street: "Muñecas 671", city: "San Miguel de Tucumán", province: "Tucumán", postalCode: "4000" },
+      items: [
+        { productId: "prod_007", name: "Set Mate + Bombilla Artesanal", image: "https://acdn-us.mitiendanube.com/stores/003/024/004/products/img_5168-877e4a2f4754a8696517423171106674-480-0.webp", price: 5800, qty: 1 },
+        { productId: "prod_004", name: "Bombilla Acero Inox Pico de Loro", image: "https://acdn-us.mitiendanube.com/stores/004/274/329/products/pico-de-loro-acero-1-d208ed4b8e792db12617592794656043-1024-1024.webp", price: 1200, qty: 1 },
+      ],
+    },
+    // 9. CONFIRMED — SHIP-9512, seller_001 → Córdoba (5 days ago)
+    {
+      id: "order_client_009", cartId: "cart_client_009", status: "CONFIRMED",
+      shippingId: "SHIP-9512", daysAgo: 5, shippingCost: 2500, sellerId: "seller_001",
+      userAddress: { street: "Av. General Paz 1200", city: "Córdoba", province: "Córdoba", postalCode: "5000" },
+      items: [
+        { productId: "prod_002", name: "Yerba Mate CBSé Energía Pomelo", image: "https://http2.mlstatic.com/D_NQ_NP_927424-MLU72565713266_112023-O.webp", price: 3100, qty: 1 },
+        { productId: "prod_008", name: "Hierbas para Tereré Frío", image: "https://jesper.com.ar/wp-content/uploads/2023/04/te-verde-terere-bolsa500g.jpg", price: 1650, qty: 2 },
+      ],
+    },
+    // 10. AWAITING_PAYMENT — payment link sent (2 days ago)
+    {
+      id: "order_client_010", cartId: "cart_client_010", status: "AWAITING_PAYMENT",
+      shippingId: null, daysAgo: 2, shippingCost: 0, sellerId: "seller_005",
+      userAddress: { street: "Bv. Oroño 1500", city: "Rosario", province: "Santa Fe", postalCode: "2000" },
       items: [
         { productId: "prod_010", name: "Espresso Blend Brasileño", image: "https://www.connectroasters.com/cdn/shop/files/Connect112125-8.jpg?v=1763930646&width=1946", price: 3600, qty: 2 },
-        { productId: "prod_022", name: "Molinillo Manual Cerámica", image: "https://http2.mlstatic.com/D_614158-MLA89952426337_082025-O.webp", price: 11000, qty: 1 },
+        { productId: "prod_009", name: "Café Yirgacheffe Etiopía", image: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, qty: 1 },
+      ],
+    },
+    // 11. PENDING — just placed (today)
+    {
+      id: "order_client_011", cartId: "cart_client_011", status: "PENDING",
+      shippingId: null, daysAgo: 0, shippingCost: 0, sellerId: "seller_001",
+      userAddress: { street: "San Martín 340", city: "Mendoza", province: "Mendoza", postalCode: "5500" },
+      items: [
+        { productId: "prod_001", name: "Yerba Mate Rosamonte Especial", image: "https://http2.mlstatic.com/D_NQ_NP_654535-MLA92396918908_092025-O.webp", price: 2850, qty: 2 },
+        { productId: "prod_006", name: "Té Verde Taragüi Menta Poleo", image: "https://statics.dinoonline.com.ar/imagenes/large_460x460/2020123_l.jpg", price: 890, qty: 1 },
       ],
     },
   ];
