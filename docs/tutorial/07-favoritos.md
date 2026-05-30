@@ -9,8 +9,13 @@ En la ficha de cualquier producto, hay un botón con un ícono de estrella. Hac�
 
 Al guardar, se activa una animación: la miniatura del producto vuela hacia el ícono de favoritos en la barra de navegación.
 
+<div align="center">
+
 ![Botón de favorito en ficha de producto](./images/07-favorito-boton.png)
+
 *La estrella pasa de contorno a relleno al guardar el producto.*
+
+</div>
 
 > Es necesario estar logueado para usar favoritos.
 
@@ -26,8 +31,13 @@ En la parte superior aparece:
 - El **total de ítems** guardados.
 - El **valor total** de todos los productos en la lista.
 
+<div align="center">
+
 ![Página de favoritos](./images/07-favoritos-pagina.png)
+
 *Grilla de productos favoritos con resumen de cantidad y valor total.*
+
+</div>
 
 ---
 
@@ -41,8 +51,13 @@ Para eliminar un producto de favoritos, volvé a hacer clic en la **estrella rel
 
 Para eliminar todos los favoritos de una vez, hacé clic en el botón **"VACIAR LISTA"** en la parte superior de la página.
 
+<div align="center">
+
 ![Botón vaciar lista](./images/07-vaciar-lista.png)
+
 *El botón "VACIAR LISTA" elimina todos los favoritos de una sola vez.*
+
+</div>
 
 ---
 
@@ -60,8 +75,13 @@ Hacé clic en el botón **"COMPARTIR SELECCIÓN"** para generar un enlace públi
 2. Aparece un botón **"Copiar link"**.
 3. Al hacer clic, el texto del botón cambia a **"¡COPIADO!"** por un instante para confirmar.
 
+<div align="center">
+
 ![Botón compartir y feedback de copiado](./images/07-compartir-link.png)
+
 *El link se genera y el botón da feedback visual al copiarse.*
+
+</div>
 
 ---
 
@@ -75,5 +95,10 @@ Cualquier persona que reciba el link puede ver la selección sin necesidad de es
 
 No se pueden agregar ni eliminar productos desde esta vista.
 
+<div align="center">
+
 ![Vista de lista compartida](./images/07-lista-compartida.png)
+
 *Vista pública de la lista de favoritos compartida. Solo lectura, sin autenticación.*
+
+</div>

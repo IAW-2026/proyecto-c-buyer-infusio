@@ -4,8 +4,13 @@
 
 Hacé clic en el **ícono de estrella (✦)** en la barra de navegación superior para abrir el asistente virtual. También encontrás el link al asistente en el **footer** de la página.
 
+<div align="center">
+
 ![Ícono del asistente en la navegación](./images/08-asistente-icono.png)
+
 *El ícono de estrella abre el asistente. Se rellena cuando estás en la página del asistente.*
+
+</div>
 
 ---
 
@@ -20,8 +25,13 @@ Al abrir `/assistant`, el asistente saluda y ofrece chips de sugerencia rápida 
 
 Hacé clic en cualquier chip para enviarlo como mensaje. Los chips se desactivan mientras el asistente está procesando la respuesta.
 
+<div align="center">
+
 ![Pantalla inicial del asistente con chips de sugerencia](./images/08-asistente-inicio.png)
+
 *Saludo inicial y chips de inicio rápido. Se desactivan durante la carga.*
+
+</div>
 
 ---
 
@@ -35,8 +45,13 @@ Mientras el asistente procesa, aparece el indicador **"Escribiendo..."**.
 
 Cuando el asistente recomienda un producto específico, la respuesta incluye una tarjeta con imagen, nombre, origen, precio y un botón **"VER PRODUCTO →"** para ir directamente a la ficha.
 
+<div align="center">
+
 ![Pregunta del usuario y respuesta del asistente con tarjeta de producto](./images/08-asistente-conversacion.png)
+
 *Mensaje del usuario (derecha) y respuesta del asistente con tarjeta de producto (izquierda).*
+
+</div>
 
 ---
 

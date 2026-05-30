@@ -23,8 +23,13 @@ La parte superior muestra cuatro indicadores clave:
 - **Base de clientes** — usuarios totales y nuevos esta semana
 - **Estado de la plataforma** — estado operativo del sistema
 
+<div align="center">
+
 ![Tarjetas de métricas del dashboard](./images/10-admin-stats.png)
+
 *Las cuatro tarjetas de métricas en la parte superior del dashboard.*
+
+</div>
 
 ---
 
@@ -38,8 +43,13 @@ Podés buscar órdenes específicas ingresando:
 
 Los resultados aparecen en la tabla inferior.
 
+<div align="center">
+
 ![Buscador de órdenes en el admin](./images/10-admin-busqueda.png)
+
 *Campo de búsqueda y tabla de resultados filtrados.*
+
+</div>
 
 ---
 
@@ -49,8 +59,13 @@ Muestra las órdenes de los últimos 7 días (o los resultados del buscador). Co
 
 En la columna **Productos**, hacé clic en **"ver lista de productos"** para expandir una mini-tabla con el detalle de los artículos de esa orden.
 
+<div align="center">
+
 ![Tabla expandida con lista de productos](./images/10-admin-tabla-productos.png)
+
 *La mini-tabla inline muestra nombre y cantidad de cada producto de la orden.*
+
+</div>
 
 ---
 
@@ -70,8 +85,13 @@ Los botones en la parte superior filtran la tabla:
 
 Cada botón muestra el conteo de órdenes en ese estado.
 
+<div align="center">
+
 ![Filtros de estado en compras](./images/10-admin-compras-filtros.png)
+
 *Los botones de filtro muestran la cantidad de órdenes en cada estado.*
+
+</div>
 
 La tabla incluye una columna adicional de **Estado de envío** que trae el estado en tiempo real del Shipping App para las órdenes con envío asignado.
 
@@ -83,8 +103,13 @@ Lista de todos los usuarios registrados con rol CLIENT.
 
 Columnas: nombre (con ID de Clerk abreviado), email, rol, cantidad de compras y fecha de registro.
 
+<div align="center">
+
 ![Tabla de usuarios](./images/10-admin-usuarios.png)
+
 *Lista de usuarios con cantidad de compras y fecha de registro.*
+
+</div>
 
 ---
 
@@ -98,8 +123,13 @@ La página de analíticas combina datos reales con análisis generado por IA (Ge
 
 Lista de recomendaciones generadas por IA basadas en los datos actuales del negocio: ingresos, carritos abandonados, cancelaciones y productos más vendidos.
 
+<div align="center">
+
 ![Plan de acción semanal](./images/10-admin-action-plan.png)
+
 *Recomendaciones priorizadas generadas automáticamente. Solo aparece cuando Gemini devuelve una respuesta.*
+
+</div>
 
 ---
 
@@ -113,8 +143,13 @@ Gráfico de barras con los ingresos históricos. Tiene tres vistas seleccionable
 
 Incluye un análisis de IA sobre la tendencia observada.
 
+<div align="center">
+
 ![Gráfico de ingresos](./images/10-admin-ingresos.png)
+
 *Gráfico de barras con selector de período y análisis de IA.*
+
+</div>
 
 ---
 
@@ -122,8 +157,13 @@ Incluye un análisis de IA sobre la tendencia observada.
 
 Gráfico de torta que muestra la proporción de órdenes por estado (PROCESANDO, CONFIRMADO, CANCELADO, PENDIENTE).
 
+<div align="center">
+
 ![Gráfico de distribución de estados](./images/10-admin-estados-pie.png)
+
 *Torta de distribución de estados de órdenes.*
+
+</div>
 
 ---
 
@@ -131,8 +171,13 @@ Gráfico de torta que muestra la proporción de órdenes por estado (PROCESANDO,
 
 Lista de los productos con mayor cantidad de unidades vendidas y su ingreso total generado. Incluye análisis de IA.
 
+<div align="center">
+
 ![Ranking de productos más vendidos](./images/10-admin-top-products.png)
+
 *Los productos más vendidos con métricas de unidades e ingresos.*
+
+</div>
 
 ---
 
@@ -153,8 +198,13 @@ Si existen carritos con ítems que no fueron comprados, esta sección muestra:
 - Categorías favoritas
 - Análisis de IA sobre preferencias de los clientes
 
+<div align="center">
+
 ![Analíticas de favoritos](./images/10-admin-favoritos.png)
+
 *Métricas de favoritos con insights generados por IA.*
+
+</div>
 
 ---
 

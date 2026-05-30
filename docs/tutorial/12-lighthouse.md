@@ -6,12 +6,22 @@ Lighthouse es la herramienta de auditoría de Google integrada en Chrome DevTool
 
 ## Desktop
 
+<div align="center">
+
 ![Resultados Lighthouse — Home](./images/12-lighthouse-desktop.png)
+
 *Auditoría de la página en computadora.*
+
+</div>
 
 ---
 
 ## Mobile
 
+<div align="center">
+
 ![Resultados Lighthouse — Admin](./images/12-lighthouse-mobile.png)
+
 *Auditoría de la página en celular.*
+
+</div>

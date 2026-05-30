@@ -4,8 +4,13 @@
 
 Al abrir la aplicación sin ningún filtro activo, se muestra la página de inicio con secciones editoriales: un hero de bienvenida, una sección de ritual matutino, tarjetas de características y una franja de edición limitada.
 
+<div align="center">
+
 ![Página de inicio de Infusio](./images/01-home.png)
+
 *Vista de la página de inicio con las secciones editoriales.*
+
+</div>
 
 ---
 
@@ -20,11 +25,21 @@ Para ver los productos de una categoría, hacé clic en uno de los links de la b
 
 Al hacer clic, la página muestra la grilla de productos de esa categoría junto con la barra lateral de filtros.
 
+<div align="center">
+
 ![Links de categoría en la barra de navegación](./images/01-navbar-categorias.png)
+
 *Los cuatro links de categoría en la parte superior de la página.*
 
+</div>
+
+<div align="center">
+
 ![Resultados al seleccionar una categoría](./images/01-busqueda-resultados.png)
+
 *Grilla de productos de la categoría seleccionada con imagen, nombre, precio y origen.*
+
+</div>
 
 ---
 
@@ -41,8 +56,13 @@ Filtra por subcategoría dentro de los resultados (por ejemplo: dentro de "yerba
 ### Rango de precio
 Filtra por franja de precio. Solo se puede seleccionar **una franja a la vez**.
 
+<div align="center">
+
 ![Barra lateral con filtros activos](./images/01-filtros-sidebar.png)
+
 *Barra lateral con filtros de origen, tipo y precio. Los filtros activos se muestran destacados.*
+
+</div>
 
 ---
 
@@ -50,8 +70,13 @@ Filtra por franja de precio. Solo se puede seleccionar **una franja a la vez**.
 
 Para eliminar todos los filtros aplicados, hacé clic en el botón **"Limpiar filtros"** que aparece en la parte superior de la barra lateral cuando hay al menos un filtro activo.
 
+<div align="center">
+
 ![Botón limpiar filtros](./images/01-limpiar-filtros.png)
+
 *El botón "Limpiar filtros" solo aparece cuando hay filtros activos.*
+
+</div>
 
 ---
 
@@ -59,5 +84,10 @@ Para eliminar todos los filtros aplicados, hacé clic en el botón **"Limpiar fi
 
 Si hay más de 12 productos en los resultados, aparecen controles de paginación en la parte inferior de la grilla. Hacé clic en el número de página o en las flechas para navegar.
 
+<div align="center">
+
 ![Controles de paginación](./images/01-paginacion.png)
+
 *Controles de paginación. La página actual se muestra resaltada.*
+
+</div>

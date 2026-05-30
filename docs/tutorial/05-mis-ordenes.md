@@ -4,8 +4,13 @@ Para ver el historial de órdenes, hacé clic en **"Mis pedidos"** en el menú d
 
 > Es necesario estar logueado para ver esta sección.
 
+<div align="center">
+
 ![Página de mis pedidos](./images/05-ordenes-lista.png)
+
 *Lista de todas las órdenes con sus estados, fechas y totales.*
+
+</div>
 
 ---
 
@@ -20,8 +25,13 @@ En la parte superior de la página hay cuatro pestañas para filtrar los pedidos
 | **PEDIDOS ACTIVOS** | Órdenes confirmadas que están en proceso de envío |
 | **VER TODAS MIS COMPRAS** | Todas las órdenes confirmadas (entregadas e in-transit) |
 
+<div align="center">
+
 ![Pestañas de filtrado de órdenes](./images/05-ordenes-pestanas.png)
+
 *Las pestañas permiten filtrar el historial por estado.*
+
+</div>
 
 ---
 
@@ -59,6 +69,11 @@ Desde la lista de órdenes, cada fila tiene acciones rápidas según el estado:
 - **PENDIENTE:** botón **"Reintentar compra"** que redirige al link de pago original.
 - **CONFIRMADO con envío activo:** link **"Ver detalles de envío"** que abre el **Shipping App** externo en una nueva pestaña, donde podés ver el estado detallado del envío y el seguimiento en tiempo real.
 
+<div align="center">
+
 ![Acciones por fila de orden](./images/05-ordenes-acciones.png)
+
 *Botones de acción que aparecen según el estado de cada orden.*
+
+</div>
 

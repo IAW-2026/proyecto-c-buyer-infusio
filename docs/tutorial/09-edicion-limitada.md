@@ -9,8 +9,13 @@ Los productos de edición limitada son accesibles desde:
 
 Ambos llevan a `/limited-edition`.
 
+<div align="center">
+
 ![Franja de edición limitada en la home](./images/09-le-franja-home.png)
+
 *La sección de edición limitada aparece en la página de inicio con acceso directo.*
+
+</div>
 
 ---
 
@@ -18,8 +23,13 @@ Ambos llevan a `/limited-edition`.
 
 La página muestra solo los productos con disponibilidad temporal, junto con la fecha límite hasta la que estarán disponibles.
 
+<div align="center">
+
 ![Página completa de edición limitada](./images/09-le-pagina.png)
+
 *Grilla de productos de edición limitada con badges y fechas de vencimiento.*
+
+</div>
 
 ---
 
@@ -34,8 +44,13 @@ En la parte superior hay pestañas para filtrar por tipo de producto:
 | **TÉ ARTESANAL** | Solo los tés de edición especial |
 | **ACCESORIOS Y MÁQUINAS** | Accesorios o máquinas de edición limitada |
 
+<div align="center">
+
 ![Pestañas de edición limitada](./images/09-le-pestanas.png)
+
 *Las pestañas filtran los productos sin recargar la página.*
+
+</div>
 
 ---
 
