@@ -23,6 +23,11 @@ export async function GET(
   const address = order.userAddress as Record<string, string | undefined>;
   const shippingCost = order.packages.reduce((s, p) => s + Number(p.shippingCost), 0);
 
+  // Build a lookup map from CartItems for image/variant data not stored in PackageItem
+  const cartItemByProductId = Object.fromEntries(
+    order.cart.items.map((i) => [i.productId, i])
+  );
+
   // New orders have PackageItems; old orders fall back to CartItems
   const cartItems = order.packages.length > 0
     ? order.packages.flatMap((p) =>
@@ -31,8 +36,8 @@ export async function GET(
           cart_id: order.cartId,
           product_id: item.productId,
           product_name: item.productName,
-          product_variant: null as string | null,
-          product_image_url: null as string | null,
+          product_variant: cartItemByProductId[item.productId]?.productVariant ?? null,
+          product_image_url: cartItemByProductId[item.productId]?.productImageUrl ?? null,
           price_at_time: Number(item.unitPrice),
           quantity: item.quantity,
         }))
