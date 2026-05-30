@@ -46,7 +46,7 @@ export default function MorningRitual() {
                   alt="Ritual matutino con infusiones"
                   fill
                   priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, (max-width: 1400px) 58vw, 800px"
+                  sizes="(max-width: 768px) calc(100vw - 48px), (max-width: 1024px) calc(100vw - 96px), (max-width: 1400px) 58vw, 800px"
                   className="object-cover"
                 />
               </div>
