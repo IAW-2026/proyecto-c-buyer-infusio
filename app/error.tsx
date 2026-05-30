@@ -8,12 +8,15 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
-      <p className="font-serif text-2xl text-[#2d2926]">Algo salió mal</p>
-      <p className="mt-2 text-sm text-[#6b6560]">{error.message}</p>
+    <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-6 text-center">
+      <p className="text-xs tracking-[0.25em] text-terracotta italic mb-4">ERROR</p>
+      <h1 className="font-serif text-5xl lg:text-7xl text-brown mb-6">Algo salió mal</h1>
+      <p className="text-sm text-muted-foreground mb-10 max-w-sm leading-relaxed italic">
+        {error.message}
+      </p>
       <button
         onClick={reset}
-        className="mt-6 px-8 py-3 text-xs tracking-[0.15em] text-[#2d2926] border border-[#2d2926] hover:bg-[#2d2926] hover:text-[#f5f3ef] transition-colors"
+        className="px-10 py-4 text-[11px] tracking-[0.2em] text-cream bg-brown hover:bg-olive transition-colors"
       >
         INTENTAR DE NUEVO
       </button>
