@@ -16,6 +16,8 @@ Aplicación de compras de **Infusio**, una tienda artesanal argentina de cafés 
 
 **Deploy:** [https://proyecto-c-buyer-infusio.vercel.app](https://proyecto-c-buyer-infusio.vercel.app)
 
+**Docs:** [https://github.com/IAW-2026/proyecto-c-buyer-infusio/tree/main/docs/tutorial](https://github.com/IAW-2026/proyecto-c-buyer-infusio/tree/main/docs/tutorial)
+
 ---
 
 ## Acceso
