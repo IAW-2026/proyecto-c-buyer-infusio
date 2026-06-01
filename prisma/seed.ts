@@ -8,18 +8,58 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-// Test password for both seed users — change in Clerk dashboard after seeding
-const TEST_PASSWORD = "Infusio2024!";
+const ADMIN_PASSWORD  = "Infusio2024!";
+const CLIENT_PASSWORD = "iawuser#";
 
-async function findOrCreateClerkUser(email: string, firstName: string, lastName: string, username: string) {
+async function findOrCreateClerkUser(email: string, firstName: string, lastName: string, username: string, password: string) {
   const { data: existing } = await clerk.users.getUserList({ emailAddress: [email] });
-  if (existing.length > 0) return existing[0];
+  if (existing.length > 0) {
+    await clerk.users.updateUser(existing[0].id, { password });
+    return existing[0];
+  }
+  return clerk.users.createUser({ emailAddress: [email], username, password, firstName, lastName });
+}
+
+// Migrates buyer+clerktest@iaw.com → buyer+clerktest@iaw.com while preserving the Clerk ID
+// so all linked DB data (orders, favourites, cart) stays intact.
+async function findCreateOrMigrateClientClerkUser() {
+  const NEW_EMAIL = "buyer+clerktest@iaw.com";
+  const OLD_EMAIL = "buyer+clerktest@iaw.com";
+
+  // 1. Already on new email
+  const { data: byNew } = await clerk.users.getUserList({ emailAddress: [NEW_EMAIL] });
+  if (byNew.length > 0) {
+    await clerk.users.updateUser(byNew[0].id, { password: CLIENT_PASSWORD, username: "buyerclerktest" });
+    return byNew[0];
+  }
+
+  // 2. Old email still in Clerk → update in-place (keeps Clerk ID)
+  const { data: byOld } = await clerk.users.getUserList({ emailAddress: [OLD_EMAIL] });
+  if (byOld.length > 0) {
+    const user = byOld[0];
+    const oldEmailId = user.emailAddresses[0]?.id;
+    const newEmailObj = await clerk.emailAddresses.createEmailAddress({
+      userId: user.id,
+      emailAddress: NEW_EMAIL,
+      verified: true,
+      primary: true,
+    });
+    await clerk.users.updateUser(user.id, {
+      primaryEmailAddressID: newEmailObj.id,
+      password: CLIENT_PASSWORD,
+      username: "buyerclerktest",
+    });
+    if (oldEmailId) await clerk.emailAddresses.deleteEmailAddress(oldEmailId);
+    return clerk.users.getUser(user.id);
+  }
+
+  // 3. Neither exists — create fresh
   return clerk.users.createUser({
-    emailAddress: [email],
-    username,
-    password: TEST_PASSWORD,
-    firstName,
-    lastName,
+    emailAddress: [NEW_EMAIL],
+    username: "buyerclerktest",
+    password: CLIENT_PASSWORD,
+    firstName: "Cliente",
+    lastName: "Prueba",
   });
 }
 
@@ -101,16 +141,16 @@ async function main() {
     await prisma.user.deleteMany({ where: { email, NOT: { id: clerkId } } });
     await prisma.user.upsert({
       where: { id: clerkId },
-      update: { roles },
+      update: { roles, email },
       create: { id: clerkId, name, lastName, email, roles },
     });
   }
 
-  const adminClerk = await findOrCreateClerkUser("admin@infusio.com", "Admin", "Infusio", "admin_infusio");
+  const adminClerk = await findOrCreateClerkUser("admin@infusio.com", "Admin", "Infusio", "admin_infusio", ADMIN_PASSWORD);
   await upsertUser(adminClerk.id, "Admin", "Infusio", "admin@infusio.com", [UserRole.ADMIN]);
 
-  const clientClerk = await findOrCreateClerkUser("cliente@infusio.com", "Cliente", "Prueba", "cliente_prueba");
-  await upsertUser(clientClerk.id, "Cliente", "Prueba", "cliente@infusio.com", [UserRole.CLIENT]);
+  const clientClerk = await findCreateOrMigrateClientClerkUser();
+  await upsertUser(clientClerk.id, "Cliente", "Prueba", "buyer+clerktest@iaw.com", [UserRole.CLIENT]);
 
   for (const p of PRODUCTS) {
     await prisma.product.upsert({ where: { id: p.id }, create: p, update: p });
@@ -239,7 +279,7 @@ async function main() {
   }
   console.log(`  ${ORDERS.length} demo orders upserted`);
 
-  // ─── Orders for cliente@infusio.com (every possible status) ─────────────────
+  // ─── Orders for buyer+clerktest@iaw.com (every possible status) ─────────────────
   await prisma.package.deleteMany({ where: { purchaseOrderId: { startsWith: "order_client_" } } });
   await prisma.purchaseOrder.deleteMany({ where: { userId: clientClerk.id, id: { startsWith: "order_client_" } } });
   await prisma.cart.deleteMany({ where: { id: { startsWith: "cart_client_" } } });
@@ -401,7 +441,7 @@ async function main() {
   }
   console.log(`  ${CLIENT_ORDERS.length} client orders upserted`);
 
-  // ─── Favourites for cliente@infusio.com ──────────────────────────────────────
+  // ─── Favourites for buyer+clerktest@iaw.com ──────────────────────────────────────
   const CLIENT_FAVOURITES = [
     { productId: "prod_009", productName: "Café Yirgacheffe Etiopía",      productImageUrl: "https://newsite.fazenda.com.ar/wp-content/uploads/2025/01/Cafe-Ethiopia-La-fazenda.webp", price: 4800, location: "Etiopía",                    categories: ["café"],                    description: "Notas florales de jazmín y limón, acidez brillante. Perfil de tueste claro." },
     { productId: "prod_001", productName: "Yerba Mate Rosamonte Especial", productImageUrl: "https://http2.mlstatic.com/D_NQ_NP_654535-MLA92396918908_092025-O.webp",                   price: 2850, location: "Corrientes, Argentina",       categories: ["yerba mate", "infusiones"], description: "Yerba mate suave y equilibrada, ideal para cebar mate largo." },
@@ -420,7 +460,7 @@ async function main() {
   }
   console.log(`  ${CLIENT_FAVOURITES.length} client favourites upserted`);
 
-  // ─── Active cart for cliente@infusio.com (2 items, not checked out) ──────────
+  // ─── Active cart for buyer+clerktest@iaw.com (2 items, not checked out) ──────────
   await prisma.cart.upsert({
     where: { id: "cart_client_active" },
     create: { id: "cart_client_active", userId: clientUserId, status: "NOT_CHECKED_OUT" },
@@ -433,11 +473,11 @@ async function main() {
       { cartId: "cart_client_active", productId: "prod_005", productName: "Termo Stanley Classic Verde",  productImageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvAwrS7ZrOMVhlT5P3R-Jl87w46X7PWJ5vWg&s",                                  priceAtTime: 28000, quantity: 1 },
     ],
   });
-  console.log("  Active cart with 2 items upserted for cliente@infusio.com");
+  console.log("  Active cart with 2 items upserted for buyer+clerktest@iaw.com");
 
   console.log(`\nSeed complete. Test password: ${TEST_PASSWORD}`);
   console.log(`  admin@infusio.com   → ${adminClerk.id}`);
-  console.log(`  cliente@infusio.com → ${clientClerk.id}\n`);
+  console.log(`  buyer+clerktest@iaw.com → ${clientClerk.id}\n`);
 }
 
 main()
