@@ -25,7 +25,7 @@ Aplicación de compras de **Infusio**, una tienda artesanal argentina de cafés 
 | Rol | Email | Contraseña |
 |-----|-------|------------|
 | Administrador | admin@infusio.com | Infusio2024! |
-| Usuario final | buyer+clerktest@iaw.com | iawuser# |
+| Usuario final | buyer+clerk_test@iaw.com | iawuser# |
 
 ---
 
