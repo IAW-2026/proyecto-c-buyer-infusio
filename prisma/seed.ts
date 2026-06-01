@@ -475,7 +475,7 @@ async function main() {
   });
   console.log("  Active cart with 2 items upserted for buyer+clerktest@iaw.com");
 
-  console.log(`\nSeed complete. Test password: ${TEST_PASSWORD}`);
+  console.log(`\nSeed complete. admin: ${ADMIN_PASSWORD} / client: ${CLIENT_PASSWORD}`);
   console.log(`  admin@infusio.com   → ${adminClerk.id}`);
   console.log(`  buyer+clerktest@iaw.com → ${clientClerk.id}\n`);
 }
