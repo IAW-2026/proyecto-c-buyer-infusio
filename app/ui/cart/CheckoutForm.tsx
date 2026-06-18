@@ -21,7 +21,7 @@ interface OrderData {
   cartId: string;
 }
 
-export default function CheckoutForm({ items }: { items: CartItem[] }) {
+export default function CheckoutForm({ items, sellerId = null }: { items: CartItem[]; sellerId?: string | null }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +75,7 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
     const res = await fetch("/cart/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ address: { ...form, note } }),
+      body: JSON.stringify({ address: { ...form, note }, sellerId }),
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -199,9 +199,15 @@ export default function CheckoutForm({ items }: { items: CartItem[] }) {
             </div>
           </div>
 
+          {error && <p className="text-xs text-red-600">{error}</p>}
+
           <div className="pt-2">
             <button
               onClick={async () => {
+                if (!orderData!.payment_url) {
+                  setError("No se pudo obtener el enlace de pago. Intentá de nuevo.");
+                  return;
+                }
                 sessionStorage.setItem("failedCartId", orderData!.cartId);
                 sessionStorage.setItem("pendingOrderId", orderData!.purchase_order_id);
                 await fetch("/cart/confirm", {

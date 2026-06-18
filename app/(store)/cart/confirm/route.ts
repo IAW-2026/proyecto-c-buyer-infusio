@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   if (!cartId) return NextResponse.json({ error: "cartId required" }, { status: 400 });
 
   await db.cart.updateMany({
-    where: { id: cartId, userId, status: "NOT_CHECKED_OUT" },
+    where: { id: cartId, userId, status: { in: ["NOT_CHECKED_OUT", "CHECKOUT_PENDING"] } },
     data: { status: "CHECKED_OUT" },
   });
 

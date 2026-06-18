@@ -5,6 +5,7 @@ import AddToCartControls from "@/app/ui/cart/AddToCartControls";
 
 interface Props {
   productId: string;
+  sellerId?: string;
   productName: string;
   priceAtTime: number;
   productImageUrl?: string;
@@ -16,6 +17,7 @@ interface Props {
 
 export default function AccessoryPurchasePanel({
   productId,
+  sellerId,
   productName,
   priceAtTime,
   productImageUrl,
@@ -57,6 +59,7 @@ export default function AccessoryPurchasePanel({
         <p className="text-xs tracking-[0.15em] text-muted-foreground mb-3">CANTIDAD</p>
         <AddToCartControls
           productId={productId}
+          sellerId={sellerId}
           productName={productName}
           productVariant={variant}
           productImageUrl={productImageUrl}

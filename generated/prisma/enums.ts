@@ -11,6 +11,7 @@
 
 export const CartStatus = {
   NOT_CHECKED_OUT: 'NOT_CHECKED_OUT',
+  CHECKOUT_PENDING: 'CHECKOUT_PENDING',
   CHECKED_OUT: 'CHECKED_OUT'
 } as const
 

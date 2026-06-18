@@ -111,7 +111,7 @@ export default function CartDrawer() {
                   const lineTotal = item.priceAtTime * item.quantity;
                   return (
                     <div
-                      key={item.id}
+                      key={item.productId}
                       className="flex gap-4 py-5 border-b border-tan/60 last:border-b-0"
                     >
                       {/* Image */}
@@ -173,7 +173,7 @@ export default function CartDrawer() {
                             </button>
                           </div>
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItem(item.productId)}
                             className="text-[10px] tracking-[0.12em] transition-colors hover:opacity-70"
                             style={{ color: "#BB6D51" }}
                           >

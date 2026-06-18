@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/app/lib/prisma";
 import CheckoutForm from "@/app/ui/cart/CheckoutForm";
+import VendorSelector, { type VendorGroup } from "@/app/ui/cart/VendorSelector";
 
 export const metadata = { title: "Pago — Infusio" };
 
@@ -37,9 +38,28 @@ export default async function CartPage() {
     );
   }
 
+  // Group items by sellerId
+  const groupMap = new Map<string | null, typeof items>();
+  for (const item of items) {
+    const key = item.sellerId ?? null;
+    const group = groupMap.get(key) ?? [];
+    group.push(item);
+    groupMap.set(key, group);
+  }
+
+  const groups: VendorGroup[] = Array.from(groupMap, ([sellerId, groupItems]) => ({
+    sellerId,
+    items: groupItems,
+    subtotal: groupItems.reduce((s, i) => s + i.priceAtTime * i.quantity, 0),
+  }));
+
   return (
     <main className="max-w-350 mx-auto px-6 lg:px-12 py-16 lg:py-24">
-      <CheckoutForm items={items} />
+      {groups.length === 1 ? (
+        <CheckoutForm items={groups[0].items} sellerId={groups[0].sellerId} />
+      ) : (
+        <VendorSelector groups={groups} />
+      )}
     </main>
   );
 }

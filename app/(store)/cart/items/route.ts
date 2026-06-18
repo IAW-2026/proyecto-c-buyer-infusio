@@ -8,6 +8,50 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Auto-recover any CHECKOUT_PENDING sub-carts the user abandoned (e.g. by logging out
+  // mid-checkout). Their items are merged back into the NOT_CHECKED_OUT cart.
+  const pendingCarts = await db.cart.findMany({
+    where: { userId, status: "CHECKOUT_PENDING" },
+    include: { items: true },
+  });
+
+  if (pendingCarts.length > 0) {
+    let mainCart = await db.cart.findFirst({
+      where: { userId, status: "NOT_CHECKED_OUT" },
+    });
+    if (!mainCart) {
+      mainCart = await db.cart.create({ data: { userId } });
+    }
+
+    for (const pendingCart of pendingCarts) {
+      for (const item of pendingCart.items) {
+        const existing = await db.cartItem.findUnique({
+          where: { cartId_productId: { cartId: mainCart.id, productId: item.productId } },
+        });
+        if (existing) {
+          await db.cartItem.update({
+            where: { id: existing.id },
+            data: { quantity: existing.quantity + item.quantity },
+          });
+        } else {
+          await db.cartItem.create({
+            data: {
+              cartId: mainCart.id,
+              productId: item.productId,
+              sellerId: item.sellerId,
+              productName: item.productName,
+              productVariant: item.productVariant,
+              productImageUrl: item.productImageUrl,
+              priceAtTime: item.priceAtTime,
+              quantity: item.quantity,
+            },
+          });
+        }
+      }
+      await db.cart.delete({ where: { id: pendingCart.id } });
+    }
+  }
+
   const cart = await db.cart.findFirst({
     where: { userId, status: "NOT_CHECKED_OUT" },
     include: { items: true },
@@ -27,13 +71,14 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { productId, productName, productVariant, productImageUrl, priceAtTime, quantity = 1 } = body as {
+  const { productId, productName, productVariant, productImageUrl, priceAtTime, quantity = 1, sellerId } = body as {
     productId: string;
     productName: string;
     productVariant?: string;
     productImageUrl?: string;
     priceAtTime: number;
     quantity?: number;
+    sellerId?: string;
   };
 
   if (!productId || !productName || priceAtTime === undefined) {
@@ -41,7 +86,6 @@ export async function POST(request: NextRequest) {
   }
 
   // Ensure the User row exists — may not yet if the Clerk webhook hasn't fired.
-  // Only call currentUser() (slow Clerk API round-trip) when the row is actually missing.
   const existingUser = await db.user.findUnique({ where: { id: userId }, select: { id: true } });
   if (!existingUser) {
     const clerkUser = await currentUser();
@@ -50,7 +94,6 @@ export async function POST(request: NextRequest) {
     const lastName = clerkUser?.lastName ?? "—";
 
     await db.$transaction(async (tx) => {
-      // Remove any old record with the same email but a stale/seed ID.
       await tx.user.deleteMany({ where: { email, NOT: { id: userId } } });
       await tx.user.upsert({
         where: { id: userId },
@@ -83,6 +126,7 @@ export async function POST(request: NextRequest) {
       data: {
         cartId: cart.id,
         productId,
+        sellerId: sellerId ?? null,
         productName,
         productVariant: productVariant ?? null,
         productImageUrl: productImageUrl ?? null,

@@ -121,6 +121,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="mt-auto pt-4">
           <AddToCartControls
             productId={product.id}
+            sellerId={product.sellerId}
             productName={product.name}
             productImageUrl={product.imageUrl ?? undefined}
             priceAtTime={product.price}

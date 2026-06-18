@@ -13,12 +13,11 @@ export default async function OrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId, getToken } = await auth();
+  const { userId } = await auth();
 
   if (!userId) redirect("/sign-in");
 
-  const token = await getToken();
-  const order = await getOrderById(id, token ?? undefined).catch(() => null);
+  const order = await getOrderById(id).catch(() => null);
 
   if (!order || order.user_id !== userId) notFound();
 
@@ -32,8 +31,6 @@ export default async function OrderDetailPage({
     order.status === "CONFIRMED"        ? { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" } :
     order.status === "AWAITING_PAYMENT" ? { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" } :
                                           { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
-
-  const address = order.address;
 
   const orderedOn = new Date(order.created_at).toLocaleDateString("es-AR", {
     day: "2-digit", month: "long", year: "numeric",
@@ -167,12 +164,8 @@ export default async function OrderDetailPage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <p className="text-[10px] tracking-[0.15em] text-muted-foreground mb-2">DIRECCIÓN DE ENTREGA</p>
-              {address?.street ? (
-                <div className="space-y-0.5 text-sm text-brown">
-                  <p>{address.street}</p>
-                  <p>{address.city}, {address.province}</p>
-                  <p className="text-muted-foreground text-xs">{address.postal_code}</p>
-                </div>
+              {order.address ? (
+                <p className="text-sm text-brown leading-relaxed">{order.address}</p>
               ) : (
                 <p className="text-sm text-muted-foreground italic">Sin información.</p>
               )}

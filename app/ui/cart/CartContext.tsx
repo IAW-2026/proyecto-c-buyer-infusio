@@ -1,11 +1,13 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
+import { useRouter, usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface CartItem {
   id: string;
   productId: string;
+  sellerId: string | null;
   productName: string;
   productVariant: string | null;
   productImageUrl: string | null;
@@ -15,6 +17,7 @@ export interface CartItem {
 
 export interface AddItemInput {
   productId: string;
+  sellerId?: string | null;
   productName: string;
   productVariant?: string | null;
   productImageUrl?: string | null;
@@ -31,18 +34,26 @@ interface CartContextValue {
   refresh: () => Promise<void>;
   addItem: (item: AddItemInput) => Promise<void>;
   updateItemQty: (itemId: string, newQty: number) => void;
-  removeItem: (itemId: string) => void;
+  removeItem: (productId: string) => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { userId } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
   const isBroadcastRefresh = useRef(false);
+  // productIds currently being deleted — refresh must not restore them
+  const pendingRemovals = useRef(new Set<string>());
+  // mirror of items state — readable synchronously inside callbacks
+  const itemsRef = useRef<CartItem[]>([]);
+
+  useEffect(() => { itemsRef.current = items; }, [items]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -50,8 +61,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/cart/items");
       if (res.ok) {
         const data = await res.json();
-        setItems(data.items ?? []);
-        // Notify other tabs only when this refresh was not itself triggered by a broadcast
+        const fresh = (data.items ?? []) as CartItem[];
+        // Filter out any items the user has already deleted but whose DELETE
+        // request hasn't completed (or whose refresh fired concurrently).
+        setItems(fresh.filter((i) => !pendingRemovals.current.has(i.productId)));
         if (!isBroadcastRefresh.current) {
           channelRef.current?.postMessage("cart-updated");
         }
@@ -99,6 +112,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         {
           id: tempId,
           productId: item.productId,
+          sellerId: item.sellerId ?? null,
           productName: item.productName,
           productVariant: item.productVariant ?? null,
           productImageUrl: item.productImageUrl ?? null,
@@ -129,10 +143,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }).catch(() => refresh());
   }, [refresh]);
 
-  const removeItem = useCallback((itemId: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== itemId));
-    fetch(`/cart/items/${itemId}`, { method: "DELETE" }).catch(() => refresh());
-  }, [refresh]);
+  const removeItem = useCallback((productId: string) => {
+    // Mark as pending so any concurrent refresh() doesn't restore this item
+    pendingRemovals.current.add(productId);
+    setItems((prev) => prev.filter((i) => i.productId !== productId));
+
+    const dbId = itemsRef.current.find((i) => i.productId === productId)?.id;
+
+    if (!dbId || dbId.startsWith("optimistic_")) {
+      // Item hasn't been persisted yet — nothing to DELETE.
+      // pendingRemovals blocks addItem's upcoming refresh from restoring it.
+      // Clear the pending flag after a short window so it doesn't block future adds.
+      setTimeout(() => pendingRemovals.current.delete(productId), 3000);
+      return;
+    }
+
+    fetch(`/cart/items/${dbId}`, { method: "DELETE" })
+      .finally(() => {
+        pendingRemovals.current.delete(productId);
+        refresh();
+        // Re-render the /cart server page now that the deletion is confirmed in DB
+        if (pathname === "/cart") router.refresh();
+      });
+  }, [refresh, router, pathname]);
 
   const openCart = useCallback(() => {
     setIsOpen(true);

@@ -7,6 +7,7 @@ import { useCart } from "./CartContext";
 
 interface AddToCartControlsProps {
   productId: string;
+  sellerId?: string;
   productName: string;
   productVariant?: string;
   productImageUrl?: string;
@@ -17,6 +18,7 @@ interface AddToCartControlsProps {
 
 export default function AddToCartControls({
   productId,
+  sellerId,
   productName,
   productVariant,
   productImageUrl,
@@ -47,7 +49,7 @@ export default function AddToCartControls({
     if (!userId) {
       sessionStorage.setItem(
         "pendingCartItem",
-        JSON.stringify({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity })
+        JSON.stringify({ productId, sellerId, productName, productVariant, productImageUrl, priceAtTime, quantity })
       );
       const { pathname, search } = new URL(window.location.href);
       router.push(`/sign-in?redirect_url=${encodeURIComponent(pathname + search)}`);
@@ -56,7 +58,7 @@ export default function AddToCartControls({
 
     setLoading(true);
     try {
-      await addItem({ productId, productName, productVariant, productImageUrl, priceAtTime, quantity });
+      await addItem({ productId, sellerId, productName, productVariant, productImageUrl, priceAtTime, quantity });
     } finally {
       setLoading(false);
     }

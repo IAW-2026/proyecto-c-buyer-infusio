@@ -9,6 +9,7 @@ const imgSrc = [
   "https://newsite.fazenda.com.ar",
   "https://www.connectroasters.com",
   "https://beanswithoutborders.com",
+  "https://res.cloudinary.com",
   "https://*.maptiler.com",
   "https://*.clerk.com",
   "https://*.clerk.accounts.dev",
@@ -38,6 +39,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "newsite.fazenda.com.ar" },
       { protocol: "https", hostname: "www.connectroasters.com" },
       { protocol: "https", hostname: "beanswithoutborders.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
   async headers() {

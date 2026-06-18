@@ -4,7 +4,7 @@ import { getOrdersByUser, getShipmentTracking } from "@/app/lib/services/externa
 import OrdersTable, { type OrderRow } from "@/app/ui/OrdersTable";
 
 export default async function OrdersPage() {
-  const { userId, getToken } = await auth();
+  const { userId } = await auth();
 
   if (!userId) {
     return (
@@ -22,8 +22,7 @@ export default async function OrdersPage() {
     );
   }
 
-  const token = await getToken();
-  const rawOrders = await getOrdersByUser(userId, token ?? undefined);
+  const rawOrders = await getOrdersByUser(userId);
 
   const trackingMap = Object.fromEntries(
     await Promise.all(

@@ -231,6 +231,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 <p className="text-xs tracking-[0.15em] text-muted-foreground mb-3">CANTIDAD</p>
                 <AddToCartControls
                   productId={product.id}
+                  sellerId={product.sellerId}
                   productName={product.name}
                   productVariant={product.unit ?? undefined}
                   productImageUrl={product.imageUrl ?? undefined}

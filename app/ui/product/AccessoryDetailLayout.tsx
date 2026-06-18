@@ -95,6 +95,7 @@ export default function AccessoryDetailLayout({ product, ritual, accent }: Props
               {/* Color swatches + add-to-cart */}
               <AccessoryPurchasePanel
                 productId={product.id}
+                sellerId={product.sellerId}
                 productName={product.name}
                 priceAtTime={product.price}
                 productImageUrl={product.imageUrl ?? undefined}

@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       product_name: string;
       product_variant: string | null;
       product_image_url: string | null;
-      unit_price: number;
+      price_at_time: number;
       quantity: number;
       subtotal: number;
     }>;
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         product_name: item.product_name,
         product_variant: item.product_variant ?? null,
         product_image_url: item.product_image_url ?? null,
-        price_at_time: item.unit_price,
+        price_at_time: item.price_at_time,
         quantity: item.quantity,
       })),
     }, { status: 200 });
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
             create: cart_items.map((item) => ({
               productId: item.product_id,
               productName: item.product_name,
-              unitPrice: item.unit_price,
+              unitPrice: item.price_at_time,
               quantity: item.quantity,
               subtotal: item.subtotal,
             })),
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
         product_name: item.product_name,
         product_variant: item.product_variant ?? null,
         product_image_url: item.product_image_url ?? null,
-        price_at_time: item.unit_price,
+        price_at_time: item.price_at_time,
         quantity: item.quantity,
       })),
     },

@@ -59,11 +59,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { userId, getToken } = await auth();
+  const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const token = await getToken();
-  const order = await getOrderById(id, token ?? undefined).catch(() => null);
+  const order = await getOrderById(id).catch(() => null);
 
   if (!order || order.user_id !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

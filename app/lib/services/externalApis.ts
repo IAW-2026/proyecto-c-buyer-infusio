@@ -13,6 +13,7 @@
  */
 
 const SELLER_API_URL = process.env.SELLER_API_URL!;
+const SELLER_APP_KEY = process.env.SELLER_APP_KEY!;
 const SHIPPING_API_URL = process.env.SHIPPING_API_URL!;
 const SHIPPING_APP_KEY = process.env.SHIPPING_APP_KEY!;
 const PAYMENTS_API_URL = process.env.PAYMENTS_API_URL!;
@@ -39,6 +40,15 @@ async function apiFetch<T>(
   }
 
   return res.json() as Promise<T>;
+}
+
+// All Seller App calls authenticate with the static SELLER_APP_KEY,
+// not with the user's Clerk JWT.
+async function sellerFetch<T>(url: string, options?: RequestInit): Promise<T> {
+  return apiFetch<T>(url, {
+    ...options,
+    headers: { Authorization: `Bearer ${SELLER_APP_KEY}`, ...options?.headers },
+  });
 }
 
 // ─── Seller App types ─────────────────────────────────────────────────────────
@@ -77,7 +87,7 @@ export interface CartItemPayload {
   product_name: string;
   product_variant: string | null;
   product_image_url: string | null;
-  unit_price: number;
+  price_at_time: number;
   quantity: number;
   subtotal: number;
 }
@@ -86,6 +96,7 @@ export interface SellerPurchaseOrder {
   purchase_order_id: string;
   user_id: string;
   shopping_cart_id: string;
+  // Seller App returns lowercase — normalizeOrder() uppercases it before use
   status: "PENDING" | "AWAITING_PAYMENT" | "CONFIRMED" | "CANCELLED";
   created_at: string;
   shipping_id: string | null;
@@ -93,17 +104,8 @@ export interface SellerPurchaseOrder {
   payment_url: string;
   shipping_cost: number;
   currency: string;
-  address: {
-    street?: string;
-    city?: string;
-    province?: string;
-    postal_code?: string;
-    firstName?: string;
-    lastName?: string;
-    apartment?: string;
-    country?: string;
-    [key: string]: string | undefined;
-  };
+  // Seller App returns a concatenated string e.g. "Av. Corrientes 1234, Buenos Aires, Buenos Aires"
+  address: string;
   cart_items: Array<{
     id: string;
     cart_id: string;
@@ -182,23 +184,23 @@ export interface DisputeStatusResponse {
 
 // ─── Seller App ───────────────────────────────────────────────────────────────
 
-export async function getProducts(token?: string): Promise<SellerProduct[]> {
-  const data = await apiFetch<{ products: SellerProduct[] }>(
+// Seller App returns status in lowercase — normalize to uppercase to match our enums.
+function normalizeOrder(order: SellerPurchaseOrder): SellerPurchaseOrder {
+  return { ...order, status: order.status.toUpperCase() as SellerPurchaseOrder["status"] };
+}
+
+export async function getProducts(): Promise<SellerProduct[]> {
+  const data = await sellerFetch<{ products: SellerProduct[] }>(
     `${SELLER_API_URL}/products`,
-    { next: { revalidate: 60 } },
-    token
+    { next: { revalidate: 60 } }
   );
   return data.products;
 }
 
-export async function getProductById(
-  id: string,
-  token?: string
-): Promise<SellerProduct> {
-  const data = await apiFetch<{ product: SellerProduct }>(
-    `${SELLER_API_URL}/product/${id}`,
-    { next: { revalidate: 60 } },
-    token
+export async function getProductById(id: string): Promise<SellerProduct> {
+  const data = await sellerFetch<{ product: SellerProduct }>(
+    `${SELLER_API_URL}/products/${id}`,
+    { next: { revalidate: 60 } }
   );
   return data.product;
 }
@@ -207,41 +209,33 @@ export async function createPurchaseOrder(
   userId: string,
   cartId: string,
   address: Record<string, string | undefined>,
-  cartItems: CartItemPayload[],
-  token?: string
+  cartItems: CartItemPayload[]
 ): Promise<SellerPurchaseOrder> {
-  return apiFetch<SellerPurchaseOrder>(
+  const order = await sellerFetch<SellerPurchaseOrder>(
     `${SELLER_API_URL}/purchase_order`,
     {
       method: "POST",
       body: JSON.stringify({ user_id: userId, shopping_cart_id: cartId, address, cart_items: cartItems }),
       cache: "no-store",
-    },
-    token
+    }
   );
+  return normalizeOrder(order);
 }
 
-export async function getOrdersByUser(
-  userId: string,
-  token?: string
-): Promise<SellerPurchaseOrder[]> {
-  const data = await apiFetch<{ orders: SellerPurchaseOrder[] }>(
+export async function getOrdersByUser(userId: string): Promise<SellerPurchaseOrder[]> {
+  const data = await sellerFetch<{ orders: SellerPurchaseOrder[] }>(
     `${SELLER_API_URL}/purchase_orders?user_id=${encodeURIComponent(userId)}`,
-    { cache: "no-store" },
-    token
+    { cache: "no-store" }
   );
-  return data.orders;
+  return data.orders.map(normalizeOrder);
 }
 
-export async function getOrderById(
-  orderId: string,
-  token?: string
-): Promise<SellerPurchaseOrder> {
-  return apiFetch<SellerPurchaseOrder>(
+export async function getOrderById(orderId: string): Promise<SellerPurchaseOrder> {
+  const order = await sellerFetch<SellerPurchaseOrder>(
     `${SELLER_API_URL}/purchase_orders/${orderId}`,
-    { cache: "no-store" },
-    token
+    { cache: "no-store" }
   );
+  return normalizeOrder(order);
 }
 
 
