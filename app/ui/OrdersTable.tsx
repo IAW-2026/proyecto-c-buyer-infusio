@@ -42,14 +42,15 @@ const TABS: { id: Tab; label: string }[] = [
 
 type BadgeInfo = { label: string; cls: string };
 
-const CONFIRMED_STATUSES = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED", "DELIVERED"];
+const CONFIRMED_STATUSES = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED"];
 const ACTIVE_STATUSES    = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED"];
 
 function getStatusBadge(order: OrderRow): BadgeInfo {
-  if (order.status === "CANCELLED")              return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
-  if (CONFIRMED_STATUSES.includes(order.status)) return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
-  if (order.status === "PENDING" && !!order.paymentId && order.paymentId) return { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" };
-  return                                                { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
+  if (order.status === "CANCELLED")                  return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
+  if (order.status === "DELIVERED")                  return { label: "FINALIZADO", cls: "bg-[#d8e0f0] text-[#2d4a7a]" };
+  if (CONFIRMED_STATUSES.includes(order.status))     return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
+  if (order.status === "PENDING" && order.paymentId) return { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" };
+  return                                                    { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
 }
 
 function isOrderActive(order: OrderRow, tracking: ShipmentTrackingResponse | null) {

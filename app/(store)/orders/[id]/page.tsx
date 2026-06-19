@@ -26,10 +26,11 @@ export default async function OrderDetailPage({
   const shippingCost = order.shipping_cost;
   const total = subtotal + shippingCost;
 
-  const CONFIRMED_STATUSES = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED", "DELIVERED"];
+  const CONFIRMED_STATUSES = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED"];
 
   const badge: BadgeInfo =
     order.status === "CANCELLED"                         ? { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" } :
+    order.status === "DELIVERED"                         ? { label: "FINALIZADO", cls: "bg-[#d8e0f0] text-[#2d4a7a]" } :
     CONFIRMED_STATUSES.includes(order.status)            ? { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" } :
     order.status === "PENDING" && order.payment_id       ? { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" } :
                                                            { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
