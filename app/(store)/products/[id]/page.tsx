@@ -28,11 +28,11 @@ function getAccent(categories: string[]): Accent {
 }
 
 function getSensoryTags(product: SellerProduct): string[] {
-  const cats = product.categories.join(" ").toLowerCase();
-  if (cats.includes("café") || cats.includes("cafe")) return ["CHOCOLATE", "FRUTOS SECOS", "CARAMELO", "ACIDEZ"];
-  if (cats.includes("yerba")) return ["HIERBA", "TERROSO", "FRESCO", "EQUILIBRADO"];
-  if (cats.includes("tereré")) return ["CÍTRICO", "FRESCO", "HERBAL", "REFRESCANTE"];
-  if (cats.includes("té") || cats.includes("te")) return ["FLORAL", "HERBÁCEO", "SUAVE", "ANTIOXIDANTE"];
+  const s = `${product.name} ${product.categories.join(" ")}`.toLowerCase();
+  if (s.includes("café") || s.includes("cafe") || s.includes("coffee")) return ["CHOCOLATE", "FRUTOS SECOS", "CARAMELO", "ACIDEZ"];
+  if (s.includes("tereré") || s.includes("terere")) return ["CÍTRICO", "FRESCO", "HERBAL", "REFRESCANTE"];
+  if (s.includes("yerba") || s.includes("mate")) return ["HIERBA", "TERROSO", "FRESCO", "EQUILIBRADO"];
+  if (s.includes("té") || s.includes(" te ") || s.includes("tea")) return ["FLORAL", "HERBÁCEO", "SUAVE", "ANTIOXIDANTE"];
   return ["ARTESANAL", "AUTÉNTICO", "NATURAL"];
 }
 
@@ -65,17 +65,17 @@ function getMapUrl(location?: string): string {
 }
 
 function getBrewingInfo(product: SellerProduct): { method: string; ratio: string; temp: string } {
-  const cats = product.categories.join(" ").toLowerCase();
-  if (cats.includes("café") || cats.includes("cafe")) {
+  const s = `${product.name} ${product.categories.join(" ")}`.toLowerCase();
+  if (s.includes("café") || s.includes("cafe") || s.includes("coffee")) {
     return { method: "ESPRESSO / POUR OVER", ratio: "1:15 CAFÉ / AGUA", temp: "92–96 °C" };
   }
-  if (cats.includes("tereré")) {
+  if (s.includes("tereré") || s.includes("terere")) {
     return { method: "TERERÉ FRÍO", ratio: "LLENO 3/4", temp: "AGUA FRÍA" };
   }
-  if (cats.includes("yerba") || cats.includes("mate")) {
+  if (s.includes("yerba") || s.includes("mate")) {
     return { method: "MATE TRADICIONAL", ratio: "LLENO 3/4", temp: "70–75 °C" };
   }
-  if (cats.includes("té") || cats.includes("te")) {
+  if (s.includes("té") || s.includes(" te ") || s.includes("tea")) {
     return { method: "INFUSIÓN EN TAZA", ratio: "1 SAQUITO / 250 ML", temp: "80–90 °C" };
   }
   return { method: "—", ratio: "—", temp: "—" };
