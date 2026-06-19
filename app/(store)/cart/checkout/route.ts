@@ -90,6 +90,8 @@ export async function POST(request: NextRequest) {
   const { postalCode, id: _id, ...rest } = address as AddressBody & { id?: string };
   const sellerAddress: Record<string, string | undefined> = { ...rest, postal_code: postalCode };
 
+  console.log("[checkout] sending to seller:", JSON.stringify({ user_id: userId, shopping_cart_id: checkoutCartId, cart_items: cartItems, address: sellerAddress }, null, 2));
+
   try {
     const order = await createPurchaseOrder(userId, checkoutCartId, sellerAddress, cartItems);
 

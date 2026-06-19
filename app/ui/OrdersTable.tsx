@@ -17,6 +17,7 @@ export interface OrderRow {
   id: string;
   createdAt: Date;
   status: string;
+  paymentId: string | null;
   shippingId: string | null;
   paymentUrl: string;
   items: OrderCartItem[];
@@ -41,24 +42,20 @@ const TABS: { id: Tab; label: string }[] = [
 
 type BadgeInfo = { label: string; cls: string };
 
+const CONFIRMED_STATUSES = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED", "DELIVERED"];
+const ACTIVE_STATUSES    = ["PAYMENT_CONFIRMED", "PREPARING", "DISPATCHED"];
+
 function getStatusBadge(order: OrderRow): BadgeInfo {
-  if (order.status === "CANCELLED")        return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
-  if (order.status === "CONFIRMED")        return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
-  if (order.status === "AWAITING_PAYMENT") return { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" };
-  return                                          { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
+  if (order.status === "CANCELLED")              return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
+  if (CONFIRMED_STATUSES.includes(order.status)) return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
+  if (order.status === "PENDING" && !!order.paymentId && order.paymentId) return { label: "PENDIENTE",  cls: "bg-[#f2e8c8] text-[#8a7030]" };
+  return                                                { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
 }
 
 function isOrderActive(order: OrderRow, tracking: ShipmentTrackingResponse | null) {
-  if (order.status === "CANCELLED") return false;
-  if (order.status === "AWAITING_PAYMENT") return false;
+  if (!ACTIVE_STATUSES.includes(order.status)) return false;
   if (!tracking) return true;
   return !["DELIVERED", "CANCELLED"].includes(tracking.status);
-}
-
-function isOrderHistorical(order: OrderRow, tracking: ShipmentTrackingResponse | null) {
-  if (order.status === "CANCELLED") return true;
-  if (tracking && ["DELIVERED", "CANCELLED"].includes(tracking.status)) return true;
-  return false;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -68,9 +65,9 @@ export default function OrdersTable({ orders, trackingMap, trackingBase }: Props
 
   const filtered = orders.filter((o) => {
     const t = trackingMap[o.id] ?? null;
-    if (activeTab === "pendientes") return o.status === "AWAITING_PAYMENT";
+    if (activeTab === "pendientes") return o.status === "PENDING" && !!o.paymentId;
     if (activeTab === "activos")    return isOrderActive(o, t);
-    if (activeTab === "compras")    return o.status === "CONFIRMED";
+    if (activeTab === "compras")    return o.status === "DELIVERED" || o.status === "CANCELLED";
     return true;
   });
 
@@ -153,7 +150,7 @@ export default function OrdersTable({ orders, trackingMap, trackingBase }: Props
                           <span className={`inline-block min-w-27.5 text-center px-3 py-1 text-[10px] tracking-[0.12em] rounded-full whitespace-nowrap ${badge.cls}`}>
                             {badge.label}
                           </span>
-                          {order.status === "AWAITING_PAYMENT" ? (
+                          {order.status === "PENDING" && !!order.paymentId ? (
                             <a
                               href={order.paymentUrl}
                               className="text-[11px] text-terracotta hover:text-brown transition-colors whitespace-nowrap"
@@ -222,7 +219,7 @@ export default function OrdersTable({ orders, trackingMap, trackingBase }: Props
                     </span>
                   </div>
 
-                  {order.status === "AWAITING_PAYMENT" ? (
+                  {order.status === "PENDING" && !!order.paymentId ? (
                     <a
                       href={order.paymentUrl}
                       className="block text-[11px] text-terracotta hover:text-brown transition-colors"

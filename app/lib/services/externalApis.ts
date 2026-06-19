@@ -97,7 +97,7 @@ export interface SellerPurchaseOrder {
   user_id: string;
   shopping_cart_id: string;
   // Seller App returns lowercase — normalizeOrder() uppercases it before use
-  status: "PENDING" | "AWAITING_PAYMENT" | "CONFIRMED" | "CANCELLED";
+  status: "PENDING" | "PAYMENT_CONFIRMED" | "PREPARING" | "DISPATCHED" | "DELIVERED" | "CANCELLED";
   created_at: string;
   shipping_id: string | null;
   payment_id: string | null;
