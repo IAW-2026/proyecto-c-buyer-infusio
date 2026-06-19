@@ -114,17 +114,8 @@ export async function GET(
           View,
           { style: styles.metaBlock },
           React.createElement(Text, { style: styles.metaLabel }, "FACTURADO A"),
-          address?.firstName
-            ? React.createElement(Text, { style: styles.metaText }, `${address.firstName} ${address.lastName ?? ""}`)
-            : null,
-          address?.street
-            ? React.createElement(Text, { style: styles.metaSubtext }, `${address.street}${address.apartment ? `, ${address.apartment}` : ""}`)
-            : null,
-          address?.city
-            ? React.createElement(Text, { style: styles.metaSubtext }, `${address.city}, ${address.province ?? ""} ${address.postal_code ?? ""}`)
-            : null,
-          address?.country
-            ? React.createElement(Text, { style: styles.metaSubtext }, address.country)
+          address
+            ? React.createElement(Text, { style: styles.metaSubtext }, address)
             : null
         ),
         React.createElement(
