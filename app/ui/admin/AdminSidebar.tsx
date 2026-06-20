@@ -9,9 +9,18 @@ interface AdminSidebarProps {
   adminName: string;
 }
 
-const NAV = [
+interface NavItem {
+  label: string;
+  href: string;
+  exact?: boolean;
+  external?: boolean;
+  tracking?: string;
+  icon: React.ReactNode;
+}
+
+const NAV: NavItem[] = [
   {
-    label: "PANEL DE CONTROL",
+    label: "PANORAMA OPERATIVO",
     href: "/admin",
     exact: true,
     icon: (
@@ -59,6 +68,35 @@ const NAV = [
       </svg>
     ),
   },
+  {
+    label: "PANEL DE CONTROL",
+    href: "https://etapa-3-control-plane-infusio.vercel.app/",
+    external: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="1" y="1" width="14" height="14" rx="1.5" />
+        <circle cx="5.5" cy="6" r="2.5" />
+        <path d="M5.5 3.5V6l1.8 1.8" />
+        <line x1="10" y1="4.5" x2="13.5" y2="4.5" />
+        <line x1="10" y1="6.5" x2="13.5" y2="6.5" />
+        <line x1="10" y1="8.5" x2="13.5" y2="8.5" />
+        <line x1="2.5" y1="11.5" x2="13.5" y2="11.5" />
+        <circle cx="7" cy="11.5" r="1" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "ANALYTICS DASHBOARD",
+    href: "https://etapa-3-analytics-dashboard-infusio.vercel.app/dashboard",
+    external: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="1" y="9" width="3" height="5" rx="0.5" />
+        <rect x="6" y="6" width="3" height="8" rx="0.5" />
+        <rect x="11" y="3" width="3" height="11" rx="0.5" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminSidebar({ adminName }: AdminSidebarProps) {
@@ -70,7 +108,7 @@ export default function AdminSidebar({ adminName }: AdminSidebarProps) {
   }
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-65 bg-cream border-r border-tan flex flex-col z-40">
+    <aside className="fixed top-0 left-0 h-screen w-72 bg-cream border-r border-tan flex flex-col z-40">
       {/* Logo */}
       <div className="px-8 py-7 border-b border-tan">
         <span className="font-serif font-semibold text-xl text-brown">Infusio</span>
@@ -78,21 +116,27 @@ export default function AdminSidebar({ adminName }: AdminSidebarProps) {
 
       {/* Nav */}
       <nav className="flex-1 px-5 py-6 space-y-1">
-        {NAV.map(({ label, href, exact, icon }) => {
-          const active = isActive(href, exact);
+        {NAV.map(({ label, href, exact, external, tracking, icon }) => {
+          const active = !external && isActive(href, exact ?? false);
+          const cls = `flex items-center gap-3 px-3 py-2.5 rounded-sm text-xs ${tracking ?? "tracking-[0.12em]"} transition-colors ${
+            active ? "text-terracotta" : "text-muted-foreground hover:text-brown"
+          }`;
+          const iconEl = (
+            <span className={active ? "text-terracotta" : "text-muted-foreground"}>
+              {icon}
+            </span>
+          );
+          if (external) {
+            return (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+                {iconEl}
+                {label}
+              </a>
+            );
+          }
           return (
-            <Link
-              key={label}
-              href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-sm text-xs tracking-[0.12em] transition-colors ${
-                active
-                  ? "text-terracotta"
-                  : "text-muted-foreground hover:text-brown"
-              }`}
-            >
-              <span className={active ? "text-terracotta" : "text-muted-foreground"}>
-                {icon}
-              </span>
+            <Link key={label} href={href} className={cls}>
+              {iconEl}
               {label}
             </Link>
           );

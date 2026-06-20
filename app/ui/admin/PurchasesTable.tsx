@@ -26,21 +26,15 @@ interface Props {
   orders: AdminOrderRow[];
 }
 
-const ORDER_STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:           "PROCESANDO",
-  AWAITING_PAYMENT:  "PENDIENTE",
-  CONFIRMED:         "CONFIRMADO",
-  CANCELLED:         "CANCELADO",
-};
-
-const ORDER_STATUS_CLS: Record<PurchaseOrderStatus, string> = {
-  PENDING:           "bg-tan/60 text-brown",
-  AWAITING_PAYMENT:  "bg-[#f2e8c8] text-[#8a7030]",
-  CONFIRMED:         "bg-[#dce6d8] text-[#4e7048]",
-  CANCELLED:         "bg-[#eedede] text-[#904545]",
-};
-
 type BadgeInfo = { label: string; cls: string };
+
+function getOrderBadge(status: PurchaseOrderStatus, shipStatus: ShipmentStatusValue | null): BadgeInfo {
+  if (shipStatus === "DELIVERED")  return { label: "FINALIZADO", cls: "bg-[#d8e0f0] text-[#2d4a7a]" };
+  if (status === "CANCELLED")      return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
+  if (status === "CONFIRMED")      return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
+  if (status === "AWAITING_PAYMENT") return { label: "PENDIENTE", cls: "bg-[#f2e8c8] text-[#8a7030]" };
+  return                                  { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
+}
 
 const SHIP_BADGE: Record<ShipmentStatusValue, BadgeInfo> = {
   CONFIRMED:        { label: "EN PREPARACIÓN",    cls: "bg-[#e5e3ef] text-[#6a629a]" },
@@ -78,6 +72,7 @@ export default function PurchasesTable({ orders }: Props) {
     <>
       {orders.map((o) => {
         const isOpen = expandedId === o.id;
+        const orderBadge = getOrderBadge(o.status, o.shipStatus);
         const shipBadge = o.shipStatus ? SHIP_BADGE[o.shipStatus] : null;
 
         return (
@@ -106,8 +101,8 @@ export default function PurchasesTable({ orders }: Props) {
                   : "—"}
               </td>
               <td className="py-4">
-                <span className={`px-3 py-1 rounded-full text-xs tracking-widest ${ORDER_STATUS_CLS[o.status]}`}>
-                  {ORDER_STATUS_LABEL[o.status]}
+                <span className={`px-3 py-1 rounded-full text-xs tracking-widest ${orderBadge.cls}`}>
+                  {orderBadge.label}
                 </span>
               </td>
               <td className="py-4">

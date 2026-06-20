@@ -5,18 +5,17 @@ import DbErrorBanner from "@/app/ui/admin/DbErrorBanner";
 import PurchasesTable, { type AdminOrderRow } from "@/app/ui/admin/PurchasesTable";
 import { getShipmentTracking, type ShipmentStatusValue } from "@/app/lib/services/externalApis";
 
-const STATUS_LABEL: Record<PurchaseOrderStatus, string> = {
-  PENDING:           "PROCESANDO",
-  AWAITING_PAYMENT:  "PENDIENTE",
-  CONFIRMED:         "CONFIRMADO",
-  CANCELLED:         "CANCELADO",
-};
+type FilterValue = PurchaseOrderStatus | "FINALIZADO";
 
-const ALL_STATUSES: PurchaseOrderStatus[] = ["PENDING", "AWAITING_PAYMENT", "CONFIRMED", "CANCELLED"];
+const DB_STATUSES: PurchaseOrderStatus[] = ["PENDING", "AWAITING_PAYMENT", "CONFIRMED", "CANCELLED"];
 
-function formatId(id: string) {
-  return `#INF-${id.slice(-4).toUpperCase()}`;
-}
+const FILTERS: { value: FilterValue; label: string }[] = [
+  { value: "PENDING",           label: "PROCESANDO" },
+  { value: "AWAITING_PAYMENT",  label: "PENDIENTE" },
+  { value: "CONFIRMED",         label: "CONFIRMADO" },
+  { value: "FINALIZADO",        label: "FINALIZADO" },
+  { value: "CANCELLED",         label: "CANCELADO" },
+];
 
 export default async function PurchasesPage({
   searchParams,
@@ -24,9 +23,11 @@ export default async function PurchasesPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const { status } = await searchParams;
-  const activeStatus = ALL_STATUSES.includes(status as PurchaseOrderStatus)
-    ? (status as PurchaseOrderStatus)
-    : null;
+
+  const activeFilter: FilterValue | null =
+    [...DB_STATUSES, "FINALIZADO" as FilterValue].includes(status as FilterValue)
+      ? (status as FilterValue)
+      : null;
 
   type RawOrder = {
     id: string;
@@ -42,28 +43,37 @@ export default async function PurchasesPage({
   let countByStatus: Partial<Record<PurchaseOrderStatus, number>> = {};
   let dbError = false;
 
+  const include = {
+    user: { select: { name: true, lastName: true, email: true } },
+    cart: { include: { items: { select: { productName: true, quantity: true, priceAtTime: true } } } },
+    packages: { select: { amount: true } },
+  } as const;
+
   try {
-    const [orders, statusGroups] = await Promise.all([
-      db.purchaseOrder.findMany({
-        where: activeStatus ? { status: activeStatus } : undefined,
-        include: {
-          user: { select: { name: true, lastName: true, email: true } },
-          cart: { include: { items: { select: { productName: true, quantity: true, priceAtTime: true } } } },
-          packages: { select: { amount: true } },
-        },
-        orderBy: { createdAt: "desc" },
-      }),
+    const [statusGroups] = await Promise.all([
       db.purchaseOrder.groupBy({ by: ["status"], _count: { id: true } }),
     ]);
-    rawOrders = orders;
     countByStatus = Object.fromEntries(statusGroups.map((s) => [s.status, s._count.id]));
+
+    if (activeFilter === "FINALIZADO") {
+      // Fetch all CONFIRMED orders that have a shippingId — candidates for FINALIZADO
+      rawOrders = await db.purchaseOrder.findMany({
+        where: { status: "CONFIRMED", shippingId: { not: null } },
+        include,
+        orderBy: { createdAt: "desc" },
+      });
+    } else {
+      rawOrders = await db.purchaseOrder.findMany({
+        where: activeFilter ? { status: activeFilter } : undefined,
+        include,
+        orderBy: { createdAt: "desc" },
+      });
+    }
   } catch {
     dbError = true;
   }
 
-  const totalCount = Object.values(countByStatus).reduce((s, n) => s + (n ?? 0), 0);
-
-  // Fetch shipping statuses in parallel for orders that have a shippingId
+  // Fetch shipment tracking in parallel for orders that have a shippingId
   const trackingMap: Record<string, ShipmentStatusValue | null> = {};
   await Promise.all(
     rawOrders
@@ -78,8 +88,46 @@ export default async function PurchasesPage({
       })
   );
 
-  // Serialize Prisma Decimals and Dates before passing to the client component
-  const orders: AdminOrderRow[] = rawOrders.map((o) => ({
+  // When filtering by FINALIZADO keep only orders whose shipment was delivered
+  const filteredOrders =
+    activeFilter === "FINALIZADO"
+      ? rawOrders.filter((o) => trackingMap[o.id] === "DELIVERED")
+      : rawOrders;
+
+  const totalCount = Object.values(countByStatus).reduce((s, n) => s + (n ?? 0), 0);
+
+  // Compute FINALIZADO count
+  let finalizedCount: number;
+  if (activeFilter === "FINALIZADO") {
+    // Already know it from the filter result
+    finalizedCount = filteredOrders.length;
+  } else if (activeFilter === null) {
+    // TODOS: we fetched all orders and their tracking
+    finalizedCount = rawOrders.filter(
+      (o) => o.status === "CONFIRMED" && trackingMap[o.id] === "DELIVERED"
+    ).length;
+  } else {
+    // Another status filter: fetch CONFIRMED+shippingId orders separately
+    try {
+      const candidates = await db.purchaseOrder.findMany({
+        where: { status: "CONFIRMED", shippingId: { not: null } },
+        select: { id: true, shippingId: true },
+      });
+      const statuses = await Promise.all(
+        candidates.map(async (o) => {
+          try {
+            const t = await getShipmentTracking(o.shippingId!);
+            return t.status;
+          } catch { return null; }
+        })
+      );
+      finalizedCount = statuses.filter((s) => s === "DELIVERED").length;
+    } catch {
+      finalizedCount = 0;
+    }
+  }
+
+  const orders: AdminOrderRow[] = filteredOrders.map((o) => ({
     id: o.id,
     status: o.status,
     shippingId: o.shippingId,
@@ -108,24 +156,24 @@ export default async function PurchasesPage({
         <Link
           href="/admin/purchases"
           className={`px-4 py-1.5 text-xs tracking-[0.12em] border transition-colors ${
-            !activeStatus
+            !activeFilter
               ? "border-brown text-brown"
               : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
           }`}
         >
           TODOS ({totalCount})
         </Link>
-        {ALL_STATUSES.map((s) => (
+        {FILTERS.map(({ value, label }) => (
           <Link
-            key={s}
-            href={`/admin/purchases?status=${s}`}
+            key={value}
+            href={`/admin/purchases?status=${value}`}
             className={`px-4 py-1.5 text-xs tracking-[0.12em] border transition-colors ${
-              activeStatus === s
+              activeFilter === value
                 ? "border-brown text-brown"
                 : "border-tan text-muted-foreground hover:border-brown hover:text-brown"
             }`}
           >
-            {STATUS_LABEL[s]} ({countByStatus[s] ?? 0})
+            {label} ({value === "FINALIZADO" ? finalizedCount : (countByStatus[value as PurchaseOrderStatus] ?? 0)})
           </Link>
         ))}
       </div>
