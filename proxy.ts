@@ -1,0 +1,31 @@
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/products/(.*)",
+  "/limited-edition(.*)",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/returns(.*)",
+  "/contact(.*)",
+  "/assistant(.*)",
+  // All API routes are public at proxy level — individual routes handle auth themselves
+  "/api/(.*)",
+  "/cart/items(.*)",     // Added because folder structure changed and this route is now under /cart
+  "/cart/checkout",
+]);
+
+export default clerkMiddleware(async (auth, request) => {
+  if (!isPublicRoute(request)) {
+    await auth.protect();
+  }
+});
+
+export const config = {
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run for API routes
+    "/(api|trpc)(.*)",
+  ],
+};

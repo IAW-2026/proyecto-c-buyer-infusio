@@ -1,0 +1,156 @@
+"use client";
+
+import { Fragment, useState } from "react";
+import type { PurchaseOrderStatus } from "@/generated/prisma/client";
+import type { ShipmentStatusValue } from "@/app/lib/services/externalApis";
+
+export interface AdminOrderItem {
+  productName: string;
+  quantity: number;
+  priceAtTime: number;
+}
+
+export interface AdminOrderRow {
+  id: string;
+  status: PurchaseOrderStatus;
+  shippingId: string | null;
+  shipStatus: ShipmentStatusValue | null;
+  createdAt: string;
+  userName: string;
+  userEmail: string;
+  items: AdminOrderItem[];
+  total: number;
+}
+
+interface Props {
+  orders: AdminOrderRow[];
+}
+
+type BadgeInfo = { label: string; cls: string };
+
+function getOrderBadge(status: PurchaseOrderStatus, shipStatus: ShipmentStatusValue | null): BadgeInfo {
+  if (shipStatus === "DELIVERED")  return { label: "FINALIZADO", cls: "bg-[#d8e0f0] text-[#2d4a7a]" };
+  if (status === "CANCELLED")      return { label: "CANCELADO",  cls: "bg-[#eedede] text-[#904545]" };
+  if (status === "CONFIRMED")      return { label: "CONFIRMADO", cls: "bg-[#dce6d8] text-[#4e7048]" };
+  if (status === "AWAITING_PAYMENT") return { label: "PENDIENTE", cls: "bg-[#f2e8c8] text-[#8a7030]" };
+  return                                  { label: "PROCESANDO", cls: "bg-tan/60 text-brown" };
+}
+
+const SHIP_BADGE: Record<ShipmentStatusValue, BadgeInfo> = {
+  CONFIRMED:        { label: "EN PREPARACIÓN",    cls: "bg-[#e5e3ef] text-[#6a629a]" },
+  PREPARING:        { label: "EN PREPARACIÓN",    cls: "bg-[#e5e3ef] text-[#6a629a]" },
+  IN_TRANSIT:       { label: "EN TRÁNSITO",       cls: "bg-[#f2e8c8] text-[#8a7030]" },
+  ARRIVED_CITY:     { label: "LLEGÓ A TU CIUDAD", cls: "bg-[#f2e8c8] text-[#8a7030]" },
+  OUT_FOR_DELIVERY: { label: "EN REPARTO",        cls: "bg-[#f2e8c8] text-[#8a7030]" },
+  DELIVERED:        { label: "ENTREGADO",         cls: "bg-[#dce6d8] text-[#4e7048]" },
+  CANCELLED:        { label: "CANCELADO",         cls: "bg-[#eedede] text-[#904545]" },
+  WITH_ISSUE:       { label: "CON INCIDENTE",     cls: "bg-[#eedede] text-[#904545]" },
+};
+
+function formatId(id: string) {
+  return `#INF-${id.slice(-4).toUpperCase()}`;
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+}
+
+export default function PurchasesTable({ orders }: Props) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  if (orders.length === 0) {
+    return (
+      <tr>
+        <td colSpan={7} className="py-16 text-center font-serif text-xl text-muted-foreground">
+          No hay pedidos para este filtro.
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <>
+      {orders.map((o) => {
+        const isOpen = expandedId === o.id;
+        const orderBadge = getOrderBadge(o.status, o.shipStatus);
+        const shipBadge = o.shipStatus ? SHIP_BADGE[o.shipStatus] : null;
+
+        return (
+          <Fragment key={o.id}>
+            <tr
+              className="border-b border-tan/60 hover:bg-tan/20 transition-colors cursor-pointer"
+              onClick={() => setExpandedId(isOpen ? null : o.id)}
+            >
+              <td className="py-4 text-sm text-brown">{formatId(o.id)}</td>
+              <td className="py-4">
+                <p className="text-sm text-brown">{o.userName}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{o.userEmail}</p>
+              </td>
+              <td className="py-4 text-sm text-muted-foreground whitespace-nowrap">{formatDate(o.createdAt)}</td>
+              <td className="py-4">
+                <span className="text-xs text-muted-foreground">
+                  {o.items.length} producto{o.items.length !== 1 ? "s" : ""}
+                </span>
+                <span className={`ml-1.5 text-xs text-brown/50 transition-transform inline-block ${isOpen ? "rotate-180" : ""}`}>
+                  ▾
+                </span>
+              </td>
+              <td className="py-4 text-sm font-medium text-brown">
+                {o.total > 0
+                  ? `$${o.total.toLocaleString("es-AR", { minimumFractionDigits: 2 })}`
+                  : "—"}
+              </td>
+              <td className="py-4">
+                <span className={`px-3 py-1 rounded-full text-xs tracking-widest ${orderBadge.cls}`}>
+                  {orderBadge.label}
+                </span>
+              </td>
+              <td className="py-4">
+                {shipBadge ? (
+                  <span className={`px-3 py-1 rounded-full text-xs tracking-widest ${shipBadge.cls}`}>
+                    {shipBadge.label}
+                  </span>
+                ) : o.shippingId ? (
+                  <span className="text-xs text-muted-foreground">Sin datos</span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
+              </td>
+            </tr>
+
+            {isOpen && (
+              <tr className="bg-tan/10 border-b border-tan/60">
+                <td colSpan={7} className="px-6 py-4">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-tan/40">
+                        <th className="pb-2 text-left text-xs tracking-[0.12em] text-terracotta font-normal">PRODUCTO</th>
+                        <th className="pb-2 text-right text-xs tracking-[0.12em] text-terracotta font-normal">PRECIO UNIT.</th>
+                        <th className="pb-2 text-right text-xs tracking-[0.12em] text-terracotta font-normal">CANT.</th>
+                        <th className="pb-2 text-right text-xs tracking-[0.12em] text-terracotta font-normal">SUBTOTAL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {o.items.map((item, i) => (
+                        <tr key={i}>
+                          <td className="py-2 text-sm text-brown">{item.productName}</td>
+                          <td className="py-2 text-sm text-muted-foreground text-right">
+                            ${item.priceAtTime.toLocaleString("es-AR", { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="py-2 text-sm text-muted-foreground text-right">×{item.quantity}</td>
+                          <td className="py-2 text-sm font-medium text-brown text-right">
+                            ${(item.priceAtTime * item.quantity).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            )}
+          </Fragment>
+        );
+      })}
+    </>
+  );
+}
